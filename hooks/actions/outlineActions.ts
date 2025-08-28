@@ -12,6 +12,7 @@ interface GenerateOutlineArgs extends ActionContext {
     setError: SetState<string | null>;
     setIsLoading: SetState<boolean>;
     setLoadingMessage: SetState<string>;
+    setLoadingSubMessage: SetState<string>;
     setOutline: SetState<string>;
     setSources: SetState<Source[]>;
     setPresentationTitle: SetState<string>;
@@ -22,12 +23,29 @@ export const generateOutlineAction = async (args: GenerateOutlineArgs) => {
     const {
         inputText, managedFiles, presentation,
         setError, setIsLoading, setLoadingMessage, setOutline, setSources, setPresentationTitle, setGenerationStep,
-        onUpdatePresentation, createCheckpoint, currentState
+        onUpdatePresentation, createCheckpoint, currentState, setLoadingSubMessage
     } = args;
 
     setError(null);
     setIsLoading(true);
     setLoadingMessage('Researching & building outline...');
+
+    const subTasks = [
+        "Analyzing input and context files...",
+        "Conducting web research for up-to-date information...",
+        "Identifying key themes and topics...",
+        "Structuring a logical presentation flow...",
+        "Generating an engaging title...",
+    ];
+
+    let subTaskIndex = 0;
+    const intervalId = setInterval(() => {
+        subTaskIndex++;
+        setLoadingSubMessage(subTasks[subTaskIndex % subTasks.length]);
+    }, 4000); 
+    setLoadingSubMessage(subTasks[0]);
+
+
     try {
         const completedFiles = managedFiles.filter(f => f.status === 'completed' && f.data && f.mimeType);
         const fileParts: FilePart[] = completedFiles.map(f => ({
@@ -54,7 +72,9 @@ export const generateOutlineAction = async (args: GenerateOutlineArgs) => {
     } catch (e) {
         setError(e instanceof Error ? e.message : 'An unknown error occurred.');
     } finally {
+        clearInterval(intervalId);
         setIsLoading(false);
         setLoadingMessage('');
+        setLoadingSubMessage('');
     }
 };

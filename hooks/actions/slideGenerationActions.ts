@@ -24,12 +24,13 @@ interface GenerateSlidesArgs extends ActionContext {
     setCurrentLoadingStep: SetState<number>;
     setCurrentLoadingSubStep: SetState<number>;
     setGenerationStats: SetState<GenerationStats>;
+    setGeneratingSlideId: SetState<string | null>;
 }
 export const generateSlidesAction = async (args: GenerateSlidesArgs) => {
     const {
         managedFiles, inputText, outline, tone, sources,
         setError, setIsLoading, setLoadingMessage, setSlides, setSourcedImages, setGenerationStep,
-        setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats,
+        setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats, setGeneratingSlideId,
         createCheckpoint, currentState
     } = args;
 
@@ -83,6 +84,7 @@ export const generateSlidesAction = async (args: GenerateSlidesArgs) => {
             }
 
             const placeholderSlide = tempSlides[slideIndex];
+            setGeneratingSlideId(placeholderSlide.id);
             tempSlides[slideIndex] = {
                 ...placeholderSlide,
                 ...slideData,
@@ -135,5 +137,6 @@ export const generateSlidesAction = async (args: GenerateSlidesArgs) => {
     } finally {
         setIsLoading(false);
         setLoadingMessage('');
+        setGeneratingSlideId(null);
     }
 };

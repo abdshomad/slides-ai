@@ -53,6 +53,7 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
           onGenerateOutline={handlers.handleGenerateOutline}
           isLoading={state.isLoading}
           loadingMessage={state.loadingMessage}
+          loadingSubMessage={state.loadingSubMessage}
           hasContent={derivedState.hasContent}
           elapsedTime={state.elapsedTime}
           estimatedTime={state.estimatedTime}
@@ -110,6 +111,7 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
           generationStats={state.generationStats}
           elapsedTime={state.elapsedTime}
           estimatedTime={state.estimatedTime}
+          generatingSlideId={state.generatingSlideId}
           selectedTemplate={derivedState.selectedTemplate}
         />
       )}

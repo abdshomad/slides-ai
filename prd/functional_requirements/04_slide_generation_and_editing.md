@@ -37,3 +37,5 @@
     *   The Image Studio includes a "Search" tab, providing access to a library of high-quality, royalty-free stock photos.
     *   Users can enter search queries to find relevant images for their slide content.
     *   Users can select an image from the search results to apply it directly to their slide.
+*   **F-SE-15 (Advanced Image Controls):** The Image Studio provides granular control over AI image generation. Users can provide "negative prompts" to exclude unwanted elements and select from a range of artistic styles to guide the visual output.
+*   **F-SE-16 (Presentation-Wide Style Cohesion):** Users can apply a single artistic style across all AI-generated images in the presentation via an "Apply Style to All" function, ensuring a consistent and professional aesthetic.

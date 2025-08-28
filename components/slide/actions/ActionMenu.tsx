@@ -22,15 +22,15 @@ interface ActionMenuProps {
 
 export const ActionMenu: React.FC<ActionMenuProps> = (props) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const desktopMenuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (window.innerWidth < 640) return;
-
+      // This effect is for the desktop popover click-outside behavior.
+      // Mobile modal handles this with a backdrop click.
       if (
-        menuRef.current && !menuRef.current.contains(event.target as Node) &&
+        desktopMenuRef.current && !desktopMenuRef.current.contains(event.target as Node) &&
         buttonRef.current && !buttonRef.current.contains(event.target as Node)
       ) {
         setIsMenuOpen(false);
@@ -65,30 +65,36 @@ export const ActionMenu: React.FC<ActionMenuProps> = (props) => {
 
         {isMenuOpen && (
           <>
+            {/* Mobile: A centered modal dialog. */}
             <div 
-              className="fixed inset-0 bg-black/60 z-10 sm:hidden animate-fade-in-fast"
+              className="fixed inset-0 bg-black/60 z-20 p-4 flex items-center justify-center sm:hidden animate-fade-in-fast"
               onClick={() => setIsMenuOpen(false)}
               aria-hidden="true"
-            />
-            
-            <div
-              ref={menuRef}
-              className="
-                fixed bottom-0 left-0 right-0 w-full max-h-[75vh] overflow-y-auto
-                bg-white dark:bg-slate-700
-                border-t border-slate-200 dark:border-slate-600
-                rounded-t-xl shadow-2xl z-20 p-2
-                animate-slide-up-fast
+            >
+              <div 
+                className="w-full max-w-xs bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-h-[85vh] overflow-y-auto animate-modal-enter"
+                onClick={(e) => e.stopPropagation()}
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="menu-button"
+              >
+                <ActionMenuContent {...props} onItemClick={handleItemClick} />
+              </div>
+            </div>
 
-                sm:absolute sm:bottom-full sm:left-1/2 sm:-translate-x-1/2 sm:w-64 sm:max-h-none sm:overflow-y-visible
-                sm:border sm:rounded-lg
-                sm:animate-fade-in-fast sm:origin-bottom sm:mb-2
+            {/* Desktop: A popover menu. */}
+            <div
+              ref={desktopMenuRef}
+              className="
+                hidden sm:block absolute bottom-full left-1/2 -translate-x-1/2 w-64 mb-2 z-20 
               "
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
             >
-              <ActionMenuContent {...props} onItemClick={handleItemClick} />
+               <div className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg shadow-2xl p-2 animate-fade-in-fast">
+                 <ActionMenuContent {...props} onItemClick={handleItemClick} />
+               </div>
             </div>
           </>
         )}
@@ -98,15 +104,21 @@ export const ActionMenu: React.FC<ActionMenuProps> = (props) => {
           animation: fadeIn 0.15s ease-in-out;
         }
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px) scale(0.95); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
-        .animate-slide-up-fast {
-          animation: slideUp 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+        .animate-modal-enter {
+          animation: modalEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @keyframes slideUp {
-          from { transform: translateY(100%); }
-          to { transform: translateY(0); }
+        @keyframes modalEnter {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @media (min-width: 640px) {
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(5px) scale(0.98); }
+              to { opacity: 1; transform: translateY(0) scale(1); }
+            }
         }
       `}</style>
     </div>

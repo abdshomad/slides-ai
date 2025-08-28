@@ -4,7 +4,7 @@ import ImageSearchResults from '../slide/ImageSearchResults';
 import { searchStockImages } from '../../services/stockImageService';
 import { StockImageResult } from '../../types/api';
 import Loader from '../Loader';
-import { ResearchIcon } from '../icons';
+import { ResearchIcon, ImageIcon } from '../icons';
 
 interface SearchTabProps {
     slide: Slide;
@@ -14,7 +14,7 @@ interface SearchTabProps {
 
 const SearchTab: React.FC<SearchTabProps> = ({ slide, onSelectFromSearch, onClose }) => {
     const hasAiResults = slide.imageSearchResults && slide.imageSearchResults.length > 0;
-    const [searchSource, setSearchSource] = useState<'ai' | 'stock'>(hasAiResults ? 'ai' : 'stock');
+    const [searchSource, setSearchSource] = useState<'ai' | 'stock'>('ai');
     
     const [query, setQuery] = useState(slide.title);
     const [stockResults, setStockResults] = useState<StockImageResult[]>([]);
@@ -86,23 +86,47 @@ const SearchTab: React.FC<SearchTabProps> = ({ slide, onSelectFromSearch, onClos
         </>
     );
 
-    const renderAiSearch = () => (
-        <div className="h-64">
-            <ImageSearchResults results={slide.imageSearchResults || []} onSelect={handleSelect} />
-        </div>
-    );
+    const renderAiSearch = () => {
+        if (hasAiResults) {
+            return (
+                <div className="h-64">
+                    <ImageSearchResults results={slide.imageSearchResults || []} onSelect={handleSelect} />
+                </div>
+            );
+        }
+
+        return (
+            <div className="h-64 flex flex-col items-center justify-center text-center p-4">
+                <ImageIcon className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                <h4 className="font-semibold text-slate-700 dark:text-slate-300">No AI Search Results</h4>
+                <p className="text-slate-500 dark:text-slate-400 mb-4 text-sm max-w-xs">
+                    The AI didn't find any web images for this slide during its initial research.
+                </p>
+                <button
+                    onClick={() => {
+                        setSearchSource('stock');
+                        // Use a short timeout to ensure the UI switches to the stock search tab
+                        // before the loading state appears. This feels smoother.
+                        setTimeout(() => handleStockSearch(), 50);
+                    }}
+                    className="inline-flex items-center px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition-colors"
+                >
+                    <ResearchIcon className="w-5 h-5 mr-2" />
+                    Search Stock Photos for "{query}"
+                </button>
+            </div>
+        );
+    };
     
     return (
         <div>
-            {hasAiResults && (
-                <div className="flex justify-center mb-4">
-                    <div className="inline-flex gap-1 p-1 bg-slate-200 dark:bg-slate-700/50 rounded-md">
-                        <button onClick={() => setSearchSource('ai')} className={`px-3 py-1 text-sm rounded ${searchSource === 'ai' ? 'bg-white dark:bg-slate-600' : 'hover:bg-slate-300/50 dark:hover:bg-slate-700'}`}>AI Search</button>
-                        <button onClick={() => setSearchSource('stock')} className={`px-3 py-1 text-sm rounded ${searchSource === 'stock' ? 'bg-white dark:bg-slate-600' : 'hover:bg-slate-300/50 dark:hover:bg-slate-700'}`}>Stock Photos</button>
-                    </div>
+            <div className="flex justify-center mb-4">
+                <div className="inline-flex gap-1 p-1 bg-slate-200 dark:bg-slate-700/50 rounded-md">
+                    <button onClick={() => setSearchSource('ai')} className={`px-3 py-1 text-sm rounded ${searchSource === 'ai' ? 'bg-white dark:bg-slate-600' : 'hover:bg-slate-300/50 dark:hover:bg-slate-700'}`}>AI Search</button>
+                    <button onClick={() => setSearchSource('stock')} className={`px-3 py-1 text-sm rounded ${searchSource === 'stock' ? 'bg-white dark:bg-slate-600' : 'hover:bg-slate-300/50 dark:hover:bg-slate-700'}`}>Stock Photos</button>
                 </div>
-            )}
-            {searchSource === 'ai' && hasAiResults ? renderAiSearch() : renderStockSearch()}
+            </div>
+            {searchSource === 'ai' ? renderAiSearch() : renderStockSearch()}
         </div>
     );
 };

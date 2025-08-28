@@ -31,7 +31,7 @@ export async function* generateSlidesStream(text: string, files: FilePart[], out
     
     IMPORTANT: Write all slide content (titles and bullet points) in a '${tone}' tone of voice.
 
-    Your response MUST be a stream of line-delimited JSON objects. Each JSON object represents a single slide. Do not wrap the output in a parent 'slides' array or use markdown. Just stream each slide object, one after the other, separated by a newline.`;
+    Your response MUST be a stream of JSON objects. Each JSON object represents a single slide. Do not wrap the output in a parent 'slides' array or use markdown. Just stream each slide object, one after the other.`;
 
     const requestParts: ({ text: string } | FilePart)[] = [{ text: prompt }, ...files];
 
@@ -47,28 +47,52 @@ export async function* generateSlidesStream(text: string, files: FilePart[], out
 
         let buffer = '';
         for await (const chunk of responseStream) {
+            // Add incoming chunk to buffer
             buffer += chunk.text;
-            let newlineIndex;
-            while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
-                const line = buffer.substring(0, newlineIndex).trim();
-                buffer = buffer.substring(newlineIndex + 1);
-                if (line) {
-                    try {
-                        const slide = JSON.parse(line);
-                        yield slide;
-                    } catch (e) {
-                        console.warn("Could not parse slide JSON from stream:", line, e);
+            
+            // Clean markdown fences that might be at the start/end of the whole stream
+            buffer = buffer.replace(/```json/g, '').replace(/```/g, '');
+
+            let objectStartIndex = buffer.indexOf('{');
+            while(objectStartIndex !== -1) {
+                let braceCount = 0;
+                let objectEndIndex = -1;
+
+                // Find the matching closing brace for the first opening brace
+                for (let i = objectStartIndex; i < buffer.length; i++) {
+                    if (buffer[i] === '{') {
+                        braceCount++;
+                    } else if (buffer[i] === '}') {
+                        braceCount--;
+                    }
+                    if (braceCount === 0) {
+                        objectEndIndex = i;
+                        break;
                     }
                 }
-            }
-        }
-        // Process any remaining text in the buffer after the stream ends
-        if (buffer.trim()) {
-            try {
-                const slide = JSON.parse(buffer.trim());
-                yield slide;
-            } catch (e) {
-                console.warn("Could not parse final slide JSON from stream:", buffer.trim(), e);
+
+                // If we found a complete object
+                if (objectEndIndex !== -1) {
+                    const jsonString = buffer.substring(objectStartIndex, objectEndIndex + 1);
+                    try {
+                        const slide = JSON.parse(jsonString);
+                        yield slide;
+                        
+                        // Remove the parsed object from the buffer and continue
+                        buffer = buffer.substring(objectEndIndex + 1);
+                        objectStartIndex = buffer.indexOf('{');
+
+                    } catch (e) {
+                        // Failed to parse. This could be because it's not a real object.
+                        // We'll advance past the first '{' to avoid an infinite loop on malformed data.
+                        console.warn("Could not parse potential JSON object from stream:", jsonString, e);
+                        buffer = buffer.substring(objectStartIndex + 1);
+                        objectStartIndex = buffer.indexOf('{');
+                    }
+                } else {
+                    // We have an opening brace but no closing one yet, so break and wait for more data
+                    break;
+                }
             }
         }
 

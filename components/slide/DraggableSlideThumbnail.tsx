@@ -2,12 +2,14 @@ import React from 'react';
 import { Slide as SlideType, PresentationTemplate } from '../../types/index';
 import { EditIcon, ChartIcon } from '../icons';
 import SlideThumbnail from '../SlideThumbnail';
+import Loader from '../Loader';
 
 interface DraggableSlideThumbnailProps {
     slide: SlideType;
     template: PresentationTemplate;
     index: number;
     isSelected: boolean;
+    isGenerating: boolean;
     isBeingDragged: boolean;
     isDragTarget: boolean;
     onSelectSlide: (slideId: string) => void;
@@ -22,7 +24,7 @@ interface DraggableSlideThumbnailProps {
 
 const DraggableSlideThumbnail: React.FC<DraggableSlideThumbnailProps> = (props) => {
     const {
-        slide, template, index, isSelected, isBeingDragged, isDragTarget,
+        slide, template, index, isSelected, isGenerating, isBeingDragged, isDragTarget,
         onSelectSlide, onEditSlide,
         onDragStart, onDragOver, onDragEnter, onDragLeave, onDrop, onDragEnd
     } = props;
@@ -31,8 +33,10 @@ const DraggableSlideThumbnail: React.FC<DraggableSlideThumbnailProps> = (props) 
         <div
             onClick={() => onSelectSlide(slide.id)}
             className={`cursor-pointer rounded-lg border-2 transition-all duration-200 p-2 relative group ${
-                isSelected && !isBeingDragged ? 'border-pink-500 bg-slate-200/50 dark:bg-slate-700/50' : 'border-transparent hover:border-slate-300 dark:hover:border-slate-600 bg-slate-100/50 dark:bg-slate-700/20'
-            } ${isBeingDragged ? 'opacity-40' : ''} ${isDragTarget ? 'ring-2 ring-pink-400' : ''} ${slide.isLoading ? 'animate-pulse' : ''}`}
+                isSelected && !isBeingDragged ? 'border-pink-500' : 'border-transparent'
+            } ${
+                isGenerating ? 'bg-slate-200/80 dark:bg-slate-700/80 ring-2 ring-pink-500 ring-offset-2 dark:ring-offset-slate-900 animate-pulse' : 'hover:border-slate-300 dark:hover:border-slate-600 bg-slate-100/50 dark:bg-slate-700/20'
+            } ${isBeingDragged ? 'opacity-40' : ''} ${isDragTarget ? 'ring-2 ring-pink-400' : ''} ${slide.isLoading && !isGenerating ? 'animate-pulse opacity-70' : ''}`}
             role="button"
             aria-label={`Select slide ${index + 1}. Draggable.`}
             tabIndex={0}
@@ -47,8 +51,13 @@ const DraggableSlideThumbnail: React.FC<DraggableSlideThumbnailProps> = (props) 
         >
             <div className="flex items-center gap-3 pointer-events-none">
                 <span className="text-slate-500 dark:text-slate-400 font-bold w-6 text-center">{index + 1}</span>
-                <div className="w-24 h-14 rounded-md flex-shrink-0 overflow-hidden">
+                <div className="w-24 h-14 rounded-md flex-shrink-0 overflow-hidden relative">
                     <SlideThumbnail template={template} slide={slide} />
+                    {isGenerating && (
+                        <div className="absolute inset-0 bg-slate-800/50 flex items-center justify-center">
+                            <Loader />
+                        </div>
+                    )}
                 </div>
                 <div className="flex-grow pr-2 overflow-hidden">
                     <p className="text-sm text-slate-700 dark:text-slate-300 truncate">{slide.title}</p>

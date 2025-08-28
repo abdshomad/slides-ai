@@ -17,18 +17,22 @@ interface SlideEditorLayoutProps {
   onCritiqueSlide: (slideId: string, imageBase64: string) => void;
   onAdaptAudience: (id: string) => void;
   onReorderSlides: (startIndex: number, endIndex: number) => void;
+  generatingSlideId: string | null;
   selectedTemplate: PresentationTemplate;
 }
 
 const SlideEditorLayout: React.FC<SlideEditorLayoutProps> = (props) => {
-  const { slides, onEditSlide, onStyleSlide, onReorderSlides, selectedTemplate } = props;
+  const { slides, onEditSlide, onStyleSlide, onReorderSlides, generatingSlideId, selectedTemplate } = props;
   const [selectedSlideId, setSelectedSlideId] = useState<string | null>(slides.length > 0 ? slides[0].id : null);
 
-  const selectedSlide = useMemo(() => slides.find(s => s.id === selectedSlideId) || null, [slides, selectedSlideId]);
-  const selectedSlideIndex = useMemo(() => {
-    if (!selectedSlideId) return -1;
-    return slides.findIndex(s => s.id === selectedSlideId);
-  }, [slides, selectedSlideId]);
+  // The slide to display in the main view. Prioritizes the slide being generated.
+  const displayedSlideId = generatingSlideId || selectedSlideId;
+
+  const displayedSlide = useMemo(() => slides.find(s => s.id === displayedSlideId) || null, [slides, displayedSlideId]);
+  const displayedSlideIndex = useMemo(() => {
+    if (!displayedSlideId) return -1;
+    return slides.findIndex(s => s.id === displayedSlideId);
+  }, [slides, displayedSlideId]);
   
   // Update selected slide if it's deleted or on first load
   useEffect(() => {
@@ -48,25 +52,26 @@ const SlideEditorLayout: React.FC<SlideEditorLayoutProps> = (props) => {
             <SlideSidebar
                 slides={slides}
                 selectedSlideId={selectedSlideId}
+                generatingSlideId={generatingSlideId}
                 onSelectSlide={setSelectedSlideId}
                 onReorderSlides={onReorderSlides}
                 onEditSlide={onEditSlide}
                 template={selectedTemplate}
             />
             <SlideDetailView
-                slide={selectedSlide}
-                slideNumber={selectedSlideIndex + 1}
+                slide={displayedSlide}
+                slideNumber={displayedSlideIndex + 1}
                 totalSlides={slides.length}
-                onEdit={() => selectedSlide && onEditSlide(selectedSlide.id)}
-                onStyle={() => selectedSlide && onStyleSlide(selectedSlide.id)}
-                onGenerateNotes={() => selectedSlide && props.onGenerateNotes(selectedSlide.id)}
-                onGenerateTakeaway={() => selectedSlide && props.onGenerateTakeaway(selectedSlide.id)}
-                onOpenImageStudio={() => selectedSlide && props.onOpenImageStudio(selectedSlide.id)}
-                onExpand={() => selectedSlide && props.onExpandSlide(selectedSlide.id)}
-                onViewHistory={() => selectedSlide && props.onViewSlideHistory(selectedSlide.id)}
-                onFactCheck={() => selectedSlide && props.onFactCheckSlide(selectedSlide.id)}
+                onEdit={() => displayedSlide && onEditSlide(displayedSlide.id)}
+                onStyle={() => displayedSlide && onStyleSlide(displayedSlide.id)}
+                onGenerateNotes={() => displayedSlide && props.onGenerateNotes(displayedSlide.id)}
+                onGenerateTakeaway={() => displayedSlide && props.onGenerateTakeaway(displayedSlide.id)}
+                onOpenImageStudio={() => displayedSlide && props.onOpenImageStudio(displayedSlide.id)}
+                onExpand={() => displayedSlide && props.onExpandSlide(displayedSlide.id)}
+                onViewHistory={() => displayedSlide && props.onViewSlideHistory(displayedSlide.id)}
+                onFactCheck={() => displayedSlide && props.onFactCheckSlide(displayedSlide.id)}
                 onCritiqueDesign={props.onCritiqueSlide}
-                onAdaptAudience={() => selectedSlide && props.onAdaptAudience(selectedSlide.id)}
+                onAdaptAudience={() => displayedSlide && props.onAdaptAudience(displayedSlide.id)}
             />
         </div>
       ) : (

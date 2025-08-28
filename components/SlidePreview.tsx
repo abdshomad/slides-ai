@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 // FIX: Correct import path for types
 import { Slide } from '../types/index';
 // FIX: Correctly import NotesIcon and consolidate icon imports from the barrel file.
-import { KeyIcon, NotesIcon, EditIcon, StyleIcon } from './icons';
+import { KeyIcon, NotesIcon } from './icons';
 import SlideImage from './slide/SlideImage';
-import SlidePreviewActions from './slide/SlidePreviewActions';
+import SlideActionToolbar from './SlideActionToolbar';
 
 
 interface SlidePreviewProps {
@@ -66,30 +66,18 @@ const SlidePreview: React.FC<SlidePreviewProps> = (props) => {
         )}
       </div>
 
-       <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <button
-          onClick={onEdit}
-          className="p-1.5 bg-slate-100/50 dark:bg-slate-800/50 text-slate-800 dark:text-white rounded-full hover:bg-pink-600 hover:text-white transition-colors"
-          aria-label={`Edit slide ${slideNumber}`}
-        >
-          <EditIcon className="w-4 h-4" />
-        </button>
-        <button
-          onClick={onStyle}
-          className="p-1.5 bg-slate-100/50 dark:bg-slate-800/50 text-slate-800 dark:text-white rounded-full hover:bg-purple-600 hover:text-white transition-colors"
-          aria-label={`Change style for slide ${slideNumber}`}
-        >
-          <StyleIcon className="w-4 h-4" />
-        </button>
+       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <SlideActionToolbar
+          slide={slide}
+          onEdit={onEdit}
+          onStyle={onStyle}
+          onGenerateNotes={props.onGenerateNotes}
+          onGenerateTakeaway={props.onGenerateTakeaway}
+          showNotes={showNotes}
+          setShowNotes={setShowNotes}
+        />
       </div>
 
-      <SlidePreviewActions 
-        slide={slide}
-        onGenerateNotes={props.onGenerateNotes}
-        onGenerateTakeaway={props.onGenerateTakeaway}
-        showNotes={showNotes}
-        setShowNotes={setShowNotes}
-      />
        {showNotes && slide.speakerNotes && (
         <div className="bg-slate-100 dark:bg-slate-900/70 p-4 animate-fade-in">
           <h4 className="font-bold text-sm text-purple-600 dark:text-purple-300 mb-2 flex items-center">

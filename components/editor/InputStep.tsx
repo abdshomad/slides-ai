@@ -17,6 +17,7 @@ interface InputStepProps {
   onGenerateOutline: () => void;
   isLoading: boolean;
   loadingMessage: string;
+  loadingSubMessage: string;
   hasContent: boolean;
   elapsedTime: number;
   estimatedTime: number;
@@ -31,6 +32,7 @@ const InputStep: React.FC<InputStepProps> = ({
   onGenerateOutline,
   isLoading,
   loadingMessage,
+  loadingSubMessage,
   hasContent,
   elapsedTime,
   estimatedTime,
@@ -88,9 +90,16 @@ const InputStep: React.FC<InputStepProps> = ({
       <div className="mt-8 text-center">
         {isLoading ? (
             <div className="inline-block" role="status">
-                <div className="inline-flex items-center justify-center px-8 py-4">
-                    <Loader />
-                    <span className="ml-3 text-lg font-medium">{loadingMessage}</span>
+                <div className="flex flex-col items-center justify-center px-8 py-4">
+                    <div className="flex items-center">
+                        <Loader />
+                        <span className="ml-3 text-lg font-medium">{loadingMessage}</span>
+                    </div>
+                    <div className="h-5 mt-2">
+                        {loadingSubMessage && (
+                            <p className="text-sm text-slate-500 dark:text-slate-400 animate-fade-in-fast">{loadingSubMessage}</p>
+                        )}
+                    </div>
                 </div>
                 <LoadingProgress elapsedTime={elapsedTime} estimatedTime={estimatedTime} />
             </div>

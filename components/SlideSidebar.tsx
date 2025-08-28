@@ -6,13 +6,14 @@ import DraggableSlideThumbnail from './slide/DraggableSlideThumbnail';
 interface SlideSidebarProps {
   slides: SlideType[];
   selectedSlideId: string | null;
+  generatingSlideId: string | null;
   onSelectSlide: (slideId: string) => void;
   onReorderSlides: (startIndex: number, endIndex: number) => void;
   onEditSlide: (slideId: string) => void;
   template: PresentationTemplate;
 }
 
-const SlideSidebar: React.FC<SlideSidebarProps> = ({ slides, selectedSlideId, onSelectSlide, onReorderSlides, onEditSlide, template }) => {
+const SlideSidebar: React.FC<SlideSidebarProps> = ({ slides, selectedSlideId, generatingSlideId, onSelectSlide, onReorderSlides, onEditSlide, template }) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -59,6 +60,7 @@ const SlideSidebar: React.FC<SlideSidebarProps> = ({ slides, selectedSlideId, on
           template={template}
           index={index}
           isSelected={selectedSlideId === slide.id}
+          isGenerating={generatingSlideId === slide.id}
           isBeingDragged={draggedIndex === index}
           isDragTarget={dragOverIndex === index}
           onSelectSlide={onSelectSlide}

@@ -26,6 +26,7 @@ interface SlidesStepProps {
   generationStats: GenerationStats;
   elapsedTime: number;
   estimatedTime: number;
+  generatingSlideId: string | null;
   selectedTemplate: PresentationTemplate;
 }
 

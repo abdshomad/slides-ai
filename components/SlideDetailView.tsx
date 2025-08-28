@@ -49,7 +49,6 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
     );
   }
 
-  const hasContent = slide.bulletPoints?.length > 0 || slide.body1?.length > 0 || slide.body2?.length > 0;
   const hasImage = !['ONE_COLUMN_TEXT', 'TITLE_ONLY', 'SECTION_HEADER', 'QUOTE', 'TWO_COLUMN_TEXT', 'TIMELINE', 'COMPARISON'].includes(slide.layout || '');
 
   const getLayoutClass = () => {
@@ -82,11 +81,9 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
             </div>
         ) : (
             <div className={`flex-grow flex gap-8 ${getLayoutClass()}`}>
-                {(hasContent || !hasImage) && (
-                    <div className={`flex flex-col ${(hasImage && (slide.layout === 'DEFAULT' || slide.layout === 'DEFAULT_REVERSE')) ? 'w-1/2' : 'w-full'}`}>
-                        <SlideContent slide={slide} />
-                    </div>
-                )}
+                <div className={`flex flex-col ${hasImage ? 'w-1/2' : 'w-full'}`}>
+                    <SlideContent slide={slide} />
+                </div>
                 {hasImage && (
                     <div className="w-1/2">
                         <ImageEditor

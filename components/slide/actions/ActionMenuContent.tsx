@@ -40,65 +40,67 @@ const ActionMenuContent: React.FC<ActionMenuContentProps> = (props) => {
       <div className="sm:hidden w-12 h-1.5 bg-slate-300 dark:bg-slate-500 rounded-full mx-auto my-2" />
       <h3 className="sm:hidden text-lg font-bold text-center mb-2 text-slate-800 dark:text-slate-200">AI Tools & Actions</h3>
       
-      {/* Group 1: Core Editing */}
-      <ActionMenuItem onClick={() => onItemClick(onEdit)}><EditIcon className="w-4 h-4 mr-3" />Edit Content</ActionMenuItem>
-      <ActionMenuItem onClick={() => onItemClick(onStyle)}><StyleIcon className="w-4 h-4 mr-3" />Change Style</ActionMenuItem>
+      <div className="px-2 pt-1">
+        <h4 className="px-2 pb-1 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Edit</h4>
+        <ActionMenuItem onClick={() => onItemClick(onEdit)}><EditIcon className="w-4 h-4 mr-3" />Edit Content</ActionMenuItem>
+        <ActionMenuItem onClick={() => onItemClick(onStyle)}><StyleIcon className="w-4 h-4 mr-3" />Change Style</ActionMenuItem>
+      </div>
 
-      <hr className="my-2 border-slate-200 dark:border-slate-600" />
-      
-      {/* Group 2: AI Content Generation */}
-      {slide.speakerNotes ? (
-        <ActionMenuItem onClick={() => onItemClick(() => setShowNotes(!showNotes))}>
-          <NotesIcon className="w-4 h-4 mr-3" />{showNotes ? 'Hide Notes' : 'Show Notes'}
-        </ActionMenuItem>
-      ) : (
-        <ActionMenuItem onClick={() => onItemClick(onGenerateNotes)} disabled={slide.isGeneratingNotes}>
-          {slide.isGeneratingNotes ? <Loader /> : <NotesIcon className="w-4 h-4 mr-3" />}
-          {slide.isGeneratingNotes ? 'Generating...' : 'Generate Notes'}
-        </ActionMenuItem>
-      )}
-      
-      {!slide.keyTakeaway && (
-        <ActionMenuItem onClick={() => onItemClick(onGenerateTakeaway)} disabled={slide.isGeneratingTakeaway}>
-          {slide.isGeneratingTakeaway ? <Loader /> : <KeyIcon className="w-4 h-4 mr-3" />}
-          {slide.isGeneratingTakeaway ? 'Generating...' : 'Key Takeaway'}
-        </ActionMenuItem>
-      )}
+      <div className="px-2 pt-2">
+        <h4 className="px-2 pb-1 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Generate</h4>
+        {slide.speakerNotes ? (
+          <ActionMenuItem onClick={() => onItemClick(() => setShowNotes(!showNotes))}>
+            <NotesIcon className="w-4 h-4 mr-3" />{showNotes ? 'Hide Notes' : 'Show Notes'}
+          </ActionMenuItem>
+        ) : (
+          <ActionMenuItem onClick={() => onItemClick(onGenerateNotes)} disabled={slide.isGeneratingNotes}>
+            {slide.isGeneratingNotes ? <Loader /> : <NotesIcon className="w-4 h-4 mr-3" />}
+            {slide.isGeneratingNotes ? 'Generating...' : 'Generate Notes'}
+          </ActionMenuItem>
+        )}
+        
+        {!slide.keyTakeaway && (
+          <ActionMenuItem onClick={() => onItemClick(onGenerateTakeaway)} disabled={slide.isGeneratingTakeaway}>
+            {slide.isGeneratingTakeaway ? <Loader /> : <KeyIcon className="w-4 h-4 mr-3" />}
+            {slide.isGeneratingTakeaway ? 'Generating...' : 'Key Takeaway'}
+          </ActionMenuItem>
+        )}
 
-      {hasImageCapability && (
-        <ActionMenuItem onClick={() => onItemClick(onGenerateImage)} disabled={slide.isLoadingImage}>
-          {slide.isLoadingImage ? <Loader /> : <MagicIcon className="w-4 h-4 mr-3" />}
-          {slide.isLoadingImage ? 'Processing...' : 'Generate / Edit Image'}
+        {hasImageCapability && (
+          <ActionMenuItem onClick={() => onItemClick(onGenerateImage)} disabled={slide.isLoadingImage}>
+            {slide.isLoadingImage ? <Loader /> : <MagicIcon className="w-4 h-4 mr-3" />}
+            {slide.isLoadingImage ? 'Processing...' : 'Generate / Edit Image'}
+          </ActionMenuItem>
+        )}
+        
+        <ActionMenuItem onClick={() => onItemClick(onAdaptAudience)} disabled={slide.isAdaptingAudience}>
+          {slide.isAdaptingAudience ? <Loader /> : <UsersIcon className="w-4 h-4 mr-3" />}
+          {slide.isAdaptingAudience ? 'Adapting...' : 'Adapt Audience'}
         </ActionMenuItem>
-      )}
-      
-      <ActionMenuItem onClick={() => onItemClick(onAdaptAudience)} disabled={slide.isAdaptingAudience}>
-        {slide.isAdaptingAudience ? <Loader /> : <UsersIcon className="w-4 h-4 mr-3" />}
-        {slide.isAdaptingAudience ? 'Adapting...' : 'Adapt Audience'}
-      </ActionMenuItem>
-      
-      <ActionMenuItem onClick={() => onItemClick(onExpand)} disabled={slide.isExpanding}>
-        {slide.isExpanding ? <Loader /> : <ExpandIcon className="w-4 h-4 mr-3" />}
-        {slide.isExpanding ? 'Expanding...' : 'Expand Slide'}
-      </ActionMenuItem>
+        
+        <ActionMenuItem onClick={() => onItemClick(onExpand)} disabled={slide.isExpanding}>
+          {slide.isExpanding ? <Loader /> : <ExpandIcon className="w-4 h-4 mr-3" />}
+          {slide.isExpanding ? 'Expanding...' : 'Expand Slide'}
+        </ActionMenuItem>
+      </div>
 
-      <hr className="my-2 border-slate-200 dark:border-slate-600" />
-
-      {/* Group 3: AI Analysis */}
-      <ActionMenuItem onClick={() => onItemClick(onFactCheck)} disabled={slide.isFactChecking}>
-        {slide.isFactChecking ? <Loader /> : <FactCheckIcon className="w-4 h-4 mr-3" />}
-        {slide.isFactChecking ? 'Checking...' : 'Fact Check'}
-      </ActionMenuItem>
+      <div className="px-2 pt-2">
+        <h4 className="px-2 pb-1 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Analyze</h4>
+        <ActionMenuItem onClick={() => onItemClick(onFactCheck)} disabled={slide.isFactChecking}>
+          {slide.isFactChecking ? <Loader /> : <FactCheckIcon className="w-4 h-4 mr-3" />}
+          {slide.isFactChecking ? 'Checking...' : 'Fact Check'}
+        </ActionMenuItem>
+        
+        <ActionMenuItem onClick={() => onItemClick(onCritiqueDesign)} disabled={slide.isCritiquing}>
+          {slide.isCritiquing ? <Loader /> : <LightbulbIcon className="w-4 h-4 mr-3" />}
+          {slide.isCritiquing ? 'Analyzing...' : 'Suggest Ideas'}
+        </ActionMenuItem>
+      </div>
       
-      <ActionMenuItem onClick={() => onItemClick(onCritiqueDesign)} disabled={slide.isCritiquing}>
-        {slide.isCritiquing ? <Loader /> : <LightbulbIcon className="w-4 h-4 mr-3" />}
-        {slide.isCritiquing ? 'Analyzing...' : 'Suggest Ideas'}
-      </ActionMenuItem>
-      
-      <hr className="my-2 border-slate-200 dark:border-slate-600" />
-      
-      {/* Group 4: Utilities */}
-      <ActionMenuItem onClick={() => onItemClick(onViewHistory)}><HistoryIcon className="w-4 h-4 mr-3" />View History</ActionMenuItem>
+      <div className="px-2 pt-2">
+        <h4 className="px-2 pb-1 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Utilities</h4>
+        <ActionMenuItem onClick={() => onItemClick(onViewHistory)}><HistoryIcon className="w-4 h-4 mr-3" />View History</ActionMenuItem>
+      </div>
     </>
   );
 };

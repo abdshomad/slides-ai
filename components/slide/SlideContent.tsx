@@ -85,11 +85,12 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide }) => {
                         </div>
                     </div>
                 );
+            case 'TITLE_ONLY': // Title is rendered in parent, this component is for body content.
+                return null;
             case 'DEFAULT':
             case 'DEFAULT_REVERSE':
             case 'ONE_COLUMN_TEXT':
             case 'TIMELINE':
-            case 'TITLE_ONLY':
             default:
                 return renderDefaultContent();
         }

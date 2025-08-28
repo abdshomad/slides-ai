@@ -12,7 +12,8 @@ export const useOutlineActions = ({
     const { inputText, outline, tone, sources } = state;
     const { 
         setError, setIsLoading, setLoadingMessage, setOutline, setSources, setPresentationTitle, setGenerationStep,
-        setSlides, setSourcedImages, setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats, setEstimatedTime
+        setSlides, setSourcedImages, setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats, setEstimatedTime,
+        setLoadingSubMessage, setGeneratingSlideId
     } = setters;
     const { startTimer, stopTimer } = timer;
     
@@ -27,14 +28,14 @@ export const useOutlineActions = ({
             await generateOutlineAction({
                 inputText, managedFiles, presentation,
                 setError, setIsLoading, setLoadingMessage, setOutline, setSources, setPresentationTitle, setGenerationStep,
-                onUpdatePresentation, createCheckpoint, currentState
+                onUpdatePresentation, createCheckpoint, currentState, setLoadingSubMessage
             });
         } finally {
             stopTimer();
         }
     }, [
         inputText, managedFiles, presentation, onUpdatePresentation, createCheckpoint, currentState, startTimer, stopTimer,
-        setError, setIsLoading, setLoadingMessage, setOutline, setSources, setPresentationTitle, setGenerationStep, setEstimatedTime
+        setError, setIsLoading, setLoadingMessage, setOutline, setSources, setPresentationTitle, setGenerationStep, setEstimatedTime, setLoadingSubMessage
     ]);
 
     const handleGenerateSlidesFromOutline = useCallback(async () => {
@@ -46,7 +47,7 @@ export const useOutlineActions = ({
             await generateSlidesAction({
                 managedFiles, inputText, outline, tone, sources,
                 setError, setIsLoading, setLoadingMessage, setSlides, setSourcedImages, setGenerationStep,
-                setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats,
+                setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats, setGeneratingSlideId,
                 createCheckpoint, currentState
             });
         } finally {
@@ -54,7 +55,7 @@ export const useOutlineActions = ({
         }
     }, [
         managedFiles, inputText, outline, tone, sources, createCheckpoint, currentState, startTimer, stopTimer,
-        setSlides, setSourcedImages, setGenerationStep, setError, setIsLoading, setLoadingMessage, setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats, setEstimatedTime
+        setSlides, setSourcedImages, setGenerationStep, setError, setIsLoading, setLoadingMessage, setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats, setEstimatedTime, setGeneratingSlideId
     ]);
 
     return {

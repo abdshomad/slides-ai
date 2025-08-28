@@ -23,6 +23,8 @@ const SamplePresentationViewer: React.FC<{ onBack: () => void }> = ({ onBack }) 
         onAdaptAudience: doNothing,
         onReorderSlides: doNothing,
         onOpenImageStudio: doNothing,
+        // FIX: Add missing generatingSlideId prop, required by SlideEditorLayoutProps.
+        generatingSlideId: null,
         selectedTemplate: templates[0],
     };
 
