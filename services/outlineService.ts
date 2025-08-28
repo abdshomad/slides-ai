@@ -14,7 +14,7 @@ export const generateOutline = async (text: string, files: FilePart[]): Promise<
   
   First, create a concise and engaging title for the presentation. The title MUST be on the very first line of your response, prefixed with "Title: ".
 
-  Second, after the title, create a detailed, well-structured outline for the presentation. For each slide in the outline, you MUST suggest a layout.
+  Second, after the title, create a detailed, well-structured outline. For each slide, analyze its content and choose the MOST EFFECTIVE layout to represent the information. For example, if the content describes a sequence of events, use the TIMELINE layout. If it compares two concepts, use the COMPARISON layout. If it's a simple list, ONE_COLUMN_TEXT or DEFAULT might be best. You MUST prepend each slide title with a layout tag.
 
   Prepend each slide title with a layout tag from the following list:
   - [LAYOUT: DEFAULT] (Text on left, image on right)
@@ -22,16 +22,16 @@ export const generateOutline = async (text: string, files: FilePart[]): Promise<
   - [LAYOUT: ONE_COLUMN_TEXT] (For a title with only bullet points below it, no image)
   - [LAYOUT: TWO_COLUMN_TEXT] (Organize text into two distinct columns under a main title.)
   - [LAYOUT: TIMELINE] (Present a sequence of events chronologically.)
-  - [LAYOUT: TITLE_ONLY]
-  - [LAYOUT: SECTION_HEADER] (A title and a subtitle)
+  - [LAYOUT: TITLE_ONLY] (A full-slide title for section breaks or intros.)
+  - [LAYOUT: SECTION_HEADER] (A title with a supporting subtitle. Great for introductions.)
   - [LAYOUT: MAIN_POINT_EMPHASIS] (For highlighting one key fact or statement)
   - [LAYOUT: QUOTE] (For a quote and attribution)
   - [LAYOUT: COMPARISON] (Place two blocks of content side-by-side for comparison.)
 
-  Example:
-  [LAYOUT: DEFAULT] The Benefits of Remote Work
-  - Increased productivity
-  - Better work-life balance
+  Example of intelligent layout choice:
+  [LAYOUT: TIMELINE] Project Milestones
+  - Q1: Initial Research & Discovery
+  - Q2: Prototyping & User Testing
 
   Use the provided text and files as the primary context. Use Google Search to find up-to-date and relevant information. The outline should be logical and comprehensive.
 

@@ -53,7 +53,7 @@ const EditSlideModal: React.FC<EditSlideModalProps> = ({ slide, onClose, onSave 
             id="edit-prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="e.g., 'Make the title more catchy', 'Change the image to a picture of a sunset', 'Simplify the second bullet point'"
+            placeholder="e.g., 'Make the title more catchy', 'Change the image to a picture of a sunset', 'Create a bar chart showing Q1 sales of $5M, Q2 of $8M, Q3 of $6M'"
             className="w-full h-28 p-4 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:outline-none resize-none transition-shadow"
             aria-label="Edit instructions"
           />

@@ -36,9 +36,22 @@ export const editSlideAction = async (args: EditSlideArgs) => {
             : originalSlide.bulletPoints;
 
         let updatedSlide: SlideType = { ...originalSlide, ...modelResponse, bulletPoints: newBulletPoints, isFactChecking: false };
-
+        
+        // If a chart is generated, it becomes the primary content.
+        if (modelResponse.chartData) {
+            updatedSlide = {
+                ...updatedSlide,
+                bulletPoints: [],
+                body1: [],
+                body2: [],
+                image: undefined,
+                imagePrompt: undefined,
+                imageSearchResults: undefined,
+                selectedImageUrl: undefined,
+            };
+        }
         // Case 1: New image search results were returned. Clear old image state.
-        if (modelResponse.imageSearchResults && modelResponse.imageSearchResults.length > 0) {
+        else if (modelResponse.imageSearchResults && modelResponse.imageSearchResults.length > 0) {
             updatedSlide = { 
                 ...updatedSlide, 
                 image: undefined, 

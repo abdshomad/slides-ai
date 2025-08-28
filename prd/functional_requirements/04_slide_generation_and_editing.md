@@ -29,3 +29,11 @@
     *   The action captures the current visual state of the slide as an image.
     *   This image, along with the slide's text content, is sent to a multimodal AI for analysis.
     *   The AI provides a critique and a list of actionable visual improvement ideas, which are displayed to the user in a modal.
+*   **F-SE-13 (AI Image In-Painting - "Magic Edit"):**
+    *   Within the Image Studio, users can select an "Edit" tab for slides that already have a generated image.
+    *   Users can provide a natural language prompt to modify the existing image (e.g., "add a sun to the sky," "make the car red," "remove the person on the left").
+    *   The multimodal AI processes the image and the prompt to generate an edited version of the image.
+*   **F-SE-14 (Stock Photo Integration):**
+    *   The Image Studio includes a "Search" tab, providing access to a library of high-quality, royalty-free stock photos.
+    *   Users can enter search queries to find relevant images for their slide content.
+    *   Users can select an image from the search results to apply it directly to their slide.

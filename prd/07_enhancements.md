@@ -16,9 +16,10 @@ gantt
     Advanced Image Controls   :done, des2, after des1, 4w
     Presentation-Wide Style   :done, des3, after des2, 3w
     section Phase 2: Smarter Content & Collaboration
-    AI-Suggested Layouts      :active, des4, 2024-Q4, 5w
-    Expanded Image Sourcing   :done, des9, after des4, 4w
-    Presenter Coach AI        :des5, after des9, 6w
+    AI-Suggested Layouts      :done, des4, 2024-Q4, 3w
+    Expanded Image Sourcing   :done, des9, after des4, 3w
+    AI-Powered Chart Generation :done, des10, after des9, 3w
+    Presenter Coach AI        :active, des5, after des10, 6w
     Real-time Collaboration   :des6, after des5, 8w
     section Phase 3: Ecosystem & Power-User
     Cloud Integration         :des7, 2025-Q1, 6w
@@ -41,9 +42,10 @@ This phase delivered a suite of features giving users unparalleled creative cont
 
 Building on the strong visual foundation, this phase introduces features to enhance content intelligence, presentation delivery, and introduce multi-user workflows.
 
-*   **[Active] AI-Suggested Layouts:** The AI will analyze the content of a slide (e.g., a list of steps, a comparison of two products) and proactively suggest the most effective layout (e.g., Timeline, Comparison) to best represent the information.
+*   **[Done] AI-Suggested Layouts:** The AI now analyzes the content for each slide during the outline phase and automatically selects the most effective layout to represent the information (e.g., choosing a "Timeline" layout for chronological steps or a "Comparison" layout for contrasting ideas).
 *   **[Done] Expanded Image Sourcing:** Integrated a stock photo search feature directly into the Image Studio, providing a wider, more curated selection of high-quality visual assets from third-party royalty-free image providers.
-*   **Presenter Coach:** An AI-powered tool that analyzes speaker notes and slide content to provide real-time feedback on pacing, clarity, and engagement during practice runs.
+*   **[Done] AI-Powered Chart Generation:** Users can now generate bar, line, and pie charts directly within a slide by providing data or instructions in natural language.
+*   **[Active] Presenter Coach:** An AI-powered tool that analyzes speaker notes and slide content to provide real-time feedback on pacing, clarity, and engagement during practice runs.
 *   **Real-time Collaboration:** Allow multiple users to view and edit the presentation outline and slides simultaneously, with changes reflected in real-time for all participants.
 
 ---
