@@ -2,12 +2,11 @@ import { generateImageForSlide, generateImageSuggestions } from '../../services/
 import { editImage } from '../../services/imageEditingService';
 import { generateVideoForSlide } from '../../services/videoService';
 // FIX: Correct import path for types
-import { AppState, Slide as SlideType } from '../../types/index';
+import { Slide as SlideType } from '../../types/index';
 import { ActionContext } from './types';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
-// FIX: Interfaces now correctly extend ActionContext to resolve property errors.
 interface GenerateImageArgs extends ActionContext {
     slideId: string;
     prompt: string;

@@ -5,6 +5,7 @@ import GenerateTab from './studio/GenerateTab';
 import EditTab from './studio/EditTab';
 import SuggestionsTab from './studio/SuggestionsTab';
 import SearchTab from './studio/SearchTab';
+import VideoTab from './studio/VideoTab';
 
 interface ImageStudioModalProps {
     slide: Slide;
@@ -16,9 +17,10 @@ interface ImageStudioModalProps {
     onSelectSuggestion: (slideId: string, suggestion: string) => void;
     onSelectFromSearch: (slideId: string, url: string) => void;
     onApplyStyleToAll: (style: string, useBrandColors: boolean) => void;
+    onGenerateVideo: (slideId: string, prompt: string) => void;
 }
 
-export type Tab = 'generate' | 'edit' | 'suggestions' | 'search';
+export type Tab = 'generate' | 'edit' | 'suggestions' | 'search' | 'video';
 
 const ImageStudioModal: React.FC<ImageStudioModalProps> = (props) => {
     const { slide, onClose } = props;
@@ -41,6 +43,8 @@ const ImageStudioModal: React.FC<ImageStudioModalProps> = (props) => {
                 return <SuggestionsTab slide={slide} onGenerateSuggestions={props.onGenerateSuggestions} onSelectSuggestion={props.onSelectSuggestion} onClose={onClose} />;
             case 'search':
                 return <SearchTab slide={slide} onSelectFromSearch={props.onSelectFromSearch} onClose={onClose} />;
+             case 'video':
+                return <VideoTab slide={slide} onGenerateVideo={props.onGenerateVideo} onClose={onClose} />;
             case 'generate':
             default:
                 return <GenerateTab slide={slide} brandKit={props.brandKit} onGenerateImage={props.onGenerateImage} onApplyStyleToAll={props.onApplyStyleToAll} onClose={onClose} />;
@@ -51,7 +55,7 @@ const ImageStudioModal: React.FC<ImageStudioModalProps> = (props) => {
         <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="image-studio-title">
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl text-slate-900 dark:text-white transform transition-transform" onClick={e => e.stopPropagation()}>
                 <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700">
-                    <h2 id="image-studio-title" className="text-xl font-bold text-pink-600 dark:text-pink-400">Image Studio</h2>
+                    <h2 id="image-studio-title" className="text-xl font-bold text-pink-600 dark:text-pink-400">Visuals Studio</h2>
                     <button onClick={onClose} className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white text-3xl leading-none" aria-label="Close">&times;</button>
                 </div>
                 

@@ -35,6 +35,7 @@ export const editSlide = async (slide: Slide, userPrompt: string): Promise<Parti
                     subtitle2: { type: Type.STRING, description: "Subtitle for the second column in a COMPARISON layout." },
                     body2: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Bullet points for the second column in COMPARISON or TWO_COLUMN_TEXT layouts." },
                     imagePrompt: { type: Type.STRING, description: "A new prompt for an image generator. Provide this ONLY if a suitable image cannot be found from a web search." },
+                    videoPrompt: { type: Type.STRING, description: "A new prompt for a video generator. Provide this ONLY if the user explicitly asks for a video or animation." },
                     imageSearchResults: {
                         type: Type.ARRAY,
                         description: "A list of up to 3 relevant, royalty-free images. Provide this instead of an imagePrompt if suitable images are found.",

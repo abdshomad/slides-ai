@@ -38,6 +38,7 @@ interface EditorModalsProps {
     onSelectImageSuggestion: (slideId: string, suggestion: string) => void;
     onSelectImageFromSearch: (slideId: string, url: string) => void;
     onApplyStyleToAll: (style: string, useBrandColors: boolean) => void;
+    onGenerateVideo: (slideId: string, prompt: string) => void;
 }
 
 const EditorModals: React.FC<EditorModalsProps> = (props) => {
@@ -70,6 +71,7 @@ const EditorModals: React.FC<EditorModalsProps> = (props) => {
         onSelectImageSuggestion,
         onSelectImageFromSearch,
         onApplyStyleToAll,
+        onGenerateVideo,
     } = props;
 
     const originalFactCheckSlide = React.useMemo(() => {
@@ -141,6 +143,7 @@ const EditorModals: React.FC<EditorModalsProps> = (props) => {
                     onSelectSuggestion={onSelectImageSuggestion}
                     onSelectFromSearch={onSelectImageFromSearch}
                     onApplyStyleToAll={onApplyStyleToAll}
+                    onGenerateVideo={onGenerateVideo}
                 />
             )}
         </>

@@ -156,6 +156,7 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
         onSelectImageSuggestion={handlers.handleSelectImageSuggestion}
         onSelectImageFromSearch={handlers.handleSelectImageFromSearch}
         onApplyStyleToAll={handlers.handleApplyStyleToAll}
+        onGenerateVideo={handlers.handleGenerateVideoForSlide}
       />
     </div>
   );

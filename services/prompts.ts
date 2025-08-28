@@ -13,7 +13,9 @@ For the visual element, first, prioritize finding a list of up to 3 suitable, hi
 
 If suitable images cannot be found via search, create a new, descriptive 'imagePrompt' for an AI image generator.
 
-Provide EITHER 'imageSearchResults' OR 'imagePrompt', but not both. If the user's prompt doesn't imply a visual change (e.g., 'fix a typo'), omit both fields. If the visual should be removed, return null for both fields.
+If the user explicitly asks for a video, animation, or moving picture, create a 'videoPrompt' instead of an 'imagePrompt'.
+
+Provide EITHER 'imageSearchResults' OR 'imagePrompt' OR 'videoPrompt', but not more than one. If the user's prompt doesn't imply a visual change (e.g., 'fix a typo'), omit all visual fields. If the visual should be removed, return null for all visual fields.
 
 User Instructions: "${userPrompt}"
 Current Slide Layout: "${slide.layout || 'DEFAULT'}"

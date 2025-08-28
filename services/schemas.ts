@@ -41,6 +41,10 @@ export const slideSchema = {
         type: Type.STRING,
         description: "A descriptive prompt for an AI image generator. Provide this ONLY if a suitable image cannot be found from a web search."
     },
+    videoPrompt: {
+        type: Type.STRING,
+        description: "A descriptive prompt for an AI video generator. Provide this ONLY if the user explicitly asks for a video or animation. This is a premium feature, use it sparingly."
+    },
     imageSearchResults: {
         type: Type.ARRAY,
         description: "A list of up to 3 relevant, high-quality, royalty-free images found via web search. Each item should be an object with a 'url' and a 'title'. Provide this instead of an imagePrompt if suitable images are found.",

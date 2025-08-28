@@ -6,6 +6,8 @@ import {
     selectImageSuggestionAction,
     clearSelectedImageAction,
     editImageAction,
+    // FIX: Corrected import path for visualActions.
+    generateVideoAction
 } from '../../actions/visualActions';
 import { critiqueSlide } from '../../../services/slideEditingService';
 import { generateImageForSlide } from '../../../services/imageService';
@@ -65,6 +67,12 @@ export const useSlideVisualActions = ({
         (slideId: string, prompt: string, negativePrompt?: string) => generateImageAction({
             slideId, prompt, negativePrompt, slides, setSlides, createCheckpoint, currentState
         }), [slides, createCheckpoint, currentState, setSlides]
+    );
+
+    const handleGenerateVideoForSlide = useCallback(
+        (slideId: string, prompt: string) => generateVideoAction({
+            slideId, prompt, slides, setError, setSlides, createCheckpoint, currentState
+        }), [slides, createCheckpoint, currentState, setSlides, setError]
     );
 
     const handleEditImage = useCallback(
@@ -166,6 +174,7 @@ export const useSlideVisualActions = ({
         handleCritiqueSlide,
         handleCloseCritique,
         handleGenerateImageForSlide,
+        handleGenerateVideoForSlide,
         handleEditImage,
         handleSelectImageFromSearch,
         handleGenerateImageSuggestions,

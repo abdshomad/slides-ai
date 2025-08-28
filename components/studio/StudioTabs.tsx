@@ -1,7 +1,7 @@
 import React from 'react';
 import { Slide } from '../../types/index';
 import { Tab } from '../ImageStudioModal';
-import { MagicIcon, EditIcon, ImageIcon, ResearchIcon } from '../icons';
+import { MagicIcon, EditIcon, ImageIcon, ResearchIcon, VideoIcon } from '../icons';
 
 interface StudioTabsProps {
     slide: Slide;
@@ -28,6 +28,7 @@ const StudioTabs: React.FC<StudioTabsProps> = ({ slide, activeTab, setActiveTab 
                 {slide.image && <TabButton active={activeTab === 'edit'} onClick={() => setActiveTab('edit')}><EditIcon className="w-4 h-4" />Edit</TabButton>}
                 <TabButton active={activeTab === 'suggestions'} onClick={() => setActiveTab('suggestions')}><ImageIcon className="w-4 h-4" />Suggestions</TabButton>
                 <TabButton active={activeTab === 'search'} onClick={() => setActiveTab('search')}><ResearchIcon className="w-4 h-4" />Search</TabButton>
+                <TabButton active={activeTab === 'video'} onClick={() => setActiveTab('video')}><VideoIcon className="w-4 h-4" />Video</TabButton>
             </div>
         </div>
     );

@@ -20,6 +20,10 @@ export interface Slide {
   body2?: string[];   // For COMPARISON or TWO_COLUMN_TEXT layout
   imagePrompt?: string;
   negativeImagePrompt?: string; // For advanced image generation
+  videoPrompt?: string;
+  video?: string; // Will store as a data URL
+  isGeneratingVideo?: boolean;
+  videoGenerationProgress?: string;
   imageSearchResults?: { url: string; title: string; }[];
   selectedImageUrl?: string;
   image?: string; // base64 string

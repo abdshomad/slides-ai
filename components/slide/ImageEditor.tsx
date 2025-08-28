@@ -37,7 +37,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ slide, onOpenImageStudio }) =
             <div className="w-full h-full flex flex-col items-center justify-center p-4 gap-4 bg-slate-100 dark:bg-slate-800/80">
                 <ImageIcon className="w-12 h-12 text-slate-400 dark:text-slate-500" />
                 <div className="text-center">
-                    <p className="text-md font-semibold text-slate-700 dark:text-slate-300">Add Image</p>
+                    <p className="text-md font-semibold text-slate-700 dark:text-slate-300">Add Visual</p>
                     <p className="text-sm text-slate-500 dark:text-slate-400">Use AI to generate or edit visuals.</p>
                 </div>
             </div>
@@ -51,7 +51,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ slide, onOpenImageStudio }) =
             onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onOpenImageStudio()}
             role="button"
             tabIndex={0}
-            aria-label="Open Image Studio"
+            aria-label="Open Visuals Studio"
         >
             {renderContent()}
         </div>

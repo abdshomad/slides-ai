@@ -31,3 +31,4 @@ export * from './CoffeeIcon';
 export * from './SparklesIcon';
 export * from './ScissorsIcon';
 export * from './UsersIcon';
+export * from './VideoIcon';
