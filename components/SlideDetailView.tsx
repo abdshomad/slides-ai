@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 // FIX: Correct import path for types
-import { Slide as SlideType } from '../types/index';
+import { Slide as SlideType } from '../../types/index';
 import SlideContent from './slide/SlideContent';
 import SlideMetadata from './slide/SlideMetadata';
 import useSlideExport from '../hooks/useSlideExport';
@@ -50,6 +50,7 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
   }
 
   const hasImage = !['ONE_COLUMN_TEXT', 'TITLE_ONLY', 'SECTION_HEADER', 'QUOTE', 'TWO_COLUMN_TEXT', 'TIMELINE', 'COMPARISON'].includes(slide.layout || '');
+  const hasVisual = hasImage || !!slide.video;
 
   const getLayoutClass = () => {
     switch (slide.layout) {
@@ -81,15 +82,27 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
             </div>
         ) : (
             <div className={`flex-grow flex gap-8 ${getLayoutClass()}`}>
-                <div className={`flex flex-col ${hasImage ? 'w-1/2' : 'w-full'}`}>
+                <div className={`flex flex-col ${hasVisual ? 'w-1/2' : 'w-full'}`}>
                     <SlideContent slide={slide} />
                 </div>
-                {hasImage && (
+                {hasVisual && (
                     <div className="w-1/2">
-                        <ImageEditor
-                            slide={slide}
-                            onOpenImageStudio={() => onOpenImageStudio(slide.id)}
-                        />
+                        {slide.video ? (
+                            <video
+                                key={slide.video} // Re-mount component on video change to restart playback
+                                src={slide.video}
+                                controls
+                                autoPlay
+                                muted
+                                loop
+                                className="w-full h-full object-contain rounded-md bg-black"
+                            />
+                        ) : (
+                            <ImageEditor
+                                slide={slide}
+                                onOpenImageStudio={() => onOpenImageStudio(slide.id)}
+                            />
+                        )}
                     </div>
                 )}
             </div>

@@ -49,13 +49,13 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
     const selectedTemplate = useMemo(() => templates.find(t => t.id === state.selectedTemplateId) || templates[0], [state.selectedTemplateId]);
 
     // 4. Decomposed actions
-    // FIX: Restructured `actionProps` to correctly pass `state` and `currentState` as top-level properties, matching the ActionHookProps type.
+    // FIX: Corrected the structure of `actionProps` to provide `state` and `currentState` as separate, top-level properties, matching the `ActionHookProps` type.
     const actionProps = {
         presentation, onUpdatePresentation, onAddCheckpoint,
-        state, // Pass the whole state object
+        state,
+        currentState,
         setters, modalState, modalSetters,
         managedFiles, timer,
-        currentState, // Pass the memoized currentState object
         selectedTemplate, brandKit
     };
 
