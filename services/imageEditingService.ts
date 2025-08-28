@@ -31,14 +31,14 @@ export const editImage = async (base64ImageData: string, prompt: string): Promis
       },
     });
 
-    // Find the first image part in the response
+    // Find the first valid image part in the response
     for (const part of response.candidates?.[0]?.content?.parts || []) {
-      if (part.inlineData) {
+      if (part.inlineData?.data && part.inlineData.data.length > 1000) {
         return part.inlineData.data;
       }
     }
 
-    console.warn("Image editing model did not return an image part.");
+    console.warn("Image editing model did not return a valid image part.");
     return null;
 
   } catch (error) {

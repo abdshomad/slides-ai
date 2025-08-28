@@ -76,10 +76,11 @@ export const fetchImageAsBase64 = async (imageUrl: string): Promise<string> => {
       reader.onloadend = () => {
         const dataUrl = reader.result as string;
         const base64Data = dataUrl.split(',')[1];
-        if (base64Data) {
+        // Add validation for a reasonably sized image to avoid display errors
+        if (base64Data && base64Data.length > 1000) {
           resolve(base64Data);
         } else {
-          reject(new Error("Failed to convert fetched image to base64."));
+          reject(new Error("Failed to convert fetched image to base64 or image is too small."));
         }
       };
       reader.onerror = reject;

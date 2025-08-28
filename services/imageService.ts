@@ -28,9 +28,12 @@ export const generateImageForSlide = async (prompt: string, negativePrompt?: str
       });
       
       if (response.generatedImages && response.generatedImages.length > 0) {
-        return response.generatedImages[0].image.imageBytes;
+        const imageBytes = response.generatedImages[0].image.imageBytes;
+        if (imageBytes && imageBytes.length > 1000) { // Simple validation for a valid image
+          return imageBytes;
+        }
       }
-      return ""; // Success but no image, so we don't retry.
+      return ""; // Success but no image, or invalid image, so we don't retry.
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       
@@ -77,7 +80,9 @@ export const generateImageSuggestions = async (prompt: string): Promise<string[]
     });
     
     if (response.generatedImages && response.generatedImages.length > 0) {
-      return response.generatedImages.map(img => img.image.imageBytes);
+      return response.generatedImages
+        .map(img => img.image.imageBytes)
+        .filter(bytes => bytes && bytes.length > 1000); // Filter out invalid/tiny images
     }
     return [];
   } catch (error) {
