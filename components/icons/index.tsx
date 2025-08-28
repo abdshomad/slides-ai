@@ -1,4 +1,5 @@
 
+
 export * from './MagicIcon';
 export * from './DownloadIcon';
 export * from './UploadIcon';
@@ -25,3 +26,5 @@ export * from './MoonIcon';
 export * from './DesktopIcon';
 export * from './LightbulbIcon';
 export * from './ChartIcon';
+export * from './PaletteIcon';
+export * from './QuestionMarkCircleIcon';

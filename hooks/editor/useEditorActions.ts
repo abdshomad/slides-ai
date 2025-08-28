@@ -1,6 +1,7 @@
 
+
 import { useCallback } from 'react';
-import { Slide as SlideType, PresentationProject, AppState, ManagedFile, PresentationTemplate } from '../../types/index';
+import { Slide as SlideType, PresentationProject, AppState, ManagedFile, PresentationTemplate, BrandKit } from '../../types/index';
 import { downloadPptx } from '../../utils/pptxGenerator';
 import { parseOutline } from '../../utils/outlineParser';
 import { generateOutlineAction } from '../actions/outlineActions';
@@ -22,13 +23,14 @@ interface EditorActionsProps {
     timer: { startTimer: () => void; stopTimer: () => void; };
     currentState: AppState;
     selectedTemplate: PresentationTemplate;
+    brandKit: BrandKit;
 }
 
 
 export const useEditorActions = ({
     presentation, onUpdatePresentation, onAddCheckpoint,
     state, setters, modalState, modalSetters,
-    managedFiles, timer, currentState, selectedTemplate
+    managedFiles, timer, currentState, selectedTemplate, brandKit
 }: EditorActionsProps) => {
     const { 
         inputText, slides, outline, tone, sources, presentationTitle
@@ -206,7 +208,7 @@ export const useEditorActions = ({
     }, [presentation.id, presentation.title, presentationTitle, onUpdatePresentation, createCheckpoint, currentState, setIsEditingTitle]);
     
     const handleDownload = () => {
-        downloadPptx(slides, selectedTemplate, presentationTitle);
+        downloadPptx(slides, selectedTemplate, presentationTitle, brandKit);
     };
     
     const handleReorderSlides = useCallback((startIndex: number, endIndex: number) => {

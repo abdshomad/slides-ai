@@ -2,7 +2,7 @@ import React from 'react';
 import { samplePresentation } from '../../slides/samplePresentation';
 import SlideEditorLayout from '../editor/slides/SlideEditorLayout';
 import { templates } from '../../templates/index';
-import { ArrowLeftIcon } from '../icons';
+import { ArrowLeftIcon, DownloadIcon } from '../icons';
 
 const SamplePresentationViewer: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     // A dummy function to satisfy the component's prop requirements. It does nothing.
@@ -32,7 +32,14 @@ const SamplePresentationViewer: React.FC<{ onBack: () => void }> = ({ onBack }) 
                     Back to App
                 </button>
                  <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Sample Presentation</h2>
-                 <div className="w-36"></div>{/* Spacer */}
+                 <button
+                    data-tour-id="export-button"
+                    onClick={doNothing}
+                    className="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-green-500 transition-colors"
+                    >
+                    <DownloadIcon className="w-5 h-5 mr-2" />
+                    Download PPTX
+                </button>
             </div>
             
             <SlideEditorLayout {...props} />

@@ -1,18 +1,24 @@
-import React from 'react';
+
+
+import React, { useState } from 'react';
 // FIX: Correct import path for types
-import { PresentationProject } from '../types/index';
+import { PresentationProject, BrandKit } from '../types/index';
 import { PlusIcon } from './icons/PlusIcon';
 import { TrashIcon } from './icons/TrashIcon';
+import { PaletteIcon } from './icons/PaletteIcon';
+import BrandKitManager from './BrandKitManager';
 
 interface PresentationListProps {
   presentations: PresentationProject[];
+  brandKit: BrandKit;
   onCreate: (title?: string) => void;
   onSelect: (id: string) => void;
   onDelete: (id: string) => void;
+  onUpdateBrandKit: (brandKit: BrandKit) => void;
 }
 
-const PresentationList: React.FC<PresentationListProps> = ({ presentations, onCreate, onSelect, onDelete }) => {
-
+const PresentationList: React.FC<PresentationListProps> = ({ presentations, brandKit, onCreate, onSelect, onDelete, onUpdateBrandKit }) => {
+  const [isBrandKitOpen, setIsBrandKitOpen] = useState(false);
   const handleCreate = () => {
     onCreate();
   };
@@ -21,13 +27,22 @@ const PresentationList: React.FC<PresentationListProps> = ({ presentations, onCr
     <div className="animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Your Presentations</h2>
-        <button
-          onClick={handleCreate}
-          className="mt-4 sm:mt-0 inline-flex items-center justify-center p-3 rounded-full text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-pink-500 dark:hover:text-pink-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-800 focus:ring-pink-500 transition-all"
-          aria-label="Create New Presentation"
-        >
-          <PlusIcon className="w-6 h-6" />
-        </button>
+        <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsBrandKitOpen(true)}
+              className="mt-4 sm:mt-0 inline-flex items-center justify-center p-3 rounded-full text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-purple-500 dark:hover:text-purple-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-800 focus:ring-purple-500 transition-all"
+              aria-label="Customize Brand Kit"
+            >
+              <PaletteIcon className="w-6 h-6" />
+            </button>
+            <button
+              onClick={handleCreate}
+              className="mt-4 sm:mt-0 inline-flex items-center justify-center p-3 rounded-full text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-pink-500 dark:hover:text-pink-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-800 focus:ring-pink-500 transition-all"
+              aria-label="Create New Presentation"
+            >
+              <PlusIcon className="w-6 h-6" />
+            </button>
+        </div>
       </div>
 
       {presentations.length > 0 ? (
@@ -66,6 +81,17 @@ const PresentationList: React.FC<PresentationListProps> = ({ presentations, onCr
           <h3 className="text-xl font-semibold text-slate-500 dark:text-slate-400">Loading your new presentation...</h3>
           <p className="text-slate-400 dark:text-slate-500 mt-2">Get ready to create!</p>
         </div>
+      )}
+
+      {isBrandKitOpen && (
+        <BrandKitManager
+          brandKit={brandKit}
+          onClose={() => setIsBrandKitOpen(false)}
+          onSave={(newBrandKit) => {
+            onUpdateBrandKit(newBrandKit);
+            setIsBrandKitOpen(false);
+          }}
+        />
       )}
     </div>
   );

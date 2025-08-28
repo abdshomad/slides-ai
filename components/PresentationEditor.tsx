@@ -1,9 +1,8 @@
 
 
-
 import React from 'react';
 // FIX: Correct import path for types
-import { PresentationProject, AppState } from '../types/index';
+import { PresentationProject, AppState, BrandKit } from '../types/index';
 import usePresentationEditorState from '../hooks/usePresentationEditorState';
 import HistoryPanel from './HistoryPanel';
 import EditorHeader from './editor/EditorHeader';
@@ -14,6 +13,7 @@ import EditorModals from './editor/EditorModals';
 
 interface PresentationEditorProps {
     presentation: PresentationProject;
+    brandKit: BrandKit;
     onUpdatePresentation: (id: string, updates: Partial<PresentationProject>) => void;
     onAddCheckpoint: (id:string, action: string, state: AppState) => void;
     onRollback: (id: string, checkpointIndex: number) => void;

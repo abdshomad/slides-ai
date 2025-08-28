@@ -1,8 +1,18 @@
+
+
 import { Slide } from './presentation';
 import { Source } from './api';
 
 // FIX: Define and export Theme type
 export type Theme = 'light' | 'dark' | 'system';
+
+export interface BrandKit {
+  logo: string | null; // base64 data URL
+  primaryColor: string; // hex
+  secondaryColor: string; // hex
+  primaryFont: string;
+  secondaryFont: string;
+}
 
 export interface AppState {
   generationStep: 'input' | 'outline' | 'slides';

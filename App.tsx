@@ -1,13 +1,12 @@
-
-
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import usePresentations from './hooks/usePresentations';
 import Loader from './components/Loader';
 import { BookOpenIcon } from './components/icons/BookOpenIcon';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import useTheme from './hooks/useTheme';
 import ViewManager, { View } from './components/ViewManager';
+import { QuestionMarkCircleIcon } from './components/icons/QuestionMarkCircleIcon';
+import OnboardingTour from './components/OnboardingTour';
 
 
 const App: React.FC = () => {
@@ -15,12 +14,90 @@ const App: React.FC = () => {
     presentations,
     currentPresentation,
     isLoading,
+    brandKit,
     actions,
   } = usePresentations();
   
   const [activeView, setActiveView] = useState<View>('main');
   const [isDocsMenuOpen, setIsDocsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+
+  // Onboarding Tour State
+  const [isTourOpen, setIsTourOpen] = useState(false);
+  const [tourStepIndex, setTourStepIndex] = useState(0);
+
+  // FIX: Add `as const` to `tourSteps` to ensure TypeScript correctly infers the literal types
+  // for the `view` property, resolving the type error when calling `setActiveView`.
+  const tourSteps = [
+    {
+      target: '[data-tour-id="text-input"]',
+      title: 'Start with an Idea',
+      content: 'Simply type your presentation topic, key points, or paste your raw notes here. The more detail you provide, the better!',
+      view: 'main',
+    },
+    {
+      target: '[data-tour-id="file-upload"]',
+      title: 'Add Context Files',
+      content: 'You can also drag and drop documents like PDFs or text files to give the AI more context for your presentation.',
+      view: 'main',
+    },
+    {
+      target: '[data-tour-id="generate-outline-button"]',
+      title: 'Generate Your Outline',
+      content: "Once you're ready, click here. The AI will research your topic and create a structured outline for your review.",
+      view: 'main',
+    },
+    {
+      target: '[data-tour-id="ai-editing-tools"]',
+      title: 'Powerful AI Editing Tools',
+      content: 'After your slides are generated, use this toolbar to edit content with natural language, change styles, generate speaker notes, and much more!',
+      view: 'sample',
+    },
+    {
+      target: '[data-tour-id="export-button"]',
+      title: 'Export Your Presentation',
+      content: "When you're happy with the result, click here to download your presentation as a standard .pptx file.",
+      view: 'sample',
+    },
+  ] as const;
+
+  const handleStartTour = () => {
+    // A new presentation is required for the first few steps of the tour
+    if (!currentPresentation) {
+      actions.createPresentation('Onboarding Tour Presentation');
+    }
+    setTourStepIndex(0);
+    // Ensure we are in the main view for the start of the tour
+    setActiveView('main');
+    setIsTourOpen(true);
+  };
+  
+  const handleTourNext = () => setTourStepIndex(i => Math.min(i + 1, tourSteps.length - 1));
+  const handleTourPrev = () => setTourStepIndex(i => Math.max(i - 1, 0));
+  const handleTourSkip = () => {
+    setIsTourOpen(false);
+    localStorage.setItem('tourCompleted', 'true');
+  };
+
+  useEffect(() => {
+    // This effect ensures the correct application view is displayed for the current tour step.
+    if (isTourOpen) {
+      const step = tourSteps[tourStepIndex];
+      if (step.view !== activeView) {
+        setActiveView(step.view);
+      }
+    }
+  }, [tourStepIndex, isTourOpen, activeView]);
+
+  useEffect(() => {
+    // Automatically start the tour for first-time users.
+    const tourCompleted = localStorage.getItem('tourCompleted');
+    if (!tourCompleted) {
+      // Use a timeout to ensure the UI has time to render before starting the tour.
+      setTimeout(handleStartTour, 500);
+    }
+  }, []);
+
 
   if (isLoading) {
     return (
@@ -45,6 +122,14 @@ const App: React.FC = () => {
               </p>
            </div>
            <div className="flex-1 flex justify-end items-center gap-4">
+            <button
+                onClick={handleStartTour}
+                className="flex items-center text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--background-interactive)]/60 hover:bg-[var(--background-interactive-hover)]/80 px-3 py-1.5 rounded-md transition-colors border border-[var(--border-secondary)]/50"
+                aria-label="Start guided tour"
+              >
+              <QuestionMarkCircleIcon className="w-4 h-4 mr-2" />
+              <span>Tour</span>
+            </button>
             <ThemeSwitcher theme={theme} setTheme={setTheme} />
              <div className="relative">
                 <button
@@ -84,9 +169,19 @@ const App: React.FC = () => {
               presentations={presentations}
               currentPresentation={currentPresentation}
               actions={actions}
+              brandKit={brandKit}
             />
         </main>
       </div>
+       <OnboardingTour
+        isOpen={isTourOpen}
+        step={tourSteps[tourStepIndex]}
+        stepIndex={tourStepIndex}
+        totalSteps={tourSteps.length}
+        onNext={handleTourNext}
+        onPrev={handleTourPrev}
+        onSkip={handleTourSkip}
+      />
       <style>{`
         .animate-fade-in-fast {
           animation: fadeIn 0.15s ease-in-out;

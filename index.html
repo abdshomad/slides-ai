@@ -16,7 +16,8 @@
     "react/": "https://aistudiocdn.com/react@^19.1.1/",
     "react": "https://aistudiocdn.com/react@^19.1.1",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.15.0"
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.15.0",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.1.1"
   }
 }
 </script>
@@ -47,6 +48,32 @@
     height: 0.4rem;
     border-radius: 50%;
     background-color: var(--accent);
+  }
+  
+  /* Onboarding Tour Styles */
+  .tour-highlight-area {
+    position: fixed;
+    transition: all 0.3s ease-in-out;
+    border-radius: 6px;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.7), 0 0 0 4px var(--accent);
+    z-index: 999;
+    pointer-events: none;
+  }
+
+  .tour-popover {
+    position: fixed;
+    z-index: 1000;
+    max-width: 320px;
+    filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+  }
+
+  .tour-popover-arrow {
+    position: absolute;
+    width: 0.75rem;
+    height: 0.75rem;
+    transform: rotate(45deg);
+    background-color: var(--background-muted);
+    border: 1px solid var(--border-primary);
   }
 </style>
 </head>

@@ -1,13 +1,21 @@
+
+
 // FIX: Correct import path for types
-import { PresentationProject } from '../types/index';
+import { PresentationProject, BrandKit } from '../types/index';
 
 const STORAGE_KEY = 'ai_presentations';
+
+interface StoredData {
+    presentations: PresentationProject[];
+    currentPresentationId: string | null;
+    brandKit: BrandKit;
+}
 
 /**
  * Loads presentation data from localStorage.
  * @returns An object containing the array of presentations and the ID of the current presentation.
  */
-export const loadPresentations = (): { presentations: PresentationProject[], currentPresentationId: string | null } => {
+export const loadPresentations = (): Partial<StoredData> => {
   try {
     const savedData = localStorage.getItem(STORAGE_KEY);
     if (savedData) {
@@ -15,6 +23,7 @@ export const loadPresentations = (): { presentations: PresentationProject[], cur
       return {
         presentations: parsedData.presentations || [],
         currentPresentationId: parsedData.currentPresentationId || null,
+        brandKit: parsedData.brandKit,
       };
     }
   } catch (error) {
@@ -28,12 +37,8 @@ export const loadPresentations = (): { presentations: PresentationProject[], cur
  * @param presentations The array of presentation projects to save.
  * @param currentPresentationId The ID of the currently active presentation.
  */
-export const savePresentations = (presentations: PresentationProject[], currentPresentationId: string | null) => {
+export const savePresentations = (dataToSave: StoredData) => {
   try {
-    const dataToSave = {
-      presentations,
-      currentPresentationId,
-    };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
   } catch (error) {
     console.error("Failed to save presentations to localStorage", error);

@@ -17,17 +17,17 @@
     *   **F-SE-07c (AI Generation Fallback):** If the AI cannot find suitable images from its web search, it will instead provide a descriptive text prompt for an AI image generator. This prompt is displayed with a "Generate Image" button, allowing the user to create a visual on-demand.
     *   **F-SE-07d (Editing Flow):** When a user requests to change a slide's image via a natural language prompt (e.g., "find a picture of a cat"), the AI will provide a new set of image search results for the user to select from.
 
-*Workflow for F-SE-07:*
+**Workflow for F-SE-07:**
 ```mermaid
 graph TD
-    A[Slide Needs Visual] --> B{AI Performs Web Search};
-    B --> C{Images Found?};
-    C -- Yes --> D[Present up to 3 thumbnails];
-    D --> E{User Selects Image};
-    E --> F[Fetch & Display Image];
-    C -- No --> G[Provide AI Image Prompt];
-    G --> H{User Clicks "Generate"};
-    H --> I[Generate & Display Image];
+    A["Slide Needs Visual"] --> B{"AI Performs Web Search"};
+    B --> C{"Images Found?"};
+    C -- Yes --> D["Present up to 3 thumbnails"];
+    D --> E{"User Selects Image"};
+    E --> F["Fetch & Display Image"];
+    C -- No --> G["Provide AI Image Prompt"];
+    G --> H{"User Clicks 'Generate'"};
+    H --> I["Generate & Display Image"];
 ```
 
 *   **F-SE-08 (Slide Layout/Style):** Users can change the layout of a slide via a modal selector. Available layouts include standard formats (e.g., Image Left, Image Right, Title Only) as well as specialized, visually distinct layouts such as 'Section Header' (title and subtitle), 'Main Point Emphasis' (highlights a key statistic or phrase), and 'Quote' (showcases a quote with attribution).

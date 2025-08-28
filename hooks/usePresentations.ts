@@ -1,8 +1,11 @@
+
+
 import { useState, useEffect, useCallback, useMemo } from 'react';
 // FIX: Correct import path for types
-import { PresentationProject, AppState, HistoryCheckpoint } from '../types/index';
+import { PresentationProject, AppState, HistoryCheckpoint, BrandKit } from '../types/index';
 import { templates } from '../templates/index';
 import { loadPresentations, savePresentations } from '../services/presentationStorageService';
+import { defaultBrandKit } from '../utils/defaults';
 
 const createNewPresentation = (title: string): PresentationProject => {
   const now = Date.now();
@@ -33,12 +36,14 @@ const createNewPresentation = (title: string): PresentationProject => {
 const usePresentations = () => {
   const [presentations, setPresentations] = useState<PresentationProject[]>([]);
   const [currentPresentationId, setCurrentPresentationId] = useState<string | null>(null);
+  const [brandKit, setBrandKit] = useState<BrandKit>(defaultBrandKit);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const { presentations, currentPresentationId } = loadPresentations();
+    const { presentations, currentPresentationId, brandKit } = loadPresentations();
     setPresentations(presentations);
     setCurrentPresentationId(currentPresentationId);
+    setBrandKit(brandKit || defaultBrandKit);
     setIsLoading(false);
   }, []);
 
@@ -47,33 +52,33 @@ const usePresentations = () => {
     const newPresentation = createNewPresentation(newTitle);
     setPresentations(prev => {
       const updated = [...prev, newPresentation];
-      savePresentations(updated, newPresentation.id);
+      savePresentations({ presentations: updated, currentPresentationId: newPresentation.id, brandKit });
       return updated;
     });
     setCurrentPresentationId(newPresentation.id);
-  }, [presentations.length]);
+  }, [presentations.length, brandKit]);
 
   const deletePresentation = useCallback((id: string) => {
     setPresentations(prev => {
       const updated = prev.filter(p => p.id !== id);
       const newCurrentId = currentPresentationId === id ? null : currentPresentationId;
-      savePresentations(updated, newCurrentId);
+      savePresentations({ presentations: updated, currentPresentationId: newCurrentId, brandKit });
       if (currentPresentationId === id) {
         setCurrentPresentationId(null);
       }
       return updated;
     });
-  }, [currentPresentationId]);
+  }, [currentPresentationId, brandKit]);
   
   const updatePresentation = useCallback((id: string, updates: Partial<PresentationProject>) => {
     setPresentations(prev => {
       const newPresentations = prev.map(p =>
         p.id === id ? { ...p, ...updates, lastModified: Date.now() } : p
       );
-      savePresentations(newPresentations, currentPresentationId);
+      savePresentations({ presentations: newPresentations, currentPresentationId, brandKit });
       return newPresentations;
     });
-  }, [currentPresentationId]);
+  }, [currentPresentationId, brandKit]);
 
 
   const addCheckpoint = useCallback((id: string, action: string, state: AppState) => {
@@ -93,10 +98,10 @@ const usePresentations = () => {
         }
         return p;
       });
-      savePresentations(newPresentations, id);
+      savePresentations({ presentations: newPresentations, currentPresentationId: id, brandKit });
       return newPresentations;
     });
-  }, []);
+  }, [brandKit]);
 
   const rollbackToCheckpoint = useCallback((id: string, checkpointIndex: number) => {
     setPresentations(prev => {
@@ -119,20 +124,25 @@ const usePresentations = () => {
         }
         return p;
       });
-      savePresentations(newPresentations, id);
+      savePresentations({ presentations: newPresentations, currentPresentationId: id, brandKit });
       return newPresentations;
     });
-  }, []);
+  }, [brandKit]);
   
   const selectPresentation = useCallback((id: string) => {
     setCurrentPresentationId(id);
-    savePresentations(presentations, id);
-  }, [presentations]);
+    savePresentations({ presentations, currentPresentationId: id, brandKit });
+  }, [presentations, brandKit]);
 
   const clearCurrentPresentation = useCallback(() => {
     setCurrentPresentationId(null);
-    savePresentations(presentations, null);
-  }, [presentations]);
+    savePresentations({ presentations, currentPresentationId: null, brandKit });
+  }, [presentations, brandKit]);
+
+  const updateBrandKit = useCallback((newBrandKit: BrandKit) => {
+    setBrandKit(newBrandKit);
+    savePresentations({ presentations, currentPresentationId, brandKit: newBrandKit });
+  }, [presentations, currentPresentationId]);
 
   const currentPresentation = presentations.find(p => p.id === currentPresentationId) || null;
 
@@ -143,7 +153,8 @@ const usePresentations = () => {
     addCheckpoint,
     rollbackToCheckpoint,
     selectPresentation,
-    clearCurrentPresentation
+    clearCurrentPresentation,
+    updateBrandKit
   }), [
     createPresentation,
     deletePresentation,
@@ -151,13 +162,15 @@ const usePresentations = () => {
     addCheckpoint,
     rollbackToCheckpoint,
     selectPresentation,
-    clearCurrentPresentation
+    clearCurrentPresentation,
+    updateBrandKit,
   ]);
 
   return {
     presentations,
     currentPresentation,
     isLoading,
+    brandKit,
     actions,
   };
 };

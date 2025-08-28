@@ -52,7 +52,7 @@ const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
   setShowNotes,
 }) => {
   return (
-    <div className="flex-shrink-0 p-4 bg-slate-200/50 dark:bg-slate-800/50 rounded-b-lg border-t border-slate-300/50 dark:border-slate-600/50 flex flex-wrap gap-3 justify-center">
+    <div data-tour-id="ai-editing-tools" className="flex-shrink-0 p-4 bg-slate-200/50 dark:bg-slate-800/50 rounded-b-lg border-t border-slate-300/50 dark:border-slate-600/50 flex flex-wrap gap-3 justify-center">
       <button onClick={onEdit} className={secondaryButtonClass}><EditIcon className="w-4 h-4 mr-2" />Edit</button>
       <button onClick={onStyle} className={secondaryButtonClass}><StyleIcon className="w-4 h-4 mr-2" />Style</button>
       <button onClick={onExportSlide} disabled={isExporting} className={secondaryButtonClass}>

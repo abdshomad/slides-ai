@@ -51,7 +51,7 @@ const InputStep: React.FC<InputStepProps> = ({
           <label htmlFor="idea-input" className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-4">
             Start with your core idea
           </label>
-           <div className="relative flex-grow">
+           <div className="relative flex-grow" data-tour-id="text-input">
               <textarea
                 id="idea-input"
                 value={inputText}
@@ -75,7 +75,7 @@ const InputStep: React.FC<InputStepProps> = ({
           <label className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-4">
             Or provide files as context
           </label>
-          <div className="flex-grow">
+          <div className="flex-grow" data-tour-id="file-upload">
             <FileUpload 
               onFilesChange={onFilesChange}
               managedFiles={managedFiles}
@@ -96,6 +96,7 @@ const InputStep: React.FC<InputStepProps> = ({
             </div>
         ) : (
           <button
+            data-tour-id="generate-outline-button"
             onClick={onGenerateOutline}
             disabled={!hasContent || isLoading}
             className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:bg-slate-500 disabled:cursor-not-allowed transition-all transform hover:scale-105"

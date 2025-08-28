@@ -1,9 +1,8 @@
 
 
-
 import { useMemo } from 'react';
 // FIX: Correct import path for types
-import { PresentationProject, AppState, PresentationTemplate } from '../types/index';
+import { PresentationProject, AppState, PresentationTemplate, BrandKit } from '../types/index';
 import { templates } from '../templates/index';
 import useFileManager from './useFileManager';
 import useTimer from './useTimer';
@@ -15,11 +14,12 @@ import { useEditorActions } from './editor/useEditorActions';
 
 interface PresentationEditorProps {
     presentation: PresentationProject;
+    brandKit: BrandKit;
     onUpdatePresentation: (id: string, updates: Partial<PresentationProject>) => void;
     onAddCheckpoint: (id:string, action: string, state: AppState) => void;
 }
 
-const usePresentationEditorState = ({ presentation, onUpdatePresentation, onAddCheckpoint }: PresentationEditorProps) => {
+const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentation, onAddCheckpoint }: PresentationEditorProps) => {
     // 1. Decomposed state management
     const { state, setters } = useEditorState(presentation);
     const { modalState, setters: modalSetters } = useEditorModals();
@@ -54,6 +54,7 @@ const usePresentationEditorState = ({ presentation, onUpdatePresentation, onAddC
         timer,
         currentState,
         selectedTemplate,
+        brandKit,
     });
     
     // 5. Auto-save hook

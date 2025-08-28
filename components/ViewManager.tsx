@@ -1,6 +1,8 @@
+
+
 import React from 'react';
 // FIX: Correct import path for types
-import { PresentationProject } from '../types/index';
+import { PresentationProject, BrandKit } from '../types/index';
 import PRDViewer from './docs/PRDViewer';
 import SamplePresentationViewer from './docs/SamplePresentationViewer';
 import PresentationEditor from './PresentationEditor';
@@ -13,6 +15,7 @@ interface ViewManagerProps {
     setActiveView: (view: View) => void;
     presentations: PresentationProject[];
     currentPresentation: PresentationProject | null;
+    brandKit: BrandKit;
     actions: {
         createPresentation: (title?: string) => void;
         deletePresentation: (id: string) => void;
@@ -21,10 +24,11 @@ interface ViewManagerProps {
         rollbackToCheckpoint: (id: string, checkpointIndex: number) => void;
         selectPresentation: (id: string) => void;
         clearCurrentPresentation: () => void;
+        updateBrandKit: (brandKit: BrandKit) => void;
     };
 }
 
-const ViewManager: React.FC<ViewManagerProps> = ({ activeView, setActiveView, presentations, currentPresentation, actions }) => {
+const ViewManager: React.FC<ViewManagerProps> = ({ activeView, setActiveView, presentations, currentPresentation, brandKit, actions }) => {
     switch (activeView) {
         case 'prd':
             return <PRDViewer onBack={() => setActiveView('main')} />;
@@ -36,6 +40,7 @@ const ViewManager: React.FC<ViewManagerProps> = ({ activeView, setActiveView, pr
                 <PresentationEditor
                     key={currentPresentation.id} // Re-mount component on presentation change
                     presentation={currentPresentation}
+                    brandKit={brandKit}
                     onUpdatePresentation={actions.updatePresentation}
                     onAddCheckpoint={actions.addCheckpoint}
                     onRollback={actions.rollbackToCheckpoint}
@@ -44,9 +49,11 @@ const ViewManager: React.FC<ViewManagerProps> = ({ activeView, setActiveView, pr
             ) : (
                 <PresentationList
                     presentations={presentations}
+                    brandKit={brandKit}
                     onCreate={actions.createPresentation}
                     onSelect={actions.selectPresentation}
                     onDelete={actions.deletePresentation}
+                    onUpdateBrandKit={actions.updateBrandKit}
                 />
             );
     }
