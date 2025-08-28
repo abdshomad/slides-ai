@@ -26,16 +26,27 @@ const SlidePreview: React.FC<SlidePreviewProps> = (props) => {
   
   return (
     <div className="bg-white dark:bg-slate-700 rounded-lg shadow-lg h-full flex flex-col group relative transition-all duration-300">
-      {/* FIX: Pass missing required props to SlideImage to resolve TypeScript error. */}
-      <SlideImage 
-        isLoading={slide.isLoadingImage}
-        image={slide.image}
-        title={slide.title}
-        imagePrompt={slide.imagePrompt}
-        imageSearchResults={slide.imageSearchResults}
-        onGenerate={props.onGenerateImage}
-        onSelectImage={(url) => props.onSelectImageFromSearch(slide.id, url)}
-      />
+      {slide.video ? (
+        <div className="relative w-full h-40 bg-black rounded-t-lg flex items-center justify-center overflow-hidden">
+            <video 
+                src={slide.video} 
+                controls 
+                muted 
+                loop
+                className="w-full h-full object-cover"
+            />
+        </div>
+      ) : (
+        <SlideImage 
+            isLoading={slide.isLoadingImage || slide.isGeneratingVideo}
+            image={slide.image}
+            title={slide.title}
+            imagePrompt={slide.imagePrompt}
+            imageSearchResults={slide.imageSearchResults}
+            onGenerate={props.onGenerateImage}
+            onSelectImage={(url) => props.onSelectImageFromSearch(slide.id, url)}
+        />
+      )}
 
       <div className="p-4 flex-grow flex flex-col">
         <div className="flex-shrink-0 mb-2">
