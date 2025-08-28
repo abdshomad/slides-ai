@@ -3,17 +3,17 @@ import { editImage } from '../../services/imageEditingService';
 import { generateVideoForSlide } from '../../services/videoService';
 // FIX: Correct import path for types
 import { AppState, Slide as SlideType } from '../../types/index';
-import { ActionContext } from './types';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
-// FIX: Interfaces now correctly extend ActionContext to resolve property errors.
-interface GenerateImageArgs extends ActionContext {
+interface GenerateImageArgs {
     slideId: string;
     prompt: string;
     negativePrompt?: string;
     slides: SlideType[];
     setSlides: SetState<SlideType[]>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const generateImageAction = async ({ slideId, prompt, negativePrompt, slides, setSlides, createCheckpoint, currentState }: GenerateImageArgs) => {
     const slide = slides.find(s => s.id === slideId);
@@ -21,18 +21,19 @@ export const generateImageAction = async ({ slideId, prompt, negativePrompt, sli
 
     setSlides(prev => prev.map(s => s.id === slideId ? { ...s, isLoadingImage: true } : s));
     const newImage = await generateImageForSlide(prompt, negativePrompt);
-    // FIX: Corrected typo from `negativeImagePrompt` to `negativeImagePrompt: negativePrompt` to match the function argument.
     const updatedSlides = slides.map(s => s.id === slideId ? { ...s, image: newImage, imagePrompt: prompt, negativeImagePrompt: negativePrompt, isLoadingImage: false } : s);
     setSlides(updatedSlides);
     createCheckpoint(`Generated image for "${slide.title}"`, { ...currentState, slides: updatedSlides });
 };
 
-interface GenerateVideoArgs extends ActionContext {
+interface GenerateVideoArgs {
     slideId: string;
     prompt: string;
     slides: SlideType[];
     setError: SetState<string | null>;
     setSlides: SetState<SlideType[]>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const generateVideoAction = async ({ slideId, prompt, slides, setError, setSlides, createCheckpoint, currentState }: GenerateVideoArgs) => {
     const slide = slides.find(s => s.id === slideId);
@@ -65,12 +66,14 @@ export const generateVideoAction = async ({ slideId, prompt, slides, setError, s
     }
 };
 
-interface EditImageArgs extends ActionContext {
+interface EditImageArgs {
     slideId: string;
     prompt: string;
     slides: SlideType[];
     setError: SetState<string | null>;
     setSlides: SetState<SlideType[]>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const editImageAction = async ({ slideId, prompt, slides, setError, setSlides, createCheckpoint, currentState }: EditImageArgs) => {
     const slide = slides.find(s => s.id === slideId);
@@ -94,10 +97,12 @@ export const editImageAction = async ({ slideId, prompt, slides, setError, setSl
     }
 };
 
-interface GenerateSuggestionsArgs extends ActionContext {
+interface GenerateSuggestionsArgs {
     slideId: string;
     slides: SlideType[];
     setSlides: SetState<SlideType[]>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const generateImageSuggestionsAction = async ({ slideId, slides, setSlides, createCheckpoint, currentState }: GenerateSuggestionsArgs) => {
     const slide = slides.find(s => s.id === slideId);
@@ -116,11 +121,13 @@ export const generateImageSuggestionsAction = async ({ slideId, slides, setSlide
     createCheckpoint(`Generated image suggestions for "${slide.title}"`, { ...currentState, slides: updatedSlides });
 };
 
-interface SelectSuggestionArgs extends ActionContext {
+interface SelectSuggestionArgs {
     slideId: string;
     suggestion: string;
     slides: SlideType[];
     setSlides: SetState<SlideType[]>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const selectImageSuggestionAction = async ({ slideId, suggestion, slides, setSlides, createCheckpoint, currentState }: SelectSuggestionArgs) => {
     const slide = slides.find(s => s.id === slideId);
@@ -131,10 +138,12 @@ export const selectImageSuggestionAction = async ({ slideId, suggestion, slides,
     createCheckpoint(`Selected image for "${slide.title}"`, { ...currentState, slides: updatedSlides });
 };
 
-interface ClearSelectionArgs extends ActionContext {
+interface ClearSelectionArgs {
     slideId: string;
     slides: SlideType[];
     setSlides: SetState<SlideType[]>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const clearSelectedImageAction = async ({ slideId, slides, setSlides, createCheckpoint, currentState }: ClearSelectionArgs) => {
     const slide = slides.find(s => s.id === slideId);

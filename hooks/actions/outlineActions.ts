@@ -1,11 +1,10 @@
 import { generateOutline } from '../../services/outlineService';
 // FIX: Correct import path for types
 import { AppState, FilePart, ManagedFile, PresentationProject, Source } from '../../types/index';
-import { ActionContext } from './types';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
-interface GenerateOutlineArgs extends ActionContext {
+interface GenerateOutlineArgs {
     inputText: string;
     managedFiles: ManagedFile[];
     presentation: PresentationProject;
@@ -18,6 +17,8 @@ interface GenerateOutlineArgs extends ActionContext {
     setPresentationTitle: SetState<string>;
     setGenerationStep: SetState<AppState['generationStep']>;
     onUpdatePresentation: (id: string, updates: Partial<PresentationProject>) => void;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const generateOutlineAction = async (args: GenerateOutlineArgs) => {
     const {

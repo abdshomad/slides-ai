@@ -1,16 +1,17 @@
 import { expandSlide, factCheckSlide, adaptAudience } from '../../services/slideEditingService';
 import { generateSpeakerNotes, generateKeyTakeaway } from '../../services/slideContentService';
 // FIX: Correct import path for types
-import { Slide as SlideType, FactCheckResult } from '../../types/index';
-import { ActionContext } from './types';
+import { AppState, Slide as SlideType, FactCheckResult } from '../../types/index';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
-interface GenerateNotesArgs extends ActionContext {
+interface GenerateNotesArgs {
     slideId: string;
     slides: SlideType[];
     setError: SetState<string | null>;
     setSlides: SetState<SlideType[]>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const generateNotesAction = async ({ slideId, slides, setError, setSlides, createCheckpoint, currentState }: GenerateNotesArgs) => {
     const slide = slides.find(s => s.id === slideId);
@@ -30,11 +31,13 @@ export const generateNotesAction = async ({ slideId, slides, setError, setSlides
     }
 };
 
-interface GenerateTakeawayArgs extends ActionContext {
+interface GenerateTakeawayArgs {
     slideId: string;
     slides: SlideType[];
     setError: SetState<string | null>;
     setSlides: SetState<SlideType[]>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const generateTakeawayAction = async ({ slideId, slides, setError, setSlides, createCheckpoint, currentState }: GenerateTakeawayArgs) => {
     const slide = slides.find(s => s.id === slideId);
@@ -54,11 +57,13 @@ export const generateTakeawayAction = async ({ slideId, slides, setError, setSli
     }
 };
 
-interface ExpandSlideArgs extends ActionContext {
+interface ExpandSlideArgs {
     slideId: string;
     slides: SlideType[];
     setError: SetState<string | null>;
     setSlides: SetState<SlideType[]>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const expandSlideAction = async (args: ExpandSlideArgs) => {
     const { slideId, slides, setError, setSlides, createCheckpoint, currentState } = args;
@@ -125,13 +130,15 @@ export const factCheckSlideAction = async ({ slideId, slides, setError, setSlide
     }
 };
 
-interface AdaptAudienceArgs extends ActionContext {
+interface AdaptAudienceArgs {
     targetAudience: string;
     adaptingAudienceSlideId: string | null;
     slides: SlideType[];
     setError: SetState<string | null>;
     setSlides: SetState<SlideType[]>;
     setAdaptingAudienceSlideId: SetState<string | null>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const adaptAudienceAction = async (args: AdaptAudienceArgs) => {
     const { targetAudience, adaptingAudienceSlideId, slides, setError, setSlides, setAdaptingAudienceSlideId, createCheckpoint, currentState } = args;

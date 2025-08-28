@@ -1,17 +1,18 @@
 import { editSlide } from '../../services/slideEditingService';
 // FIX: Correct import path for types
-import { Slide as SlideType } from '../../types/index';
-import { ActionContext } from './types';
+import { AppState, Slide as SlideType } from '../../types/index';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
-interface EditSlideArgs extends ActionContext {
+interface EditSlideArgs {
     prompt: string;
     editingSlideId: string | null;
     slides: SlideType[];
     setError: SetState<string | null>;
     setSlides: SetState<SlideType[]>;
     setEditingSlideId: SetState<string | null>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const editSlideAction = async (args: EditSlideArgs) => {
     const { prompt, editingSlideId, slides, setError, setSlides, setEditingSlideId, createCheckpoint, currentState } = args;

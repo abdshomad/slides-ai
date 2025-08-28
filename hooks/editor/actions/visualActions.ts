@@ -2,8 +2,9 @@ import { generateImageForSlide, generateImageSuggestions } from '../../services/
 import { editImage } from '../../services/imageEditingService';
 import { generateVideoForSlide } from '../../services/videoService';
 // FIX: Correct import path for types
-import { Slide as SlideType } from '../../types/index';
-import { ActionContext } from './types';
+import { AppState, Slide as SlideType } from '../../types/index';
+// FIX: Corrected import path for ActionContext, which lives in a different directory.
+import { ActionContext } from '../../actions/types';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -20,7 +21,6 @@ export const generateImageAction = async ({ slideId, prompt, negativePrompt, sli
 
     setSlides(prev => prev.map(s => s.id === slideId ? { ...s, isLoadingImage: true } : s));
     const newImage = await generateImageForSlide(prompt, negativePrompt);
-    // FIX: Corrected typo from `negativeImagePrompt` to `negativeImagePrompt: negativePrompt` to match the function argument.
     const updatedSlides = slides.map(s => s.id === slideId ? { ...s, image: newImage, imagePrompt: prompt, negativeImagePrompt: negativePrompt, isLoadingImage: false } : s);
     setSlides(updatedSlides);
     createCheckpoint(`Generated image for "${slide.title}"`, { ...currentState, slides: updatedSlides });

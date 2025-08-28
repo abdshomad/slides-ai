@@ -11,8 +11,12 @@ gantt
     title AI Presentation Designer: Development Roadmap
     dateFormat  YYYY-Q
     axisFormat  %Y-Q%q
+    
     section Foundational Features
     Core Feature Set       :done, des1, 2024-Q3, 14w
+    
+    section Recently Completed
+    AI Video Generation    :done, des2, after des1, 4w
     
     section Active Development
     Presenter Coach AI     :active, des5, 2024-Q4, 6w
@@ -22,6 +26,12 @@ gantt
     Cloud Integration      :des7, after des6, 6w
     Advanced Data Viz      :des8, after des7, 5w
 ```
+
+---
+
+## Recently Completed
+
+*   **AI Video Generation:** Integrated a new tool allowing users to generate short, dynamic video clips from text prompts directly within the new "Visuals Studio".
 
 ---
 

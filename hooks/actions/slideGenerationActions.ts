@@ -2,14 +2,12 @@ import { generateSlidesStream } from '../../services/slideService';
 import { slideGenerationSteps } from '../../utils/loadingSteps';
 // FIX: Correct import path for types
 import { AppState, FilePart, ManagedFile, Slide as SlideType, Source, GenerationStats } from '../../types/index';
-// FIX: Correctly import ActionContext from its source file './types'.
-import { ActionContext } from './types';
 import { ProgressSimulator } from '../../utils/progressSimulator';
 import { parseOutline } from '../../utils/outlineParser';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
-interface GenerateSlidesArgs extends ActionContext {
+interface GenerateSlidesArgs {
     managedFiles: ManagedFile[];
     inputText: string;
     outline: string;
@@ -25,6 +23,8 @@ interface GenerateSlidesArgs extends ActionContext {
     setCurrentLoadingSubStep: SetState<number>;
     setGenerationStats: SetState<GenerationStats>;
     setGeneratingSlideId: SetState<string | null>;
+    currentState: AppState;
+    createCheckpoint: (action: string, state: AppState) => void;
 }
 export const generateSlidesAction = async (args: GenerateSlidesArgs) => {
     const {

@@ -6,7 +6,7 @@
 *   **F-SE-01b (Post-Generation Image Review):** After slide generation completes, if any images were sourced from web searches, the user is presented with a gallery of these images. This "Visuals Sourced by AI" screen provides a preview of the visual assets before the user proceeds to the main editor.
 *   **F-SE-02 (UI Layout):** The slide editor displays a list of slide thumbnails in a sidebar for easy navigation and a large detail view for the currently selected slide.
 *   **F-SE-02a (Grouped Slide Actions):** All individual slide actions (e.g., Edit, Style, Generate Notes) are consolidated into a single "AI Tools & Actions" dropdown menu to reduce UI clutter and streamline the user experience.
-*   **F-SE-03 (AI-Powered Text Editing):** From the slide's action menu, users can select "Edit Content" to open a modal and issue a natural language prompt to modify a slide's content (e.g., "Simplify the second bullet point", "change the image to a picture of a sunset"). The AI can also populate content for specialized layouts, for instance, by responding to prompts like "Add a subtitle: 'Q3 Financial Results'" or "Change this slide to be a quote from Albert Einstein". A visual change request will trigger a new image search (see F-SE-07).
+*   **F-SE-03 (AI-Powered Text Editing):** From the slide's action menu, users can select "Edit Content" to open a modal and issue a natural language prompt to modify a slide's content (e.g., "Simplify the second bullet point", "change the image to a picture of a sunset"). The AI can also populate content for specialized layouts, for instance, by responding to prompts like "Add a subtitle: 'Q3 Financial Results'" or "Change this slide to be a quote from Albert Einstein". A visual change request will trigger a new image search (see F-SE-07) or, if the user asks for a video, will populate the prompt for the video generator (see F-SE-17).
 *   **F-SE-04 (Speaker Notes):** From the slide's action menu, users can ask the AI to generate speaker notes for any slide. The menu item will show a loading state while the AI is processing.
 *   **F-SE-05 (Key Takeaway):** From the slide's action menu, users can ask the AI to generate a single, concise key takeaway for any slide. The menu item will show a loading state while the AI is processing.
 *   **F-SE-06 (Slide Expansion):** From the slide's action menu, users can ask the AI to expand a single slide into 2-3 new, more detailed slides. The menu item will show a loading state while the AI is processing.
@@ -30,12 +30,17 @@
     *   This image, along with the slide's text content, is sent to a multimodal AI for analysis.
     *   The AI provides a critique and a list of actionable visual improvement ideas, which are displayed to the user in a modal.
 *   **F-SE-13 (AI Image In-Painting - "Magic Edit"):**
-    *   Within the Image Studio, users can select an "Edit" tab for slides that already have a generated image.
+    *   Within the Visuals Studio, users can select an "Edit" tab for slides that already have a generated image.
     *   Users can provide a natural language prompt to modify the existing image (e.g., "add a sun to the sky," "make the car red," "remove the person on the left").
     *   The multimodal AI processes the image and the prompt to generate an edited version of the image.
 *   **F-SE-14 (Stock Photo Integration):**
-    *   The Image Studio includes a "Search" tab, providing access to a library of high-quality, royalty-free stock photos.
+    *   The Visuals Studio includes a "Search" tab, providing access to a library of high-quality, royalty-free stock photos.
     *   Users can enter search queries to find relevant images for their slide content.
     *   Users can select an image from the search results to apply it directly to their slide.
-*   **F-SE-15 (Advanced Image Controls):** The Image Studio provides granular control over AI image generation. Users can provide "negative prompts" to exclude unwanted elements and select from a range of artistic styles to guide the visual output.
+*   **F-SE-15 (Advanced Image Controls):** The Visuals Studio provides granular control over AI image generation. Users can provide "negative prompts" to exclude unwanted elements and select from a range of artistic styles to guide the visual output.
 *   **F-SE-16 (Presentation-Wide Style Cohesion):** Users can apply a single artistic style across all AI-generated images in the presentation via an "Apply Style to All" function, ensuring a consistent and professional aesthetic.
+*   **F-SE-17 (AI Video Generation):**
+    *   **F-SE-17a:** Within the "Visuals Studio", users can access a dedicated "Video" tab.
+    *   **F-SE-17b:** Users can provide a natural language prompt describing a scene or concept.
+    *   **F-SE-17c:** The AI will generate a short, silent video clip based on the prompt. The UI will provide clear, reassuring progress updates during the generation process, which may take several minutes.
+    *   **F-SE-17d:** The generated video clip can be included in the slide, replacing the standard image area.
