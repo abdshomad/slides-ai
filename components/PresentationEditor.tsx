@@ -1,5 +1,6 @@
 
 
+
 import React from 'react';
 // FIX: Correct import path for types
 import { PresentationProject, AppState } from '../types/index';

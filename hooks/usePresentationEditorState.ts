@@ -1,5 +1,6 @@
 
 
+
 import { useMemo } from 'react';
 // FIX: Correct import path for types
 import { PresentationProject, AppState, PresentationTemplate } from '../types/index';

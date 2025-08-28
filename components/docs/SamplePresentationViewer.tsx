@@ -18,7 +18,6 @@ const SamplePresentationViewer: React.FC<{ onBack: () => void }> = ({ onBack }) 
         onExpandSlide: doNothing,
         onViewSlideHistory: doNothing,
         onFactCheckSlide: doNothing,
-        // FIX: Add missing onCritiqueSlide prop for SlideEditorLayout
         onCritiqueSlide: doNothing,
         onReorderSlides: doNothing,
         onSelectImageFromSearch: doNothing,
