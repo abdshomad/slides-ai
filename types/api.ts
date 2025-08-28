@@ -24,3 +24,14 @@ export interface FactCheckResult {
   bulletPoints: string[];
   summaryOfChanges: string;
 }
+
+export interface StockImageResult {
+  id: string;
+  url: string;
+  thumbUrl: string;
+  description: string | null;
+  user: {
+    name: string;
+    link: string;
+  };
+}

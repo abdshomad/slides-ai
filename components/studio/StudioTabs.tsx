@@ -27,7 +27,7 @@ const StudioTabs: React.FC<StudioTabsProps> = ({ slide, activeTab, setActiveTab 
                 <TabButton active={activeTab === 'generate'} onClick={() => setActiveTab('generate')}><MagicIcon className="w-4 h-4" />Generate</TabButton>
                 {slide.image && <TabButton active={activeTab === 'edit'} onClick={() => setActiveTab('edit')}><EditIcon className="w-4 h-4" />Edit</TabButton>}
                 <TabButton active={activeTab === 'suggestions'} onClick={() => setActiveTab('suggestions')}><ImageIcon className="w-4 h-4" />Suggestions</TabButton>
-                {slide.imageSearchResults && slide.imageSearchResults.length > 0 && <TabButton active={activeTab === 'search'} onClick={() => setActiveTab('search')}><ResearchIcon className="w-4 h-4" />Web</TabButton>}
+                <TabButton active={activeTab === 'search'} onClick={() => setActiveTab('search')}><ResearchIcon className="w-4 h-4" />Search</TabButton>
             </div>
         </div>
     );

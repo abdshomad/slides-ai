@@ -26,7 +26,7 @@ const ImageStudioModal: React.FC<ImageStudioModalProps> = (props) => {
 
     // Automatically switch tabs if the slide's image state changes (e.g., an image is generated)
     useEffect(() => {
-        if (slide.image && activeTab === 'generate') {
+        if (slide.image && (activeTab === 'generate' || activeTab === 'suggestions' || activeTab === 'search')) {
             setActiveTab('edit');
         } else if (!slide.image && activeTab === 'edit') {
             setActiveTab('generate');
