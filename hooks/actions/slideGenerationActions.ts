@@ -2,8 +2,10 @@ import { generateSlidesStream } from '../../services/slideService';
 import { slideGenerationSteps } from '../../utils/loadingSteps';
 // FIX: Correct import path for types
 import { AppState, FilePart, ManagedFile, Slide as SlideType, Source, GenerationStats } from '../../types/index';
-import { ActionContext } from './outlineActions';
+// FIX: Correctly import ActionContext from its source file './types'.
+import { ActionContext } from './types';
 import { ProgressSimulator } from '../../utils/progressSimulator';
+import { parseOutline } from '../../utils/outlineParser';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -33,10 +35,28 @@ export const generateSlidesAction = async (args: GenerateSlidesArgs) => {
 
     setError(null);
     setIsLoading(true);
-    setLoadingMessage('');
-    setCurrentLoadingStep(0);
-    setCurrentLoadingSubStep(0);
+    setLoadingMessage('Generating slides...');
     setSlides([]);
+
+    const parsedOutline = parseOutline(outline);
+    const numSlides = parsedOutline.length;
+
+    if (numSlides === 0) {
+        setError("The outline is empty. Cannot generate slides.");
+        setIsLoading(false);
+        return;
+    }
+
+    // 1. Create and display placeholders immediately
+    const placeholderSlides: SlideType[] = Array.from({ length: numSlides }, (_, i) => ({
+      id: `slide_placeholder_${i}_${Date.now()}`,
+      title: parsedOutline[i]?.title || 'Untitled Slide',
+      bulletPoints: [],
+      isLoading: true,
+      layout: parsedOutline[i]?.layout || 'DEFAULT',
+    }));
+    setSlides(placeholderSlides);
+
     const nextStep: AppState['generationStep'] = 'slides';
     setGenerationStep(nextStep);
 
@@ -47,43 +67,45 @@ export const generateSlidesAction = async (args: GenerateSlidesArgs) => {
         slidesCreated: 0,
     });
 
-    const simulator = new ProgressSimulator(
-        slideGenerationSteps,
-        (stepIndex, subStepIndex) => {
-            setCurrentLoadingStep(stepIndex);
-            setCurrentLoadingSubStep(subStepIndex);
-        },
-        1200
-    );
+    let tempSlides = [...placeholderSlides];
 
     try {
-        simulator.start();
-
         const completedFiles = managedFiles.filter(f => f.status === 'completed' && f.data && f.mimeType);
         const fileParts: FilePart[] = completedFiles.map(f => ({ inlineData: { data: f.data!, mimeType: f.mimeType! } }));
         
-        const tempSlides: SlideType[] = [];
         const slideStream = generateSlidesStream(inputText, fileParts, outline, tone);
         
+        let slideIndex = 0;
         for await (const slideData of slideStream) {
-            const newSlide: SlideType = {
-                id: `slide_${Date.now()}_${Math.random()}`,
+            if (slideIndex >= numSlides) {
+                console.warn("AI generated more slides than expected from the outline.");
+                continue;
+            }
+
+            const placeholderSlide = tempSlides[slideIndex];
+            tempSlides[slideIndex] = {
+                ...placeholderSlide,
                 ...slideData,
-                title: slideData.title || "Untitled Slide",
+                title: slideData.title || placeholderSlide.title,
                 bulletPoints: Array.isArray(slideData.bulletPoints) ? slideData.bulletPoints : [],
-                isLoadingImage: false, // Image is not loading initially
-                layout: 'DEFAULT'
+                isLoading: false, // Mark as loaded
             };
-            tempSlides.push(newSlide);
-            setSlides([...tempSlides]);
-            setGenerationStats({
-                sourcesAnalyzed: sources.length,
-                slidesCreated: tempSlides.length,
-                imagesSourced: tempSlides.filter(s => s.imageSearchResults && s.imageSearchResults.length > 0).length,
-                imagesToGenerate: tempSlides.filter(s => s.imagePrompt).length,
-            });
+            setSlides([...tempSlides]); // Update UI with the newly loaded slide
+
+            setGenerationStats(prev => ({
+                ...prev,
+                slidesCreated: slideIndex + 1,
+                imagesSourced: prev.imagesSourced + (slideData.imageSearchResults ? 1 : 0),
+                imagesToGenerate: prev.imagesToGenerate + (slideData.imagePrompt ? 1 : 0),
+            }));
+
+            slideIndex++;
         }
         
+        // Mark any remaining placeholders as not loading (e.g., if stream ends early)
+        tempSlides = tempSlides.map(s => ({ ...s, isLoading: false }));
+        setSlides(tempSlides);
+
         const allImageSearchResults = tempSlides.flatMap(s => s.imageSearchResults || []).filter(img => img && img.url);
 
         const newState: AppState = {
@@ -108,11 +130,10 @@ export const generateSlidesAction = async (args: GenerateSlidesArgs) => {
         createCheckpoint('Generated Slides', newState);
 
     } catch (e) {
+        setSlides(prev => prev.map(slide => ({ ...slide, isLoading: false })));
         setError(e instanceof Error ? e.message : 'An unknown error occurred.');
     } finally {
-        simulator.stop();
         setIsLoading(false);
-        setCurrentLoadingStep(slideGenerationSteps.length);
         setLoadingMessage('');
     }
 };

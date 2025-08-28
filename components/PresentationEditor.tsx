@@ -30,8 +30,6 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
     derivedState,
   } = usePresentationEditorState(props);
 
-  const isGeneratingSlides = state.generationStep === 'slides' && state.isLoading && state.slides.length === 0;
-
   return (
     <div className="relative">
       <EditorHeader
@@ -82,16 +80,6 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
           {derivedState.error}
         </div>
       )}
-
-      {isGeneratingSlides && (
-        <GenerationProgress
-            currentLoadingStep={state.currentLoadingStep}
-            currentLoadingSubStep={state.currentLoadingSubStep}
-            stats={state.generationStats}
-            elapsedTime={state.elapsedTime}
-            estimatedTime={state.estimatedTime}
-        />
-      )}
       
       {state.generationStep === 'image-review' && (
         <ImageReviewStep 
@@ -100,7 +88,7 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
         />
       )}
 
-      {state.generationStep === 'slides' && !isGeneratingSlides && (
+      {state.generationStep === 'slides' && (
         <SlidesStep
           slides={state.slides}
           isLoading={state.isLoading}

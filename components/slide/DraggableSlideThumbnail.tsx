@@ -32,7 +32,7 @@ const DraggableSlideThumbnail: React.FC<DraggableSlideThumbnailProps> = (props) 
             onClick={() => onSelectSlide(slide.id)}
             className={`cursor-pointer rounded-lg border-2 transition-all duration-200 p-2 relative group ${
                 isSelected && !isBeingDragged ? 'border-pink-500 bg-slate-200/50 dark:bg-slate-700/50' : 'border-transparent hover:border-slate-300 dark:hover:border-slate-600 bg-slate-100/50 dark:bg-slate-700/20'
-            } ${isBeingDragged ? 'opacity-40' : ''} ${isDragTarget ? 'ring-2 ring-pink-400' : ''}`}
+            } ${isBeingDragged ? 'opacity-40' : ''} ${isDragTarget ? 'ring-2 ring-pink-400' : ''} ${slide.isLoading ? 'animate-pulse' : ''}`}
             role="button"
             aria-label={`Select slide ${index + 1}. Draggable.`}
             tabIndex={0}

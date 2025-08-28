@@ -60,6 +60,10 @@ const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // This popover-closing logic should only apply to larger screens.
+      // On mobile, the backdrop handles closing.
+      if (window.innerWidth < 640) return;
+
       if (
         menuRef.current && !menuRef.current.contains(event.target as Node) &&
         buttonRef.current && !buttonRef.current.contains(event.target as Node)
@@ -67,9 +71,13 @@ const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
         setIsMenuOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [isMenuOpen]);
 
   const handleItemClick = (action: () => void) => {
     action();
@@ -78,7 +86,7 @@ const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
   
   return (
     <div data-tour-id="ai-editing-tools" className="flex-shrink-0 p-4 bg-slate-200/50 dark:bg-slate-800/50 rounded-b-lg border-t border-slate-300/50 dark:border-slate-600/50 flex justify-center items-center">
-      <div className="relative">
+      <div className="sm:relative">
         <button
           ref={buttonRef}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -91,74 +99,97 @@ const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
         </button>
 
         {isMenuOpen && (
-          <div
-            ref={menuRef}
-            className="absolute bottom-full mb-2 w-64 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg shadow-2xl z-20 p-2 animate-fade-in-fast origin-bottom"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="menu-button"
-          >
-            {/* Group 1: Core Editing */}
-            <MenuItem onClick={() => handleItemClick(onEdit)}><EditIcon className="w-4 h-4 mr-3" />Edit Content</MenuItem>
-            <MenuItem onClick={() => handleItemClick(onStyle)}><StyleIcon className="w-4 h-4 mr-3" />Change Style</MenuItem>
-
-            <hr className="my-2 border-slate-200 dark:border-slate-600" />
+          <>
+            {/* Backdrop for mobile bottom sheet */}
+            <div 
+              className="fixed inset-0 bg-black/60 z-10 sm:hidden animate-fade-in-fast"
+              onClick={() => setIsMenuOpen(false)}
+              aria-hidden="true"
+            />
             
-            {/* Group 2: AI Content Generation */}
-            {slide.speakerNotes ? (
-              <MenuItem onClick={() => handleItemClick(() => setShowNotes(!showNotes))}>
-                <NotesIcon className="w-4 h-4 mr-3" />{showNotes ? 'Hide Notes' : 'Show Notes'}
+            <div
+              ref={menuRef}
+              className="
+                fixed bottom-0 left-0 right-0 w-full max-h-[75vh] overflow-y-auto
+                bg-white dark:bg-slate-700
+                border-t border-slate-200 dark:border-slate-600
+                rounded-t-xl shadow-2xl z-20 p-2
+                animate-slide-up-fast
+
+                sm:absolute sm:bottom-full sm:left-1/2 sm:-translate-x-1/2 sm:w-64 sm:max-h-none sm:overflow-y-visible
+                sm:border sm:rounded-lg
+                sm:animate-fade-in-fast sm:origin-bottom sm:mb-2
+              "
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="menu-button"
+            >
+              {/* Mobile-only handle and title */}
+              <div className="sm:hidden w-12 h-1.5 bg-slate-300 dark:bg-slate-500 rounded-full mx-auto my-2" />
+              <h3 className="sm:hidden text-lg font-bold text-center mb-2 text-slate-800 dark:text-slate-200">AI Tools & Actions</h3>
+              
+              {/* Group 1: Core Editing */}
+              <MenuItem onClick={() => handleItemClick(onEdit)}><EditIcon className="w-4 h-4 mr-3" />Edit Content</MenuItem>
+              <MenuItem onClick={() => handleItemClick(onStyle)}><StyleIcon className="w-4 h-4 mr-3" />Change Style</MenuItem>
+
+              <hr className="my-2 border-slate-200 dark:border-slate-600" />
+              
+              {/* Group 2: AI Content Generation */}
+              {slide.speakerNotes ? (
+                <MenuItem onClick={() => handleItemClick(() => setShowNotes(!showNotes))}>
+                  <NotesIcon className="w-4 h-4 mr-3" />{showNotes ? 'Hide Notes' : 'Show Notes'}
+                </MenuItem>
+              ) : (
+                <MenuItem onClick={() => handleItemClick(onGenerateNotes)} disabled={slide.isGeneratingNotes}>
+                  {slide.isGeneratingNotes ? <Loader /> : <NotesIcon className="w-4 h-4 mr-3" />}
+                  {slide.isGeneratingNotes ? 'Generating...' : 'Generate Notes'}
+                </MenuItem>
+              )}
+              
+              {!slide.keyTakeaway && (
+                <MenuItem onClick={() => handleItemClick(onGenerateTakeaway)} disabled={slide.isGeneratingTakeaway}>
+                  {slide.isGeneratingTakeaway ? <Loader /> : <KeyIcon className="w-4 h-4 mr-3" />}
+                  {slide.isGeneratingTakeaway ? 'Generating...' : 'Key Takeaway'}
+                </MenuItem>
+              )}
+
+              {slide.imagePrompt && (
+                <MenuItem onClick={() => handleItemClick(onGenerateImage)} disabled={slide.isLoadingImage}>
+                  {slide.isLoadingImage ? <Loader /> : <MagicIcon className="w-4 h-4 mr-3" />}
+                  {slide.isLoadingImage ? 'Generating...' : `${slide.image ? 'Regenerate' : 'Generate'} Image`}
+                </MenuItem>
+              )}
+              
+              <MenuItem onClick={() => handleItemClick(onAdaptAudience)} disabled={slide.isAdaptingAudience}>
+                {slide.isAdaptingAudience ? <Loader /> : <UsersIcon className="w-4 h-4 mr-3" />}
+                {slide.isAdaptingAudience ? 'Adapting...' : 'Adapt Audience'}
               </MenuItem>
-            ) : (
-              <MenuItem onClick={() => handleItemClick(onGenerateNotes)} disabled={slide.isGeneratingNotes}>
-                {slide.isGeneratingNotes ? <Loader /> : <NotesIcon className="w-4 h-4 mr-3" />}
-                {slide.isGeneratingNotes ? 'Generating...' : 'Generate Notes'}
+              
+              <MenuItem onClick={() => handleItemClick(onExpand)} disabled={slide.isExpanding}>
+                {slide.isExpanding ? <Loader /> : <ExpandIcon className="w-4 h-4 mr-3" />}
+                {slide.isExpanding ? 'Expanding...' : 'Expand Slide'}
               </MenuItem>
-            )}
-            
-            {!slide.keyTakeaway && (
-              <MenuItem onClick={() => handleItemClick(onGenerateTakeaway)} disabled={slide.isGeneratingTakeaway}>
-                {slide.isGeneratingTakeaway ? <Loader /> : <KeyIcon className="w-4 h-4 mr-3" />}
-                {slide.isGeneratingTakeaway ? 'Generating...' : 'Key Takeaway'}
+
+              <hr className="my-2 border-slate-200 dark:border-slate-600" />
+
+              {/* Group 3: AI Analysis */}
+              <MenuItem onClick={() => handleItemClick(onFactCheck)} disabled={slide.isFactChecking}>
+                {slide.isFactChecking ? <Loader /> : <FactCheckIcon className="w-4 h-4 mr-3" />}
+                {slide.isFactChecking ? 'Checking...' : 'Fact Check'}
               </MenuItem>
-            )}
-
-             {slide.imagePrompt && (
-              <MenuItem onClick={() => handleItemClick(onGenerateImage)} disabled={slide.isLoadingImage}>
-                {slide.isLoadingImage ? <Loader /> : <MagicIcon className="w-4 h-4 mr-3" />}
-                {slide.isLoadingImage ? 'Generating...' : `${slide.image ? 'Regenerate' : 'Generate'} Image`}
+              
+              <MenuItem onClick={() => handleItemClick(onCritiqueDesign)} disabled={slide.isCritiquing}>
+                {slide.isCritiquing ? <Loader /> : <LightbulbIcon className="w-4 h-4 mr-3" />}
+                {slide.isCritiquing ? 'Analyzing...' : 'Suggest Ideas'}
               </MenuItem>
-            )}
-            
-            <MenuItem onClick={() => handleItemClick(onAdaptAudience)} disabled={slide.isAdaptingAudience}>
-              {slide.isAdaptingAudience ? <Loader /> : <UsersIcon className="w-4 h-4 mr-3" />}
-              {slide.isAdaptingAudience ? 'Adapting...' : 'Adapt Audience'}
-            </MenuItem>
-            
-            <MenuItem onClick={() => handleItemClick(onExpand)} disabled={slide.isExpanding}>
-              {slide.isExpanding ? <Loader /> : <ExpandIcon className="w-4 h-4 mr-3" />}
-              {slide.isExpanding ? 'Expanding...' : 'Expand Slide'}
-            </MenuItem>
+              
+              <hr className="my-2 border-slate-200 dark:border-slate-600" />
+              
+              {/* Group 4: Utilities */}
+              <MenuItem onClick={() => handleItemClick(onViewHistory)}><HistoryIcon className="w-4 h-4 mr-3" />View History</MenuItem>
 
-            <hr className="my-2 border-slate-200 dark:border-slate-600" />
-
-            {/* Group 3: AI Analysis */}
-            <MenuItem onClick={() => handleItemClick(onFactCheck)} disabled={slide.isFactChecking}>
-              {slide.isFactChecking ? <Loader /> : <FactCheckIcon className="w-4 h-4 mr-3" />}
-              {slide.isFactChecking ? 'Checking...' : 'Fact Check'}
-            </MenuItem>
-            
-            <MenuItem onClick={() => handleItemClick(onCritiqueDesign)} disabled={slide.isCritiquing}>
-              {slide.isCritiquing ? <Loader /> : <LightbulbIcon className="w-4 h-4 mr-3" />}
-              {slide.isCritiquing ? 'Analyzing...' : 'Suggest Ideas'}
-            </MenuItem>
-            
-            <hr className="my-2 border-slate-200 dark:border-slate-600" />
-            
-            {/* Group 4: Utilities */}
-            <MenuItem onClick={() => handleItemClick(onViewHistory)}><HistoryIcon className="w-4 h-4 mr-3" />View History</MenuItem>
-
-          </div>
+            </div>
+          </>
         )}
       </div>
        <style>{`
@@ -168,6 +199,13 @@ const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px) scale(0.95); }
           to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-slide-up-fast {
+          animation: slideUp 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        @keyframes slideUp {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
         }
       `}</style>
     </div>

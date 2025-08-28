@@ -1,13 +1,9 @@
 import { generateOutline } from '../../services/outlineService';
 // FIX: Correct import path for types
 import { AppState, FilePart, ManagedFile, PresentationProject, Source } from '../../types/index';
+import { ActionContext } from './types';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
-
-export interface ActionContext {
-    currentState: AppState;
-    createCheckpoint: (action: string, state: AppState) => void;
-}
 
 interface GenerateOutlineArgs extends ActionContext {
     inputText: string;

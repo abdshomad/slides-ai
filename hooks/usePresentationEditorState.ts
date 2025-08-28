@@ -7,7 +7,11 @@ import useTimer from './useTimer';
 import useAutoSave from './useAutoSave';
 import { useEditorState } from './states/useEditorState';
 import { useEditorModals } from './states/useEditorModals';
-import { useEditorActions } from './editor/useEditorActions';
+import { useOutlineActions } from './editor/actions/useOutlineActions';
+import { useSlideContentActions } from './editor/actions/useSlideContentActions';
+import { useSlideVisualActions } from './editor/actions/useSlideVisualActions';
+import { useSlideManagementActions } from './editor/actions/useSlideManagementActions';
+import { useHistoryActions } from './editor/actions/useHistoryActions';
 
 
 interface PresentationEditorProps {
@@ -45,16 +49,17 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
     const selectedTemplate = useMemo(() => templates.find(t => t.id === state.selectedTemplateId) || templates[0], [state.selectedTemplateId]);
 
     // 4. Decomposed actions
-    const editorActions = useEditorActions({
+    const actionProps = {
         presentation, onUpdatePresentation, onAddCheckpoint,
-        state, setters,
-        modalState, modalSetters,
-        managedFiles,
-        timer,
-        currentState,
-        selectedTemplate,
-        brandKit,
-    });
+        state, setters, modalState, modalSetters,
+        managedFiles, timer, currentState, selectedTemplate, brandKit
+    };
+
+    const outlineActions = useOutlineActions(actionProps);
+    const contentActions = useSlideContentActions(actionProps);
+    const visualActions = useSlideVisualActions(actionProps);
+    const managementActions = useSlideManagementActions(actionProps);
+    const historyActions = useHistoryActions(actionProps);
     
     // 5. Auto-save hook
     const autoSaveStatus = useAutoSave({
@@ -105,7 +110,16 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
             isEditingTitle: modalState.isEditingTitle,
         },
         handlers: {
-            ...editorActions,
+            ...outlineActions,
+            ...contentActions,
+            ...visualActions,
+            ...managementActions,
+            ...historyActions,
+            handleContinueToEditor: () => {
+                const nextStep = 'slides';
+                setters.setGenerationStep(nextStep);
+                onAddCheckpoint(presentation.id, 'Reviewed Images', { ...currentState, generationStep: nextStep });
+            },
             // Expose setters and file handlers directly
             setInputText: setters.setInputText,
             setOutline: setters.setOutline,

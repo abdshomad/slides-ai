@@ -3,10 +3,10 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Slide as SlideType } from '../types/index';
 import SlideActionToolbar from './SlideActionToolbar';
 import SlideContent from './slide/SlideContent';
-import SlideImage from './slide/SlideImage';
 import SlideMetadata from './slide/SlideMetadata';
 import useSlideExport from '../hooks/useSlideExport';
 import SlideChart from './SlideChart';
+import ImageEditor from './slide/ImageEditor';
 
 
 interface SlideDetailViewProps {
@@ -93,11 +93,10 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
                 )}
                 {hasImage && !['ONE_COLUMN_TEXT', 'TITLE_ONLY', 'SECTION_HEADER', 'QUOTE', 'TWO_COLUMN_TEXT', 'TIMELINE', 'COMPARISON'].includes(slide.layout || '') && (
                     <div className="w-1/2">
-                        <SlideImage
+                        <ImageEditor
                             slide={slide}
-                            // FIX: Pass the required 'title' prop to SlideImage.
                             title={slide.title}
-                            onGenerate={() => props.onGenerateImage()}
+                            onGenerate={props.onGenerateImage}
                             onSelectImage={(url) => onSelectImageFromSearch(slide.id, url)}
                             onGenerateSuggestions={() => props.onGenerateImageSuggestions(slide.id)}
                             onSelectSuggestion={(suggestion) => props.onSelectImageSuggestion(slide.id, suggestion)}

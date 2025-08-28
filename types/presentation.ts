@@ -35,6 +35,7 @@ export interface Slide {
   imageSuggestions?: string[];
   isGeneratingSuggestions?: boolean;
   chartData?: ChartData;
+  isLoading?: boolean; // For initial content generation
 }
 
 export interface Presentation {

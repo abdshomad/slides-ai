@@ -2,13 +2,11 @@
 
 import React from 'react';
 // FIX: Correct import path for types
-import { PresentationProject, BrandKit } from '../types/index';
+import { PresentationProject, BrandKit, View } from '../types/index';
 import PRDViewer from './docs/PRDViewer';
 import SamplePresentationViewer from './docs/SamplePresentationViewer';
 import PresentationEditor from './PresentationEditor';
 import PresentationList from './PresentationList';
-
-export type View = 'main' | 'prd' | 'sample';
 
 interface ViewManagerProps {
     activeView: View;
