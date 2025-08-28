@@ -9,6 +9,7 @@ interface OutlineActionsProps {
   isLoading: boolean;
   loadingMessage: string;
   canGenerateSlides: boolean;
+  slideCount: number;
 }
 
 const OutlineActions: React.FC<OutlineActionsProps> = ({
@@ -17,9 +18,10 @@ const OutlineActions: React.FC<OutlineActionsProps> = ({
   isLoading,
   loadingMessage,
   canGenerateSlides,
+  slideCount,
 }) => {
   return (
-    <div className="mt-8 flex flex-wrap gap-4">
+    <div className="mt-8 flex flex-wrap items-center gap-4">
       <button 
         onClick={onGenerateSlides} 
         disabled={isLoading || !canGenerateSlides} 
@@ -34,6 +36,11 @@ const OutlineActions: React.FC<OutlineActionsProps> = ({
       >
         <ResearchIcon className="w-5 h-5 mr-2" />Regenerate Outline
       </button>
+      {slideCount > 0 && (
+        <span className="text-slate-500 dark:text-slate-400 font-medium">
+          ({slideCount} slides)
+        </span>
+      )}
     </div>
   );
 };

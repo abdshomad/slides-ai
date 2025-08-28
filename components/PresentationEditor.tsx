@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 // FIX: Correct import path for types
 import { PresentationProject, AppState, BrandKit } from '../types/index';
@@ -96,6 +94,7 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
           onViewSlideHistory={handlers.handleViewSlideHistory}
           onFactCheckSlide={handlers.handleFactCheckSlide}
           onCritiqueSlide={handlers.handleCritiqueSlide}
+          onAdaptAudience={id => modals.setAdaptingAudienceSlideId(id)}
           onReorderSlides={handlers.handleReorderSlides}
           onSelectImageFromSearch={handlers.handleSelectImageFromSearch}
           currentLoadingStep={state.currentLoadingStep}
@@ -122,14 +121,17 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
         presentationHistory={presentation.history}
         editingSlide={derivedState.editingSlide}
         stylingSlide={derivedState.stylingSlide}
+        adaptingAudienceSlide={derivedState.adaptingAudienceSlide}
         historySlideId={modals.historySlideId}
         factCheckResult={modals.factCheckResult}
         critiqueResult={modals.critiqueResult}
         onCloseEditing={() => modals.setEditingSlideId(null)}
         onCloseStyling={() => modals.setStylingSlideId(null)}
+        onCloseAdaptingAudience={() => modals.setAdaptingAudienceSlideId(null)}
         onCloseHistory={() => modals.setHistorySlideId(null)}
         onEditSlide={handlers.handleEditSlide}
         onStyleSlide={handlers.handleUpdateSlideLayout}
+        onAdaptAudience={handlers.handleAdaptAudience}
         onRestoreSlide={handlers.handleRestoreSlideFromHistory}
         onCloseFactCheck={handlers.handleCloseFactCheck}
         onApplyFactCheck={handlers.handleApplyFactCheck}

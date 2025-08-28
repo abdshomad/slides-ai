@@ -6,9 +6,23 @@ import { ai } from './geminiClient';
  * @returns The generated speaker notes as a string.
  */
 export const generateSpeakerNotes = async (slideContent: { title: string; bulletPoints: string[] }): Promise<string> => {
+  const prompt = `You are an expert presentation coach.
+Your task is to generate speaker notes for a presentation slide.
+The slide title is: "${slideContent.title}"
+The bullet points are:
+- ${slideContent.bulletPoints.join('\n- ')}
+
+The speaker notes should:
+1.  Provide additional context or examples to expand on the bullet points.
+2.  Suggest talking points or questions to engage the audience.
+3.  Be written in a clear, concise, and conversational tone.
+4.  Do not just repeat the bullet points. Add value for the speaker.
+
+Generate the speaker notes now.`;
+
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
-    contents: `Generate concise speaker notes for a presentation slide with the title "${slideContent.title}" and these bullet points: ${slideContent.bulletPoints.join(', ')}. The notes should provide extra context or talking points.`,
+    contents: prompt,
   });
   return response.text;
 };

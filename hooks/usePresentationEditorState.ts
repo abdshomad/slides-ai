@@ -1,5 +1,3 @@
-
-
 import { useMemo } from 'react';
 // FIX: Correct import path for types
 import { PresentationProject, AppState, PresentationTemplate, BrandKit } from '../types/index';
@@ -71,12 +69,13 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
             hasContent: state.inputText.trim().length > 0 || managedFiles.length > 0,
             editingSlide: state.slides.find(s => s.id === modalState.editingSlideId) || null,
             stylingSlide: state.slides.find(s => s.id === modalState.stylingSlideId) || null,
+            adaptingAudienceSlide: state.slides.find(s => s.id === modalState.adaptingAudienceSlideId) || null,
             error: state.error,
             autoSaveStatus,
             selectedTemplate,
             managedFiles,
         };
-    }, [state.selectedTemplateId, state.inputText, managedFiles, state.slides, modalState.editingSlideId, modalState.stylingSlideId, state.error, autoSaveStatus, selectedTemplate]);
+    }, [state.selectedTemplateId, state.inputText, managedFiles, state.slides, modalState.editingSlideId, modalState.stylingSlideId, modalState.adaptingAudienceSlideId, state.error, autoSaveStatus, selectedTemplate]);
     
     // 7. Assemble the final return object to match the original API
     return {
@@ -110,6 +109,8 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
             setFactCheckResult: modalSetters.setFactCheckResult,
             critiqueResult: modalState.critiqueResult,
             setCritiqueResult: modalSetters.setCritiqueResult,
+            adaptingAudienceSlideId: modalState.adaptingAudienceSlideId,
+            setAdaptingAudienceSlideId: modalSetters.setAdaptingAudienceSlideId,
         },
         derivedState,
     };

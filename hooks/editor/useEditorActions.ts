@@ -1,5 +1,3 @@
-
-
 import { useCallback } from 'react';
 import { Slide as SlideType, PresentationProject, AppState, ManagedFile, PresentationTemplate, BrandKit } from '../../types/index';
 import { downloadPptx } from '../../utils/pptxGenerator';
@@ -35,13 +33,13 @@ export const useEditorActions = ({
     const { 
         inputText, slides, outline, tone, sources, presentationTitle
     } = state;
-    const { editingSlideId, stylingSlideId, factCheckResult } = modalState;
+    const { editingSlideId, stylingSlideId, factCheckResult, adaptingAudienceSlideId } = modalState;
     const { 
         setError, setIsLoading, setLoadingMessage, setOutline, setSources, setPresentationTitle, setGenerationStep,
         setSlides, setStylingSlideId, setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats,
-        setFactCheckResult, setEstimatedTime, setCritiqueResult
+        setFactCheckResult, setEstimatedTime
     } = setters;
-    const { setEditingSlideId, setHistorySlideId, setIsEditingTitle } = modalSetters;
+    const { setEditingSlideId, setHistorySlideId, setIsEditingTitle, setCritiqueResult, setAdaptingAudienceSlideId } = modalSetters;
     const { startTimer, stopTimer } = timer;
 
     const createCheckpoint = useCallback((action: string, stateForCheckpoint: AppState) => {
@@ -168,18 +166,32 @@ export const useEditorActions = ({
         setSlides((prev: SlideType[]) => prev.map(s => s.id === slideId ? { ...s, isCritiquing: true } : s));
         setError(null);
         try {
-            const critique = await critiqueSlide(slide, imageBase64);
-            modalSetters.setCritiqueResult({ slideId, critique });
+            const critique = await critiqueSlide(imageBase64);
+            setCritiqueResult({ slideId, critique });
         } catch (e) {
             setError(e instanceof Error ? e.message : 'Failed to get design suggestions.');
         } finally {
             setSlides((prev: SlideType[]) => prev.map(s => s.id === slideId ? { ...s, isCritiquing: false } : s));
         }
-    }, [slides, setError, setSlides, modalSetters.setCritiqueResult]);
+    }, [slides, setError, setSlides, setCritiqueResult]);
 
     const handleCloseCritique = useCallback(() => {
-        modalSetters.setCritiqueResult(null);
-    }, [modalSetters.setCritiqueResult]);
+        setCritiqueResult(null);
+    }, [setCritiqueResult]);
+
+    const handleAdaptAudience = useCallback((targetAudience: string) => {
+        slideEditingActions.adaptAudienceAction({
+            targetAudience,
+            adaptingAudienceSlideId,
+            slides,
+            setError,
+            setSlides,
+            setAdaptingAudienceSlideId,
+            createCheckpoint,
+            currentState,
+        });
+    }, [adaptingAudienceSlideId, slides, createCheckpoint, currentState, setError, setSlides, setAdaptingAudienceSlideId]);
+
 
     const handleSelectImageFromSearch = useCallback(async (slideId: string, imageUrl: string) => {
         const slide = slides.find(s => s.id === slideId);
@@ -237,6 +249,7 @@ export const useEditorActions = ({
         handleApplyFactCheck,
         handleCritiqueSlide,
         handleCloseCritique,
+        handleAdaptAudience,
         handleSelectImageFromSearch,
         handleSaveTitle,
         handleDownload,

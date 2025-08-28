@@ -12,6 +12,7 @@ import { FactCheckIcon } from './icons/FactCheckIcon';
 import { ImageIcon } from './icons/ImageIcon';
 import Loader from './Loader';
 import { LightbulbIcon } from './icons/LightbulbIcon';
+import { UsersIcon } from './icons/UsersIcon';
 
 interface SlideActionToolbarProps {
   slide: SlideType;
@@ -24,6 +25,7 @@ interface SlideActionToolbarProps {
   onGenerateImage: () => void;
   onFactCheck: () => void;
   onCritiqueDesign: () => void;
+  onAdaptAudience: () => void;
   onExportSlide: () => void;
   isExporting: boolean;
   showNotes: boolean;
@@ -46,50 +48,70 @@ const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
   onGenerateImage,
   onFactCheck,
   onCritiqueDesign,
+  onAdaptAudience,
   onExportSlide,
   isExporting,
   showNotes,
   setShowNotes,
 }) => {
   return (
-    <div data-tour-id="ai-editing-tools" className="flex-shrink-0 p-4 bg-slate-200/50 dark:bg-slate-800/50 rounded-b-lg border-t border-slate-300/50 dark:border-slate-600/50 flex flex-wrap gap-3 justify-center">
-      <button onClick={onEdit} className={secondaryButtonClass}><EditIcon className="w-4 h-4 mr-2" />Edit</button>
-      <button onClick={onStyle} className={secondaryButtonClass}><StyleIcon className="w-4 h-4 mr-2" />Style</button>
-      <button onClick={onExportSlide} disabled={isExporting} className={secondaryButtonClass}>
-          {isExporting ? <><Loader />Exporting...</> : <><ImageIcon className="w-4 h-4 mr-2" />Export Slide</>}
-      </button>
-      <button onClick={onFactCheck} disabled={slide.isFactChecking} className={secondaryButtonClass}>
-          {slide.isFactChecking ? <><Loader />Checking...</> : <><FactCheckIcon className="w-4 h-4 mr-2" />Fact Check</>}
-      </button>
-      <button onClick={onCritiqueDesign} disabled={slide.isCritiquing} className={secondaryButtonClass}>
-          {slide.isCritiquing ? <><Loader />Analyzing...</> : <><LightbulbIcon className="w-4 h-4 mr-2" />Suggest Ideas</>}
-      </button>
+    <div data-tour-id="ai-editing-tools" className="flex-shrink-0 p-4 bg-slate-200/50 dark:bg-slate-800/50 rounded-b-lg border-t border-slate-300/50 dark:border-slate-600/50 flex flex-wrap gap-3 justify-center items-center">
+      {/* --- Group 1: Core Editing --- */}
+      <div className="flex flex-wrap gap-3 justify-center">
+        <button onClick={onEdit} className={secondaryButtonClass}><EditIcon className="w-4 h-4 mr-2" />Edit</button>
+        <button onClick={onStyle} className={secondaryButtonClass}><StyleIcon className="w-4 h-4 mr-2" />Style</button>
+      </div>
 
-      {slide.imagePrompt && (
-        <button onClick={onGenerateImage} disabled={slide.isLoadingImage} className={secondaryButtonClass}>
-          {slide.isLoadingImage ? <><Loader />Generating...</> : <><MagicIcon className="w-4 h-4 mr-2" />{slide.image ? 'Regenerate' : 'Generate'} Image</>}
+      <div className="h-6 w-px bg-slate-300/80 dark:bg-slate-600/80 hidden sm:block"></div>
+
+      {/* --- Group 2: AI Content Generation --- */}
+      <div className="flex flex-wrap gap-3 justify-center">
+        {slide.speakerNotes ? (
+              <button onClick={() => setShowNotes(!showNotes)} className={secondaryButtonClass}><NotesIcon className="w-4 h-4 mr-2" />{showNotes ? 'Hide' : 'Show'} Notes</button>
+        ) : (
+            <button onClick={onGenerateNotes} disabled={slide.isGeneratingNotes} className={secondaryButtonClass}>
+                {slide.isGeneratingNotes ? <><Loader />Generating...</> : <><NotesIcon className="w-4 h-4 mr-2" />Generate Notes</>}
+            </button>
+        )}
+        {!slide.keyTakeaway && (
+            <button onClick={onGenerateTakeaway} disabled={slide.isGeneratingTakeaway} className={secondaryButtonClass}>
+                {slide.isGeneratingTakeaway ? <><Loader />Generating...</> : <><KeyIcon className="w-4 h-4 mr-2" />Key Takeaway</>}
+            </button>
+        )}
+         {slide.imagePrompt && (
+          <button onClick={onGenerateImage} disabled={slide.isLoadingImage} className={secondaryButtonClass}>
+            {slide.isLoadingImage ? <><Loader />Generating...</> : <><MagicIcon className="w-4 h-4 mr-2" />{slide.image ? 'Regenerate' : 'Generate'} Image</>}
+          </button>
+        )}
+        <button onClick={onAdaptAudience} disabled={slide.isAdaptingAudience} className={secondaryButtonClass}>
+            {slide.isAdaptingAudience ? <><Loader />Adapting...</> : <><UsersIcon className="w-4 h-4 mr-2" />Adapt Audience</>}
         </button>
-      )}
+        <button onClick={onExpand} className={primaryButtonClass} disabled={slide.isExpanding}>
+            {slide.isExpanding ? <><Loader />Expanding...</> : <><ExpandIcon className="w-4 h-4 mr-2" />Expand Slide</>}
+        </button>
+      </div>
 
-      {slide.speakerNotes ? (
-            <button onClick={() => setShowNotes(!showNotes)} className={secondaryButtonClass}><NotesIcon className="w-4 h-4 mr-2" />{showNotes ? 'Hide' : 'Show'} Notes</button>
-      ) : (
-          <button onClick={onGenerateNotes} disabled={slide.isGeneratingNotes} className={secondaryButtonClass}>
-              {slide.isGeneratingNotes ? <><Loader />Generating...</> : <><NotesIcon className="w-4 h-4 mr-2" />Generate Notes</>}
-          </button>
-      )}
+      <div className="h-6 w-px bg-slate-300/80 dark:bg-slate-600/80 hidden sm:block"></div>
+      
+      {/* --- Group 3: AI Analysis --- */}
+      <div className="flex flex-wrap gap-3 justify-center">
+        <button onClick={onFactCheck} disabled={slide.isFactChecking} className={secondaryButtonClass}>
+            {slide.isFactChecking ? <><Loader />Fact Checking...</> : <><FactCheckIcon className="w-4 h-4 mr-2" />Fact Check</>}
+        </button>
+        <button onClick={onCritiqueDesign} disabled={slide.isCritiquing} className={secondaryButtonClass}>
+            {slide.isCritiquing ? <><Loader />Getting Ideas...</> : <><LightbulbIcon className="w-4 h-4 mr-2" />Suggest Ideas</>}
+        </button>
+      </div>
 
-      {!slide.keyTakeaway && (
-          <button onClick={onGenerateTakeaway} disabled={slide.isGeneratingTakeaway} className={secondaryButtonClass}>
-              {slide.isGeneratingTakeaway ? <><Loader />Generating...</> : <><KeyIcon className="w-4 h-4 mr-2" />Key Takeaway</>}
-          </button>
-      )}
+      <div className="h-6 w-px bg-slate-300/80 dark:bg-slate-600/80 hidden sm:block"></div>
 
-      <button onClick={onExpand} className={primaryButtonClass} disabled={slide.isExpanding}>
-          {slide.isExpanding ? <><Loader />Expanding...</> : <><ExpandIcon className="w-4 h-4 mr-2" />Expand Slide</>}
-      </button>
-
-      <button onClick={onViewHistory} className={secondaryButtonClass}><HistoryIcon className="w-4 h-4 mr-2" />View History</button>
+      {/* --- Group 4: Utilities --- */}
+      <div className="flex flex-wrap gap-3 justify-center">
+        <button onClick={onViewHistory} className={secondaryButtonClass}><HistoryIcon className="w-4 h-4 mr-2" />View History</button>
+        <button onClick={onExportSlide} disabled={isExporting} className={secondaryButtonClass}>
+            {isExporting ? <><Loader />Exporting...</> : <><ImageIcon className="w-4 h-4 mr-2" />Export Slide</>}
+        </button>
+      </div>
     </div>
   );
 };

@@ -19,6 +19,7 @@ const SamplePresentationViewer: React.FC<{ onBack: () => void }> = ({ onBack }) 
         onViewSlideHistory: doNothing,
         onFactCheckSlide: doNothing,
         onCritiqueSlide: doNothing,
+        onAdaptAudience: doNothing,
         onReorderSlides: doNothing,
         onSelectImageFromSearch: doNothing,
         selectedTemplate: templates[0],

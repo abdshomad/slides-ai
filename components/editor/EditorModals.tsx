@@ -6,19 +6,23 @@ import StyleSelectorModal from '../StyleSelectorModal';
 import SlideHistoryPanel from '../SlideHistoryPanel';
 import FactCheckModal from '../FactCheckModal';
 import CritiqueModal from '../CritiqueModal';
+import AdaptAudienceModal from '../AdaptAudienceModal';
 
 interface EditorModalsProps {
     presentationHistory: HistoryCheckpoint[];
     editingSlide: Slide | null;
     stylingSlide: Slide | null;
+    adaptingAudienceSlide: Slide | null;
     historySlideId: string | null;
     factCheckResult: { slideId: string; suggestions: FactCheckResult } | null;
     critiqueResult: { slideId: string; critique: string } | null;
     onCloseEditing: () => void;
     onCloseStyling: () => void;
+    onCloseAdaptingAudience: () => void;
     onCloseHistory: () => void;
     onEditSlide: (prompt: string) => void;
     onStyleSlide: (layout: string) => void;
+    onAdaptAudience: (targetAudience: string) => void;
     onRestoreSlide: (slideState: Slide) => void;
     onCloseFactCheck: () => void;
     onApplyFactCheck: () => void;
@@ -29,14 +33,17 @@ const EditorModals: React.FC<EditorModalsProps> = ({
     presentationHistory,
     editingSlide,
     stylingSlide,
+    adaptingAudienceSlide,
     historySlideId,
     factCheckResult,
     critiqueResult,
     onCloseEditing,
     onCloseStyling,
+    onCloseAdaptingAudience,
     onCloseHistory,
     onEditSlide,
     onStyleSlide,
+    onAdaptAudience,
     onRestoreSlide,
     onCloseFactCheck,
     onApplyFactCheck,
@@ -73,6 +80,14 @@ const EditorModals: React.FC<EditorModalsProps> = ({
                     slideId={historySlideId}
                     onClose={onCloseHistory}
                     onRestore={onRestoreSlide}
+                />
+            )}
+            
+            {adaptingAudienceSlide && (
+                <AdaptAudienceModal
+                    slide={adaptingAudienceSlide}
+                    onClose={onCloseAdaptingAudience}
+                    onSave={onAdaptAudience}
                 />
             )}
 

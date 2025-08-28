@@ -15,6 +15,7 @@ interface SlideEditorLayoutProps {
   onViewSlideHistory: (id: string) => void;
   onFactCheckSlide: (id: string) => void;
   onCritiqueSlide: (slideId: string, imageBase64: string) => void;
+  onAdaptAudience: (id: string) => void;
   onReorderSlides: (startIndex: number, endIndex: number) => void;
   onSelectImageFromSearch: (slideId: string, url: string) => void;
   selectedTemplate: PresentationTemplate;
@@ -63,9 +64,11 @@ const SlideEditorLayout: React.FC<SlideEditorLayoutProps> = (props) => {
                 onGenerateTakeaway={() => selectedSlide && props.onGenerateTakeaway(selectedSlide.id)}
                 onGenerateImage={() => selectedSlide && props.onGenerateImage(selectedSlide.id)}
                 onExpand={() => selectedSlide && props.onExpandSlide(selectedSlide.id)}
+                // FIX: Corrected the prop name from `onViewSlideHistory` to `onViewHistory` to match the `SlideDetailView` component's expected props.
                 onViewHistory={() => selectedSlide && props.onViewSlideHistory(selectedSlide.id)}
                 onFactCheck={() => selectedSlide && props.onFactCheckSlide(selectedSlide.id)}
                 onCritiqueDesign={props.onCritiqueSlide}
+                onAdaptAudience={() => selectedSlide && props.onAdaptAudience(selectedSlide.id)}
                 onSelectImageFromSearch={props.onSelectImageFromSearch}
             />
         </div>

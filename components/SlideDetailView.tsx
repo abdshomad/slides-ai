@@ -22,6 +22,7 @@ interface SlideDetailViewProps {
   onGenerateImage: () => void;
   onFactCheck: () => void;
   onCritiqueDesign: (slideId: string, imageBase64: string) => void;
+  onAdaptAudience: () => void;
   onSelectImageFromSearch: (slideId: string, url: string) => void;
 }
 
@@ -31,96 +32,98 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
   const slideContentRef = useRef<HTMLDivElement>(null);
   const { isExporting, exportSlide, captureSlideAsBase64 } = useSlideExport(slideContentRef, slide, slideNumber);
 
-  if (!slide) {
-    return (
-        <div className="flex-grow h-[75vh] flex items-center justify-center bg-slate-200 dark:bg-slate-800/50 rounded-lg">
-            <p className="text-slate-500 dark:text-slate-400">Select a slide to view details</p>
-        </div>
-    );
-  }
-
   const handleCritique = useCallback(async () => {
     if (!slide) return;
     try {
-      const imageData = await captureSlideAsBase64(); // uses default pixel ratio
-      props.onCritiqueDesign(slide.id, imageData);
+      const imageBase64 = await captureSlideAsBase64();
+      props.onCritiqueDesign(slide.id, imageBase64);
     } catch (error) {
       console.error("Failed to capture slide for critique:", error);
-      // Ideally show an error toast to the user
     }
   }, [slide, captureSlideAsBase64, props.onCritiqueDesign]);
-  
+
+  if (!slide) {
+    return (
+      <div className="flex-grow flex items-center justify-center bg-slate-100 dark:bg-slate-900/50 rounded-lg">
+        <p className="text-slate-500">Select a slide to view it</p>
+      </div>
+    );
+  }
+
+  const hasContent = slide.bulletPoints?.length > 0 || slide.body1?.length > 0 || slide.body2?.length > 0;
+  const hasImage = slide.image || (slide.imageSearchResults && slide.imageSearchResults.length > 0) || slide.imagePrompt;
+
+  const getLayoutClass = () => {
+    switch (slide.layout) {
+      case 'DEFAULT':
+        return 'flex-row';
+      case 'DEFAULT_REVERSE':
+        return 'flex-row-reverse';
+      case 'TITLE_ONLY':
+      case 'SECTION_HEADER':
+      case 'MAIN_POINT_EMPHASIS':
+      case 'QUOTE':
+        return 'flex-col justify-center text-center';
+      default:
+        return 'flex-col';
+    }
+  };
+
   return (
-    <div className="flex-grow h-[75vh] flex flex-col bg-slate-100 dark:bg-slate-700/30 rounded-lg shadow-lg">
-        <div ref={slideContentRef} className="flex-grow flex flex-col overflow-hidden relative">
-             {/* Conditionally hide SlideImage if a chart is present */}
-            {!slide.chartData && (
-                <SlideImage
-                  isLoading={slide.isLoadingImage}
-                  image={slide.image}
-                  title={slide.title}
-                  imagePrompt={slide.imagePrompt}
-                  imageSearchResults={slide.imageSearchResults}
-                  onGenerate={props.onGenerateImage}
-                  onSelectImage={(url) => onSelectImageFromSearch(slide.id, url)}
-                />
-            )}
-             {slideNumber > 0 && (
-                <div className="absolute top-3 right-3 bg-white/70 dark:bg-slate-900/70 text-slate-600 dark:text-slate-300 text-xs font-semibold rounded-md px-2 py-1 backdrop-blur-sm">
-                    {slideNumber} / {totalSlides}
-                </div>
-            )}
-            
-            <div className="p-6 flex-grow flex flex-col overflow-y-auto custom-scrollbar">
-                {/* Render title here */}
-                <div className={`flex items-center mb-4 ${slide.layout === 'TITLE_ONLY' ? 'justify-center h-full' : ''}`}>
-                   {slide.layout !== 'TITLE_ONLY' && <div className="w-1 h-8 bg-pink-400 rounded-full mr-4 flex-shrink-0"></div>}
-                    <h3 className={`font-bold text-pink-600 dark:text-pink-400 ${slide.layout === 'TITLE_ONLY' ? 'text-5xl text-center' : 'text-2xl'}`}>{slide.title}</h3>
-                </div>
-                
-                {/* Render Chart or SlideContent */}
-                {slide.chartData ? (
-                    <div className="w-full h-96 flex-grow">
-                        <SlideChart chartData={slide.chartData} />
-                    </div>
-                ) : (
-                    <SlideContent slide={slide} />
-                )}
-                <SlideMetadata slide={slide} showNotes={showNotes} />
-            </div>
+    <div className="flex-grow flex flex-col bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700/50">
+      <div ref={slideContentRef} className="flex-grow p-8 flex flex-col">
+        <div className="flex justify-between items-baseline">
+          <h2 className="text-3xl font-bold text-pink-600 dark:text-pink-400 mb-6 flex-grow">{slide.title}</h2>
+          <span className="text-sm text-slate-400 dark:text-slate-500 flex-shrink-0">{slideNumber} / {totalSlides}</span>
         </div>
-        <SlideActionToolbar 
-            slide={slide}
-            onEdit={props.onEdit}
-            onStyle={props.onStyle}
-            onGenerateTakeaway={props.onGenerateTakeaway}
-            onGenerateNotes={props.onGenerateNotes}
-            onExpand={props.onExpand}
-            onViewHistory={props.onViewHistory}
-            onGenerateImage={props.onGenerateImage}
-            onFactCheck={props.onFactCheck}
-            onCritiqueDesign={handleCritique}
-            onExportSlide={exportSlide}
-            isExporting={isExporting}
-            showNotes={showNotes}
-            setShowNotes={setShowNotes}
-        />
-         <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #cbd5e1;
-          border-radius: 10px;
-          border: 3px solid transparent;
-        }
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #475569;
-        }
-      `}</style>
+        
+        {slide.chartData ? (
+            <div className="flex-grow w-full h-[400px]">
+                <SlideChart chartData={slide.chartData} />
+            </div>
+        ) : (
+            <div className={`flex-grow flex gap-8 ${getLayoutClass()}`}>
+                {(hasContent || !hasImage) && (
+                    <div className={`flex flex-col ${(hasImage && (slide.layout === 'DEFAULT' || slide.layout === 'DEFAULT_REVERSE')) ? 'w-1/2' : 'w-full'}`}>
+                        <SlideContent slide={slide} />
+                    </div>
+                )}
+                {hasImage && !['ONE_COLUMN_TEXT', 'TITLE_ONLY', 'SECTION_HEADER', 'QUOTE', 'TWO_COLUMN_TEXT', 'TIMELINE', 'COMPARISON'].includes(slide.layout || '') && (
+                    <div className="w-1/2">
+                        <SlideImage
+                            isLoading={slide.isLoadingImage}
+                            image={slide.image}
+                            title={slide.title}
+                            imagePrompt={slide.imagePrompt}
+                            imageSearchResults={slide.imageSearchResults}
+                            onGenerate={props.onGenerateImage}
+                            onSelectImage={(url) => onSelectImageFromSearch(slide.id, url)}
+                        />
+                    </div>
+                )}
+            </div>
+        )}
+        
+        <SlideMetadata slide={slide} showNotes={showNotes} />
+      </div>
+
+      <SlideActionToolbar
+        slide={slide}
+        onEdit={props.onEdit}
+        onStyle={props.onStyle}
+        onGenerateTakeaway={props.onGenerateTakeaway}
+        onGenerateNotes={props.onGenerateNotes}
+        onExpand={props.onExpand}
+        onViewHistory={props.onViewHistory}
+        onGenerateImage={props.onGenerateImage}
+        onFactCheck={props.onFactCheck}
+        onCritiqueDesign={handleCritique}
+        onAdaptAudience={props.onAdaptAudience}
+        onExportSlide={exportSlide}
+        isExporting={isExporting}
+        showNotes={showNotes}
+        setShowNotes={setShowNotes}
+      />
     </div>
   );
 };

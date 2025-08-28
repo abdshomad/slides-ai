@@ -11,7 +11,7 @@ import SourceList from './outline/SourceList';
 import OutlineActions from './outline/OutlineActions';
 import { DiagramIcon, ListIcon } from '../icons';
 import OutlineDiagram from './outline/OutlineDiagram';
-import { updateLayoutInOutline } from '../../utils/outlineUtils';
+import { updateLayoutInOutline, addSlideToOutline, removeSlideFromOutline } from '../../utils/outlineUtils';
 
 interface OutlineStepProps {
   outline: string;
@@ -48,6 +48,18 @@ const OutlineStep: React.FC<OutlineStepProps> = ({
     const newOutline = updateLayoutInOutline(outline, slideIndex, newLayout);
     setOutline(newOutline);
   };
+  
+  const handleAddSlide = (slideIndex: number) => {
+    const newOutline = addSlideToOutline(outline, slideIndex);
+    setOutline(newOutline);
+  };
+
+  const handleRemoveSlide = (slideIndex: number) => {
+    if (window.confirm('Are you sure you want to remove this slide from the outline?')) {
+        const newOutline = removeSlideFromOutline(outline, slideIndex);
+        setOutline(newOutline);
+    }
+  };
 
 
   return (
@@ -82,7 +94,9 @@ const OutlineStep: React.FC<OutlineStepProps> = ({
             {viewMode === 'list' ? (
                  <OutlinePreview 
                     parsedOutline={parsedOutline} 
-                    onEditLayout={setEditingLayoutIndex} 
+                    onEditLayout={setEditingLayoutIndex}
+                    onAddSlide={handleAddSlide}
+                    onRemoveSlide={handleRemoveSlide}
                 />
             ) : (
                 <OutlineDiagram parsedOutline={parsedOutline} />
@@ -106,6 +120,7 @@ const OutlineStep: React.FC<OutlineStepProps> = ({
         isLoading={isLoading}
         loadingMessage={loadingMessage}
         canGenerateSlides={!!selectedTemplateId && parsedOutline.length > 0}
+        slideCount={parsedOutline.length}
       />
       
       {editingLayoutIndex !== null && (

@@ -88,3 +88,19 @@ export const factCheckSchema = {
   },
   required: ["title", "bulletPoints", "summaryOfChanges"]
 };
+
+export const adaptAudienceSchema = {
+  type: Type.OBJECT,
+  properties: {
+    title: {
+      type: Type.STRING,
+      description: "The rewritten slide title, adapted for the target audience."
+    },
+    bulletPoints: {
+      type: Type.ARRAY,
+      description: "A list of rewritten bullet points, adapted for the target audience.",
+      items: { type: Type.STRING }
+    }
+  },
+  required: ["title", "bulletPoints"]
+};

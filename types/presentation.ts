@@ -31,6 +31,7 @@ export interface Slide {
   isFactChecking?: boolean;
   isExpanding?: boolean;
   isCritiquing?: boolean;
+  isAdaptingAudience?: boolean;
   chartData?: ChartData;
 }
 

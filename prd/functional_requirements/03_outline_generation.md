@@ -14,3 +14,7 @@
 *   **F-OG-07 (Tone & Template Selection):**
     *   Users can select a content tone (e.g., Professional, Casual, Enthusiastic) from a dropdown list.
     *   Users must choose a visual design template from a gallery of predefined options.
+*   **F-OG-08 (Real-time Slide Count):** The UI shall display a real-time count of the total number of slides based on the current state of the outline, providing immediate feedback as the user makes edits.
+*   **F-OG-09 (Direct Outline Manipulation):** Users can directly add or remove slides from the outline preview.
+    *   **F-OG-09a:** Each slide in the preview has a remove button, allowing for quick deletion.
+    *   **F-OG-09b:** Users can insert a new, blank slide at any point in the outline via interactive controls in the preview.

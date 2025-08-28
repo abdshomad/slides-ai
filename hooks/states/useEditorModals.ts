@@ -1,5 +1,3 @@
-
-
 import { useState } from 'react';
 import { FactCheckResult } from '../../types/index';
 
@@ -11,13 +9,14 @@ export const useEditorModals = () => {
     const [factCheckResult, setFactCheckResult] = useState<{ slideId: string; suggestions: FactCheckResult } | null>(null);
     const [critiqueResult, setCritiqueResult] = useState<{ slideId: string; critique: string } | null>(null);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [adaptingAudienceSlideId, setAdaptingAudienceSlideId] = useState<string | null>(null);
 
     const modalState = {
-        editingSlideId, stylingSlideId, historySlideId, isHistoryPanelOpen, factCheckResult, critiqueResult, isEditingTitle,
+        editingSlideId, stylingSlideId, historySlideId, isHistoryPanelOpen, factCheckResult, critiqueResult, isEditingTitle, adaptingAudienceSlideId,
     };
 
     const setters = {
-        setEditingSlideId, setStylingSlideId, setHistorySlideId, setIsHistoryPanelOpen, setFactCheckResult, setCritiqueResult, setIsEditingTitle,
+        setEditingSlideId, setStylingSlideId, setHistorySlideId, setIsHistoryPanelOpen, setFactCheckResult, setCritiqueResult, setIsEditingTitle, setAdaptingAudienceSlideId,
     };
 
     return { modalState, setters };

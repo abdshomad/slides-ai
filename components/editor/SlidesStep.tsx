@@ -21,6 +21,7 @@ interface SlidesStepProps {
   onViewSlideHistory: (id: string) => void;
   onFactCheckSlide: (id: string) => void;
   onCritiqueSlide: (slideId: string, imageBase64: string) => void;
+  onAdaptAudience: (id: string) => void;
   onReorderSlides: (startIndex: number, endIndex: number) => void;
   onSelectImageFromSearch: (slideId: string, url: string) => void;
   currentLoadingStep: number;
@@ -46,7 +47,8 @@ const SlidesStep: React.FC<SlidesStepProps> = (props) => {
 
   // Determine if we should show the full generation progress screen.
   // This is true if the loading process for initial slide generation is still active.
-  const isInitialGeneration = currentLoadingStep < slideGenerationSteps.length;
+  const isInitialGeneration = slides.length === 0 && isLoading;
+
 
   if (isInitialGeneration) {
     return (

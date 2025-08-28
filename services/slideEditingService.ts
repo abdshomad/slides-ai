@@ -2,7 +2,7 @@ import { Type } from "@google/genai";
 import { ai } from './geminiClient';
 // FIX: Correct import path for types
 import { Slide, FactCheckResult } from '../types/index';
-import { presentationSchema, factCheckSchema, chartSchema } from './schemas';
+import { presentationSchema, factCheckSchema, chartSchema, adaptAudienceSchema } from './schemas';
 import { getEditSlidePrompt } from './prompts';
 
 /**
@@ -108,16 +108,12 @@ Your response MUST be a single, valid JSON object with the updated content and a
 
 /**
  * Uses a multimodal model to critique a slide's design based on an image and provides suggestions.
- * @param slide The slide object containing text content for context.
  * @param imageBase64 A base64 encoded PNG of the slide's visual appearance.
  * @returns A string containing the AI's critique and suggestions in markdown format.
  */
-export const critiqueSlide = async (slide: Slide, imageBase64: string): Promise<string> => {
+export const critiqueSlide = async (imageBase64: string): Promise<string> => {
     const prompt = `You are a world-class UI/UX and presentation design expert.
-    Critique the provided slide image. The slide's text content is:
-    Title: "${slide.title}"
-    Bullet Points: ${JSON.stringify(slide.bulletPoints)}
-
+    Critique the provided slide image.
     Based on your critique, provide a list of concrete, actionable visual improvement ideas. Focus on layout, typography, color theory, and imagery. Be creative and inspiring. Structure your response in markdown, using headings and bullet points.`;
 
     const imagePart = {
@@ -137,4 +133,34 @@ export const critiqueSlide = async (slide: Slide, imageBase64: string): Promise<
     });
 
     return response.text;
+};
+
+/**
+ * Rewrites slide content for a specific target audience.
+ * @param slide The current slide object.
+ * @param targetAudience A description of the new audience.
+ * @returns A partial slide object with the rewritten title and bullet points.
+ */
+export const adaptAudience = async (slide: Pick<Slide, 'title' | 'bulletPoints'>, targetAudience: string): Promise<Pick<Slide, 'title' | 'bulletPoints'>> => {
+  const prompt = `You are an expert communicator and content strategist. Your task is to rewrite the content of a presentation slide to make it suitable for a new target audience.
+
+Analyze the original slide content and the description of the target audience. Rewrite the title and bullet points to use appropriate language, tone, and complexity for that audience.
+
+Original Slide Title: "${slide.title}"
+Original Bullet Points: ${JSON.stringify(slide.bulletPoints)}
+
+Target Audience: "${targetAudience}"
+
+Your response MUST be a single, valid JSON object containing the rewritten "title" and "bulletPoints". Do not add markdown formatting.`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: adaptAudienceSchema,
+    },
+  });
+
+  return JSON.parse(response.text);
 };

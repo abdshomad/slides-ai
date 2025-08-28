@@ -1,4 +1,4 @@
-import { editSlide, expandSlide, factCheckSlide } from '../../services/slideEditingService';
+import { editSlide, expandSlide, factCheckSlide, adaptAudience } from '../../services/slideEditingService';
 import { generateSpeakerNotes, generateKeyTakeaway } from '../../services/slideContentService';
 import { generateImageForSlide } from '../../services/imageService';
 // FIX: Correct import path for types
@@ -206,5 +206,39 @@ export const factCheckSlideAction = async ({ slideId, slides, setError, setSlide
         setError(e instanceof Error ? e.message : 'Failed to perform fact-check.');
     } finally {
         setSlides(prev => prev.map(s => s.id === slideId ? { ...s, isFactChecking: false } : s));
+    }
+};
+
+interface AdaptAudienceArgs extends ActionContext {
+    targetAudience: string;
+    adaptingAudienceSlideId: string | null;
+    slides: SlideType[];
+    setError: SetState<string | null>;
+    setSlides: SetState<SlideType[]>;
+    setAdaptingAudienceSlideId: SetState<string | null>;
+}
+export const adaptAudienceAction = async (args: AdaptAudienceArgs) => {
+    const { targetAudience, adaptingAudienceSlideId, slides, setError, setSlides, setAdaptingAudienceSlideId, createCheckpoint, currentState } = args;
+
+    if (!adaptingAudienceSlideId) return;
+    const originalSlide = slides.find(s => s.id === adaptingAudienceSlideId);
+    if (!originalSlide) return;
+
+    setAdaptingAudienceSlideId(null);
+    setSlides(prev => prev.map(s => s.id === adaptingAudienceSlideId ? { ...s, isAdaptingAudience: true } : s));
+    setError(null);
+    
+    try {
+        const rewrittenContent = await adaptAudience(originalSlide, targetAudience);
+        const updatedSlides = slides.map(s => 
+            s.id === adaptingAudienceSlideId 
+                ? { ...s, ...rewrittenContent, isAdaptingAudience: false } 
+                : s
+        );
+        setSlides(updatedSlides);
+        createCheckpoint(`Adapted "${originalSlide.title}" for new audience`, { ...currentState, slides: updatedSlides });
+    } catch (e) {
+        setError(e instanceof Error ? e.message : 'Failed to adapt slide content.');
+        setSlides(prev => prev.map(s => s.id === adaptingAudienceSlideId ? { ...s, isAdaptingAudience: false } : s));
     }
 };

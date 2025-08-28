@@ -25,41 +25,59 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, step, stepIndex
   
   useLayoutEffect(() => {
     if (isOpen && step) {
-      const targetEl = document.querySelector(step.target);
-      if (targetEl) {
-        const rect = targetEl.getBoundingClientRect();
-        setTargetRect(rect);
-        
-        // --- Popover Position Calculation ---
-        const popoverHeight = 200; // Estimated height
-        const popoverWidth = 320;
-        const spacing = 15;
-        let top = rect.bottom + spacing;
-        let left = rect.left + rect.width / 2 - popoverWidth / 2;
-        let arrow = { top: '-0.375rem', left: 'calc(50% - 0.375rem)', right: '', bottom: '' };
+      let timeoutId: number;
 
-        // If it overflows bottom
-        if (top + popoverHeight > window.innerHeight) {
-          top = rect.top - popoverHeight - spacing;
-          arrow = { top: 'auto', bottom: '-0.375rem', left: 'calc(50% - 0.375rem)', right: '' };
+      const findAndPosition = () => {
+        const targetEl = document.querySelector<HTMLElement>(step.target);
+        if (targetEl) {
+          // Ensure the target element is visible before calculating its position
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+
+          // Delay to allow the smooth scroll animation to complete
+          timeoutId = window.setTimeout(() => {
+            const rect = targetEl.getBoundingClientRect();
+            setTargetRect(rect);
+
+            // --- Popover Position Calculation ---
+            const popoverHeight = 200; // Estimated height
+            const popoverWidth = 320;
+            const spacing = 15;
+            let top = rect.bottom + spacing;
+            let left = rect.left + rect.width / 2 - popoverWidth / 2;
+            let arrow = { top: '-0.375rem', left: '', right: '', bottom: '' };
+
+            // Position popover above if it overflows the bottom of the viewport
+            if (top + popoverHeight > window.innerHeight) {
+              top = rect.top - popoverHeight - spacing;
+              arrow = { top: 'auto', bottom: '-0.375rem', left: '', right: '' };
+            }
+
+            // Adjust horizontal position to stay within the viewport
+            if (left < 10) {
+                left = 10;
+            }
+            if (left + popoverWidth > window.innerWidth - 10) {
+              left = window.innerWidth - popoverWidth - 10;
+            }
+            
+            // Adjust arrow position based on horizontal adjustments
+            const arrowLeftOffset = rect.left + rect.width / 2 - left;
+            arrow.left = `calc(${arrowLeftOffset}px - 0.375rem)`;
+
+            setPopoverPos({ top, left });
+            setArrowPos(arrow);
+          }, 300); // 300ms is a reasonable time for smooth scrolling
+        } else {
+          // If the target element isn't in the DOM yet, retry shortly
+          timeoutId = window.setTimeout(findAndPosition, 300);
         }
+      };
 
-        // If it overflows left/right
-        if (left < 10) left = 10;
-        if (left + popoverWidth > window.innerWidth - 10) {
-          left = window.innerWidth - popoverWidth - 10;
-        }
+      findAndPosition();
 
-        setPopoverPos({ top, left });
-        setArrowPos(arrow);
-      } else {
-        // If target not found, maybe wait and retry
-         const timeoutId = setTimeout(() => {
-            const el = document.querySelector(step.target);
-            if (el) setTargetRect(el.getBoundingClientRect());
-         }, 300);
-         return () => clearTimeout(timeoutId);
-      }
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
     }
   }, [isOpen, step]);
 

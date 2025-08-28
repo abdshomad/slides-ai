@@ -1,5 +1,5 @@
 {
-  "name": "PowerPoint Slide Generator",
+  "name": "AI Slides - PowerPoint Slide Generator",
   "description": "An AI-powered application that transforms raw text into structured PowerPoint presentations. Simply input your content, and the app will generate downloadable slides with titles and bullet points.",
   "requestFramePermissions": [
     "microphone"
