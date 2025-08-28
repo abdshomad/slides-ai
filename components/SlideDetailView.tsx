@@ -33,7 +33,7 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
   const { slide, slideNumber, totalSlides, onSelectImageFromSearch } = props;
   const [showNotes, setShowNotes] = useState(false);
   const slideContentRef = useRef<HTMLDivElement>(null);
-  const { isExporting, exportSlide, captureSlideAsBase64 } = useSlideExport(slideContentRef, slide, slideNumber);
+  const { captureSlideAsBase64 } = useSlideExport(slideContentRef, slide, slideNumber);
 
   const handleCritique = useCallback(async () => {
     if (!slide) return;
@@ -124,8 +124,6 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
         onFactCheck={props.onFactCheck}
         onCritiqueDesign={handleCritique}
         onAdaptAudience={props.onAdaptAudience}
-        onExportSlide={exportSlide}
-        isExporting={isExporting}
         showNotes={showNotes}
         setShowNotes={setShowNotes}
       />

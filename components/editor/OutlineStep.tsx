@@ -9,7 +9,7 @@ import OutlinePreview from './outline/OutlinePreview';
 import OutlineEditor from './outline/OutlineEditor';
 import SourceList from './outline/SourceList';
 import OutlineActions from './outline/OutlineActions';
-import { DiagramIcon, ListIcon } from '../icons';
+import { DiagramIcon, ListIcon, EditIcon } from '../icons';
 import OutlineDiagram from './outline/OutlineDiagram';
 import { updateLayoutInOutline, addSlideToOutline, removeSlideFromOutline } from '../../utils/outlineUtils';
 
@@ -42,6 +42,7 @@ const OutlineStep: React.FC<OutlineStepProps> = ({
 }) => {
   const [editingLayoutIndex, setEditingLayoutIndex] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'diagram'>('list');
+  const [isEditorVisible, setIsEditorVisible] = useState(false);
   const parsedOutline = useMemo(() => parseOutline(outline), [outline]);
 
   const handleUpdateLayout = (slideIndex: number, newLayout: string) => {
@@ -64,12 +65,21 @@ const OutlineStep: React.FC<OutlineStepProps> = ({
 
   return (
     <div className="animate-fade-in">
-      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-2">Fine-Tune Your Presentation Plan</h2>
-      <p className="text-slate-500 dark:text-slate-400 mb-6">Edit the outline text on the left and see a live preview of the slide structure on the right. When you're happy, choose a tone and template to proceed.</p>
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Fine-Tune Your Presentation Plan</h2>
+        <button
+            onClick={() => setIsEditorVisible(!isEditorVisible)}
+            className="flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-200 dark:bg-slate-800/60 hover:bg-slate-300 dark:hover:bg-slate-700/80 px-3 py-1.5 rounded-md transition-colors border border-slate-300 dark:border-slate-700/50"
+        >
+            <EditIcon className="w-4 h-4 mr-2" />
+            {isEditorVisible ? 'Hide Outline Editor' : 'Show Outline Editor'}
+        </button>
+      </div>
+      <p className="text-slate-500 dark:text-slate-400 mb-6">Review the slide structure below. You can edit the raw outline text, change layouts, and adjust the content tone before generating slides.</p>
       
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <OutlineEditor outline={outline} setOutline={setOutline} />
-        <div>
+       <div className={`grid grid-cols-1 ${isEditorVisible ? 'md:grid-cols-2' : ''} gap-8`}>
+        {isEditorVisible && <OutlineEditor outline={outline} setOutline={setOutline} />}
+        <div className={`${!isEditorVisible ? 'w-full max-w-4xl mx-auto' : ''}`}>
             <div className="flex justify-between items-center mb-2">
                 <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300">Live Preview</h3>
                 <div className="flex gap-1 p-0.5 bg-slate-200 dark:bg-slate-700/50 rounded-md">

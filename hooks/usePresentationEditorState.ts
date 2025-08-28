@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 // FIX: Correct import path for types
 import { PresentationProject, AppState, PresentationTemplate, BrandKit } from '../types/index';
 import { templates } from '../templates/index';
@@ -63,6 +63,25 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
         isLoading: state.isLoading,
         onUpdatePresentation
     });
+    
+    // Add an effect to prevent accidental navigation while loading.
+    useEffect(() => {
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            event.preventDefault();
+            // Most modern browsers show a generic message for security reasons.
+            event.returnValue = 'Are you sure you want to leave? Your presentation is still being generated.';
+        };
+
+        if (state.isLoading) {
+            window.addEventListener('beforeunload', handleBeforeUnload);
+        } else {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        }
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [state.isLoading]);
     
     // 6. Derived state
     const derivedState = useMemo(() => {

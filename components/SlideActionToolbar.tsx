@@ -1,19 +1,12 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 // FIX: Correct import path for types
 import { Slide as SlideType } from '../types/index';
-import { EditIcon } from './icons/EditIcon';
-import { StyleIcon } from './icons/StyleIcon';
-import { KeyIcon } from './icons/KeyIcon';
-import { NotesIcon } from './icons/NotesIcon';
-import { HistoryIcon } from './icons/HistoryIcon';
-import { ExpandIcon } from './icons/ExpandIcon';
-import { MagicIcon } from './icons/MagicIcon';
-import { FactCheckIcon } from './icons/FactCheckIcon';
-import { ImageIcon } from './icons/ImageIcon';
+import {
+  EditIcon, StyleIcon, KeyIcon, NotesIcon, HistoryIcon, ExpandIcon, MagicIcon, FactCheckIcon, LightbulbIcon, UsersIcon
+} from './icons';
 import Loader from './Loader';
-import { LightbulbIcon } from './icons/LightbulbIcon';
-import { UsersIcon } from './icons/UsersIcon';
 
+// Props interface remains the same
 interface SlideActionToolbarProps {
   slide: SlideType;
   onEdit: () => void;
@@ -26,16 +19,25 @@ interface SlideActionToolbarProps {
   onFactCheck: () => void;
   onCritiqueDesign: () => void;
   onAdaptAudience: () => void;
-  onExportSlide: () => void;
-  isExporting: boolean;
   showNotes: boolean;
   setShowNotes: (show: boolean) => void;
 }
 
-const buttonBaseClass = "inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors disabled:opacity-70 disabled:cursor-wait";
-const secondaryButtonClass = `${buttonBaseClass} bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200`;
-const primaryButtonClass = `${buttonBaseClass} bg-purple-600 hover:bg-purple-700 text-white`;
-
+// Reusable menu item component
+const MenuItem: React.FC<{
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}> = ({ onClick, disabled = false, children }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className="w-full text-left flex items-center px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600/50 disabled:opacity-50 disabled:cursor-wait disabled:hover:bg-transparent dark:disabled:hover:bg-transparent transition-colors rounded-md"
+    role="menuitem"
+  >
+    {children}
+  </button>
+);
 
 const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
   slide,
@@ -49,69 +51,125 @@ const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
   onFactCheck,
   onCritiqueDesign,
   onAdaptAudience,
-  onExportSlide,
-  isExporting,
   showNotes,
   setShowNotes,
 }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        menuRef.current && !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current && !buttonRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleItemClick = (action: () => void) => {
+    action();
+    setIsMenuOpen(false);
+  };
+  
   return (
-    <div data-tour-id="ai-editing-tools" className="flex-shrink-0 p-4 bg-slate-200/50 dark:bg-slate-800/50 rounded-b-lg border-t border-slate-300/50 dark:border-slate-600/50 flex flex-wrap gap-3 justify-center items-center">
-      {/* --- Group 1: Core Editing --- */}
-      <div className="flex flex-wrap gap-3 justify-center">
-        <button onClick={onEdit} className={secondaryButtonClass}><EditIcon className="w-4 h-4 mr-2" />Edit</button>
-        <button onClick={onStyle} className={secondaryButtonClass}><StyleIcon className="w-4 h-4 mr-2" />Style</button>
-      </div>
+    <div data-tour-id="ai-editing-tools" className="flex-shrink-0 p-4 bg-slate-200/50 dark:bg-slate-800/50 rounded-b-lg border-t border-slate-300/50 dark:border-slate-600/50 flex justify-center items-center">
+      <div className="relative">
+        <button
+          ref={buttonRef}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-pink-500 transition-all"
+          aria-haspopup="true"
+          aria-expanded={isMenuOpen}
+        >
+          <MagicIcon className="w-5 h-5 mr-2" />
+          AI Tools & Actions
+        </button>
 
-      <div className="h-6 w-px bg-slate-300/80 dark:bg-slate-600/80 hidden sm:block"></div>
+        {isMenuOpen && (
+          <div
+            ref={menuRef}
+            className="absolute bottom-full mb-2 w-64 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg shadow-2xl z-20 p-2 animate-fade-in-fast origin-bottom"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="menu-button"
+          >
+            {/* Group 1: Core Editing */}
+            <MenuItem onClick={() => handleItemClick(onEdit)}><EditIcon className="w-4 h-4 mr-3" />Edit Content</MenuItem>
+            <MenuItem onClick={() => handleItemClick(onStyle)}><StyleIcon className="w-4 h-4 mr-3" />Change Style</MenuItem>
 
-      {/* --- Group 2: AI Content Generation --- */}
-      <div className="flex flex-wrap gap-3 justify-center">
-        {slide.speakerNotes ? (
-              <button onClick={() => setShowNotes(!showNotes)} className={secondaryButtonClass}><NotesIcon className="w-4 h-4 mr-2" />{showNotes ? 'Hide' : 'Show'} Notes</button>
-        ) : (
-            <button onClick={onGenerateNotes} disabled={slide.isGeneratingNotes} className={secondaryButtonClass}>
-                {slide.isGeneratingNotes ? <><Loader />Generating...</> : <><NotesIcon className="w-4 h-4 mr-2" />Generate Notes</>}
-            </button>
+            <hr className="my-2 border-slate-200 dark:border-slate-600" />
+            
+            {/* Group 2: AI Content Generation */}
+            {slide.speakerNotes ? (
+              <MenuItem onClick={() => handleItemClick(() => setShowNotes(!showNotes))}>
+                <NotesIcon className="w-4 h-4 mr-3" />{showNotes ? 'Hide Notes' : 'Show Notes'}
+              </MenuItem>
+            ) : (
+              <MenuItem onClick={() => handleItemClick(onGenerateNotes)} disabled={slide.isGeneratingNotes}>
+                {slide.isGeneratingNotes ? <Loader /> : <NotesIcon className="w-4 h-4 mr-3" />}
+                {slide.isGeneratingNotes ? 'Generating...' : 'Generate Notes'}
+              </MenuItem>
+            )}
+            
+            {!slide.keyTakeaway && (
+              <MenuItem onClick={() => handleItemClick(onGenerateTakeaway)} disabled={slide.isGeneratingTakeaway}>
+                {slide.isGeneratingTakeaway ? <Loader /> : <KeyIcon className="w-4 h-4 mr-3" />}
+                {slide.isGeneratingTakeaway ? 'Generating...' : 'Key Takeaway'}
+              </MenuItem>
+            )}
+
+             {slide.imagePrompt && (
+              <MenuItem onClick={() => handleItemClick(onGenerateImage)} disabled={slide.isLoadingImage}>
+                {slide.isLoadingImage ? <Loader /> : <MagicIcon className="w-4 h-4 mr-3" />}
+                {slide.isLoadingImage ? 'Generating...' : `${slide.image ? 'Regenerate' : 'Generate'} Image`}
+              </MenuItem>
+            )}
+            
+            <MenuItem onClick={() => handleItemClick(onAdaptAudience)} disabled={slide.isAdaptingAudience}>
+              {slide.isAdaptingAudience ? <Loader /> : <UsersIcon className="w-4 h-4 mr-3" />}
+              {slide.isAdaptingAudience ? 'Adapting...' : 'Adapt Audience'}
+            </MenuItem>
+            
+            <MenuItem onClick={() => handleItemClick(onExpand)} disabled={slide.isExpanding}>
+              {slide.isExpanding ? <Loader /> : <ExpandIcon className="w-4 h-4 mr-3" />}
+              {slide.isExpanding ? 'Expanding...' : 'Expand Slide'}
+            </MenuItem>
+
+            <hr className="my-2 border-slate-200 dark:border-slate-600" />
+
+            {/* Group 3: AI Analysis */}
+            <MenuItem onClick={() => handleItemClick(onFactCheck)} disabled={slide.isFactChecking}>
+              {slide.isFactChecking ? <Loader /> : <FactCheckIcon className="w-4 h-4 mr-3" />}
+              {slide.isFactChecking ? 'Checking...' : 'Fact Check'}
+            </MenuItem>
+            
+            <MenuItem onClick={() => handleItemClick(onCritiqueDesign)} disabled={slide.isCritiquing}>
+              {slide.isCritiquing ? <Loader /> : <LightbulbIcon className="w-4 h-4 mr-3" />}
+              {slide.isCritiquing ? 'Analyzing...' : 'Suggest Ideas'}
+            </MenuItem>
+            
+            <hr className="my-2 border-slate-200 dark:border-slate-600" />
+            
+            {/* Group 4: Utilities */}
+            <MenuItem onClick={() => handleItemClick(onViewHistory)}><HistoryIcon className="w-4 h-4 mr-3" />View History</MenuItem>
+
+          </div>
         )}
-        {!slide.keyTakeaway && (
-            <button onClick={onGenerateTakeaway} disabled={slide.isGeneratingTakeaway} className={secondaryButtonClass}>
-                {slide.isGeneratingTakeaway ? <><Loader />Generating...</> : <><KeyIcon className="w-4 h-4 mr-2" />Key Takeaway</>}
-            </button>
-        )}
-         {slide.imagePrompt && (
-          <button onClick={onGenerateImage} disabled={slide.isLoadingImage} className={secondaryButtonClass}>
-            {slide.isLoadingImage ? <><Loader />Generating...</> : <><MagicIcon className="w-4 h-4 mr-2" />{slide.image ? 'Regenerate' : 'Generate'} Image</>}
-          </button>
-        )}
-        <button onClick={onAdaptAudience} disabled={slide.isAdaptingAudience} className={secondaryButtonClass}>
-            {slide.isAdaptingAudience ? <><Loader />Adapting...</> : <><UsersIcon className="w-4 h-4 mr-2" />Adapt Audience</>}
-        </button>
-        <button onClick={onExpand} className={primaryButtonClass} disabled={slide.isExpanding}>
-            {slide.isExpanding ? <><Loader />Expanding...</> : <><ExpandIcon className="w-4 h-4 mr-2" />Expand Slide</>}
-        </button>
       </div>
-
-      <div className="h-6 w-px bg-slate-300/80 dark:bg-slate-600/80 hidden sm:block"></div>
-      
-      {/* --- Group 3: AI Analysis --- */}
-      <div className="flex flex-wrap gap-3 justify-center">
-        <button onClick={onFactCheck} disabled={slide.isFactChecking} className={secondaryButtonClass}>
-            {slide.isFactChecking ? <><Loader />Fact Checking...</> : <><FactCheckIcon className="w-4 h-4 mr-2" />Fact Check</>}
-        </button>
-        <button onClick={onCritiqueDesign} disabled={slide.isCritiquing} className={secondaryButtonClass}>
-            {slide.isCritiquing ? <><Loader />Getting Ideas...</> : <><LightbulbIcon className="w-4 h-4 mr-2" />Suggest Ideas</>}
-        </button>
-      </div>
-
-      <div className="h-6 w-px bg-slate-300/80 dark:bg-slate-600/80 hidden sm:block"></div>
-
-      {/* --- Group 4: Utilities --- */}
-      <div className="flex flex-wrap gap-3 justify-center">
-        <button onClick={onViewHistory} className={secondaryButtonClass}><HistoryIcon className="w-4 h-4 mr-2" />View History</button>
-        <button onClick={onExportSlide} disabled={isExporting} className={secondaryButtonClass}>
-            {isExporting ? <><Loader />Exporting...</> : <><ImageIcon className="w-4 h-4 mr-2" />Export Slide</>}
-        </button>
-      </div>
+       <style>{`
+        .animate-fade-in-fast {
+          animation: fadeIn 0.15s ease-in-out;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+      `}</style>
     </div>
   );
 };
