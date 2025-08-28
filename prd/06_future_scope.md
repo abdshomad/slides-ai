@@ -1,8 +1,7 @@
 # 6. Future Scope & Potential Enhancements
 
 *   **Real-time Collaboration:** Allow multiple users to view and edit a presentation simultaneously.
-*   **Expanded Template Library:** Introduce a wider variety of design templates and allow users to define custom branding (logos, color schemes, fonts).
-*   **AI-Powered Data Visualization:** Enable the AI to generate charts and graphs from structured data (e.g., CSV upload, pasted table).
+*   **Custom Template Creation & Sharing:** Allow users to create, save, and share their own custom design templates, going beyond the brand kit to define unique master slide layouts.
 *   **Direct Cloud Integration:** Add options to save and export directly to Google Drive (Google Slides) or Microsoft OneDrive (PowerPoint).
 *   **Advanced AI Editing Tools:**
     *   **Tone Shifting:** Allow users to change the tone of an entire presentation or a single slide after generation.

@@ -9,3 +9,4 @@ This section details the functional requirements of the AI Presentation Designer
 4.  [**Slide Generation & Editing**](./functional_requirements/04_slide_generation_and_editing.md)
 5.  [**Version History**](./functional_requirements/05_version_history.md)
 6.  [**Exporting**](./functional_requirements/06_exporting.md)
+7.  [**Onboarding**](./functional_requirements/07_onboarding.md)

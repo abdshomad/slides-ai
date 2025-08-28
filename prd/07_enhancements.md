@@ -10,7 +10,6 @@ This document outlines potential features and improvements for future versions o
 ### Content & AI Capabilities
 
 *   **AI-Suggested Layouts:** The AI will analyze the content of a slide (e.g., a list of steps, a comparison of two products) and proactively suggest the most effective layout (e.g., Timeline, Comparison) to best represent the information.
-*   **Brand Kit Customization:** Users can define a "Brand Kit" by uploading a logo and specifying primary/secondary colors and fonts. The AI will then use these assets to generate presentations that are perfectly aligned with the user's corporate or personal branding.
 *   **Advanced Data Visualization:** Building upon the existing chart generation from text prompts, this feature would enable the AI to generate complex charts, graphs, and tables from structured data (e.g., CSV upload, pasted table).
 
 ### Integration & Collaboration
@@ -18,3 +17,13 @@ This document outlines potential features and improvements for future versions o
 *   **Real-time Collaboration:** Allow multiple users to edit the presentation outline and view slide changes simultaneously, similar to Google Slides or Figma.
 *   **Direct Cloud Integration:** Add options to save and export presentations directly to Google Drive (as Google Slides) or Microsoft OneDrive (as PowerPoint).
 *   **Expanded Image Sourcing:** Integrate directly with royalty-free image APIs like Unsplash and Pexels to provide a wider, more curated selection of high-quality visual assets.
+
+### Next Enhancement Candidates
+
+*   **Hide "Editable Outline" section:** The editable outline text area could be hidden by default to simplify the UI, and only shown when requested by the user.
+*   **Visual Content Tone Selection:** Enhance the "Choose a Content Tone" selector with icons or thumbnail previews to better communicate the style of each tone.
+*   **Post-Generation Image Preview:** After the "Crafting your presentation..." process, show a sample gallery of relevant images sourced during the research step.
+*   **Display Expected Number of Slides:** Provide an estimated number of slides that will be generated based on the outline.
+*   **Visual Slide Style Previews:** When changing a slide style, the selection modal should show a visual preview, wireframe, or outline of the layout.
+*   **Hide Export Slide Button:** The individual slide export button could be moved or hidden to streamline the UI.
+*   **Grouped Slide Actions:** All actions on an individual slide should be grouped into a single dropdown action button to reduce clutter.
