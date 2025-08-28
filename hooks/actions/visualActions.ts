@@ -47,19 +47,20 @@ export const generateVideoAction = async ({ slideId, prompt, slides, setError, s
     setError(null);
     try {
         const videoDataUrl = await generateVideoForSlide(prompt, updateProgress);
-        const updatedSlides = slides.map(s => s.id === slideId ? { 
-            ...s, 
-            video: videoDataUrl, 
-            isGeneratingVideo: false,
-            // Clear image fields if a video is successfully generated
-            image: undefined,
-            imagePrompt: undefined,
-            imageSearchResults: undefined,
-            selectedImageUrl: undefined,
-        } : s);
-        setSlides(updatedSlides);
-        createCheckpoint(`Generated video for "${slide.title}"`, { ...currentState, slides: updatedSlides });
-
+        setSlides(prevSlides => {
+            const updatedSlides = prevSlides.map(s => s.id === slideId ? { 
+                ...s, 
+                video: videoDataUrl, 
+                isGeneratingVideo: false,
+                // Clear image fields if a video is successfully generated
+                image: undefined,
+                imagePrompt: undefined,
+                imageSearchResults: undefined,
+                selectedImageUrl: undefined,
+            } : s);
+            createCheckpoint(`Generated video for "${slide.title}"`, { ...currentState, slides: updatedSlides });
+            return updatedSlides;
+        });
     } catch(e) {
         setError(e instanceof Error ? e.message : 'Failed to generate video.');
         setSlides(prev => prev.map(s => s.id === slideId ? { ...s, isGeneratingVideo: false } : s));
@@ -113,12 +114,14 @@ export const generateImageSuggestionsAction = async ({ slideId, slides, setSlide
     const prompt = `A professional, visually appealing image for a presentation slide titled "${slide.title}". The content includes: ${slide.bulletPoints.join(', ')}.`;
     const suggestions = await generateImageSuggestions(prompt);
 
-    const updatedSlides = slides.map(s => s.id === slideId 
-        ? { ...s, imageSuggestions: suggestions, isGeneratingSuggestions: false } 
-        : s
-    );
-    setSlides(updatedSlides);
-    createCheckpoint(`Generated image suggestions for "${slide.title}"`, { ...currentState, slides: updatedSlides });
+    setSlides(prevSlides => {
+        const updatedSlides = prevSlides.map(s => s.id === slideId 
+            ? { ...s, imageSuggestions: suggestions, isGeneratingSuggestions: false } 
+            : s
+        );
+        createCheckpoint(`Generated image suggestions for "${slide.title}"`, { ...currentState, slides: updatedSlides });
+        return updatedSlides;
+    });
 };
 
 interface SelectSuggestionArgs {

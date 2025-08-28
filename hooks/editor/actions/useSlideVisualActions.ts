@@ -6,7 +6,6 @@ import {
     selectImageSuggestionAction,
     clearSelectedImageAction,
     editImageAction,
-    // FIX: Corrected import path for visualActions.
     generateVideoAction
 } from '../../actions/visualActions';
 import { critiqueSlide } from '../../../services/slideEditingService';

@@ -38,7 +38,7 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
         outline: state.outline,
         sources: state.sources,
         sourcedImages: state.sourcedImages,
-        slides: state.slides,
+        slides: state.slides.map(({ isGeneratingVideo, videoGenerationProgress, ...slide }) => slide), // Omit transient state
         selectedTemplateId: state.selectedTemplateId,
         tone: state.tone,
     }), [
