@@ -24,6 +24,9 @@ interface SlideDetailViewProps {
   onCritiqueDesign: (slideId: string, imageBase64: string) => void;
   onAdaptAudience: () => void;
   onSelectImageFromSearch: (slideId: string, url: string) => void;
+  onGenerateImageSuggestions: (slideId: string) => void;
+  onSelectImageSuggestion: (slideId: string, suggestion: string) => void;
+  onClearSelectedImage: (slideId: string) => void;
 }
 
 const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
@@ -51,7 +54,7 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
   }
 
   const hasContent = slide.bulletPoints?.length > 0 || slide.body1?.length > 0 || slide.body2?.length > 0;
-  const hasImage = slide.image || (slide.imageSearchResults && slide.imageSearchResults.length > 0) || slide.imagePrompt;
+  const hasImage = slide.image || (slide.imageSearchResults && slide.imageSearchResults.length > 0) || slide.imagePrompt || slide.imageSuggestions;
 
   const getLayoutClass = () => {
     switch (slide.layout) {
@@ -91,13 +94,15 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
                 {hasImage && !['ONE_COLUMN_TEXT', 'TITLE_ONLY', 'SECTION_HEADER', 'QUOTE', 'TWO_COLUMN_TEXT', 'TIMELINE', 'COMPARISON'].includes(slide.layout || '') && (
                     <div className="w-1/2">
                         <SlideImage
-                            isLoading={slide.isLoadingImage}
-                            image={slide.image}
+                            slide={slide}
+                            // FIX: Pass the required 'title' prop to SlideImage.
                             title={slide.title}
-                            imagePrompt={slide.imagePrompt}
-                            imageSearchResults={slide.imageSearchResults}
-                            onGenerate={props.onGenerateImage}
+                            onGenerate={() => props.onGenerateImage()}
                             onSelectImage={(url) => onSelectImageFromSearch(slide.id, url)}
+                            onGenerateSuggestions={() => props.onGenerateImageSuggestions(slide.id)}
+                            onSelectSuggestion={(suggestion) => props.onSelectImageSuggestion(slide.id, suggestion)}
+                            onClearSelectedImage={() => props.onClearSelectedImage(slide.id)}
+                            onCustomPrompt={props.onEdit}
                         />
                     </div>
                 )}

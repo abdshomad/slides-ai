@@ -1,6 +1,6 @@
 import { editSlide, expandSlide, factCheckSlide, adaptAudience } from '../../services/slideEditingService';
 import { generateSpeakerNotes, generateKeyTakeaway } from '../../services/slideContentService';
-import { generateImageForSlide } from '../../services/imageService';
+import { generateImageForSlide, generateImageSuggestions } from '../../services/imageService';
 // FIX: Correct import path for types
 import { AppState, Slide as SlideType, FactCheckResult } from '../../types/index';
 import { ActionContext } from './outlineActions';
@@ -241,4 +241,56 @@ export const adaptAudienceAction = async (args: AdaptAudienceArgs) => {
         setError(e instanceof Error ? e.message : 'Failed to adapt slide content.');
         setSlides(prev => prev.map(s => s.id === adaptingAudienceSlideId ? { ...s, isAdaptingAudience: false } : s));
     }
+};
+
+interface GenerateSuggestionsArgs extends ActionContext {
+    slideId: string;
+    slides: SlideType[];
+    setSlides: SetState<SlideType[]>;
+}
+export const generateImageSuggestionsAction = async ({ slideId, slides, setSlides, createCheckpoint, currentState }: GenerateSuggestionsArgs) => {
+    const slide = slides.find(s => s.id === slideId);
+    if (!slide) return;
+
+    setSlides(prev => prev.map(s => s.id === slideId ? { ...s, isGeneratingSuggestions: true } : s));
+    
+    const prompt = `A professional, visually appealing image for a presentation slide titled "${slide.title}". The content includes: ${slide.bulletPoints.join(', ')}.`;
+    const suggestions = await generateImageSuggestions(prompt);
+
+    const updatedSlides = slides.map(s => s.id === slideId 
+        ? { ...s, imageSuggestions: suggestions, isGeneratingSuggestions: false } 
+        : s
+    );
+    setSlides(updatedSlides);
+    createCheckpoint(`Generated image suggestions for "${slide.title}"`, { ...currentState, slides: updatedSlides });
+};
+
+interface SelectSuggestionArgs extends ActionContext {
+    slideId: string;
+    suggestion: string;
+    slides: SlideType[];
+    setSlides: SetState<SlideType[]>;
+}
+export const selectImageSuggestionAction = async ({ slideId, suggestion, slides, setSlides, createCheckpoint, currentState }: SelectSuggestionArgs) => {
+    const slide = slides.find(s => s.id === slideId);
+    if (!slide) return;
+    
+    const updatedSlides = slides.map(s => s.id === slideId ? { ...s, image: suggestion } : s);
+    setSlides(updatedSlides);
+    createCheckpoint(`Selected image for "${slide.title}"`, { ...currentState, slides: updatedSlides });
+};
+
+interface ClearSelectionArgs extends ActionContext {
+    slideId: string;
+    slides: SlideType[];
+    setSlides: SetState<SlideType[]>;
+}
+export const clearSelectedImageAction = async ({ slideId, slides, setSlides, createCheckpoint, currentState }: ClearSelectionArgs) => {
+    const slide = slides.find(s => s.id === slideId);
+    if (!slide) return;
+    
+    const updatedSlides = slides.map(s => s.id === slideId ? { ...s, image: undefined } : s);
+    setSlides(updatedSlides);
+    
+    createCheckpoint(`Cleared image selection for "${slide.title}"`, { ...currentState, slides: updatedSlides });
 };

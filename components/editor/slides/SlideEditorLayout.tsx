@@ -18,6 +18,9 @@ interface SlideEditorLayoutProps {
   onAdaptAudience: (id: string) => void;
   onReorderSlides: (startIndex: number, endIndex: number) => void;
   onSelectImageFromSearch: (slideId: string, url: string) => void;
+  onGenerateImageSuggestions: (slideId: string) => void;
+  onSelectImageSuggestion: (slideId: string, suggestion: string) => void;
+  onClearSelectedImage: (slideId: string) => void;
   selectedTemplate: PresentationTemplate;
 }
 
@@ -70,6 +73,9 @@ const SlideEditorLayout: React.FC<SlideEditorLayoutProps> = (props) => {
                 onCritiqueDesign={props.onCritiqueSlide}
                 onAdaptAudience={() => selectedSlide && props.onAdaptAudience(selectedSlide.id)}
                 onSelectImageFromSearch={props.onSelectImageFromSearch}
+                onGenerateImageSuggestions={props.onGenerateImageSuggestions}
+                onSelectImageSuggestion={props.onSelectImageSuggestion}
+                onClearSelectedImage={props.onClearSelectedImage}
             />
         </div>
       ) : (

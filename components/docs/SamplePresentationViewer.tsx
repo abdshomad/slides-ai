@@ -22,6 +22,10 @@ const SamplePresentationViewer: React.FC<{ onBack: () => void }> = ({ onBack }) 
         onAdaptAudience: doNothing,
         onReorderSlides: doNothing,
         onSelectImageFromSearch: doNothing,
+        // FIX: Add missing required props to satisfy the SlideEditorLayout component's type.
+        onGenerateImageSuggestions: doNothing,
+        onSelectImageSuggestion: doNothing,
+        onClearSelectedImage: doNothing,
         selectedTemplate: templates[0],
     };
 

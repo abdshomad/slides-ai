@@ -97,6 +97,9 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
           onAdaptAudience={id => modals.setAdaptingAudienceSlideId(id)}
           onReorderSlides={handlers.handleReorderSlides}
           onSelectImageFromSearch={handlers.handleSelectImageFromSearch}
+          onGenerateImageSuggestions={handlers.handleGenerateImageSuggestions}
+          onSelectImageSuggestion={handlers.handleSelectImageSuggestion}
+          onClearSelectedImage={handlers.handleClearSelectedImage}
           currentLoadingStep={state.currentLoadingStep}
           currentLoadingSubStep={state.currentLoadingSubStep}
           generationStats={state.generationStats}

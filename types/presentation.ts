@@ -32,6 +32,8 @@ export interface Slide {
   isExpanding?: boolean;
   isCritiquing?: boolean;
   isAdaptingAudience?: boolean;
+  imageSuggestions?: string[];
+  isGeneratingSuggestions?: boolean;
   chartData?: ChartData;
 }
 

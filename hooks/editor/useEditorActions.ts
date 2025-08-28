@@ -233,6 +233,24 @@ export const useEditorActions = ({
         });
     }, [createCheckpoint, currentState, setSlides]);
     
+    const handleGenerateImageSuggestions = useCallback(
+        (slideId: string) => slideEditingActions.generateImageSuggestionsAction({
+            slideId, slides, setSlides, createCheckpoint, currentState
+        }), [slides, setSlides, createCheckpoint, currentState]
+    );
+
+    const handleSelectImageSuggestion = useCallback(
+        (slideId: string, suggestion: string) => slideEditingActions.selectImageSuggestionAction({
+            slideId, suggestion, slides, setSlides, createCheckpoint, currentState
+        }), [slides, setSlides, createCheckpoint, currentState]
+    );
+    
+    const handleClearSelectedImage = useCallback(
+        (slideId: string) => slideEditingActions.clearSelectedImageAction({
+            slideId, slides, setSlides, createCheckpoint, currentState
+        }), [slides, setSlides, createCheckpoint, currentState]
+    );
+
     return {
         handleGenerateOutline,
         handleGenerateSlidesFromOutline,
@@ -254,5 +272,8 @@ export const useEditorActions = ({
         handleSaveTitle,
         handleDownload,
         handleReorderSlides,
+        handleGenerateImageSuggestions,
+        handleSelectImageSuggestion,
+        handleClearSelectedImage,
     };
 };

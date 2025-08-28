@@ -1,6 +1,8 @@
 import React from 'react';
 // FIX: Correct import path for types
 import { Slide } from '../types/index';
+// Import the wireframe component
+import SlideLayoutWireframe from './editor/SlideLayoutWireframe';
 
 interface StyleSelectorModalProps {
   slide: Slide;
@@ -34,7 +36,7 @@ const StyleSelectorModal: React.FC<StyleSelectorModalProps> = ({ slide, onClose,
       aria-labelledby="style-slide-title"
     >
       <div 
-        className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl p-6 sm:p-8 text-slate-900 dark:text-white transform transition-transform scale-100"
+        className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-4xl p-6 sm:p-8 text-slate-900 dark:text-white transform transition-transform scale-100"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-start mb-6">
@@ -44,19 +46,20 @@ const StyleSelectorModal: React.FC<StyleSelectorModalProps> = ({ slide, onClose,
             </button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
             {layoutOptions.map(option => (
                 <div
                     key={option.id}
                     onClick={() => onSave(option.id)}
                     tabIndex={0}
                     onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onSave(option.id)}
-                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 flex items-center
+                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 flex items-center gap-6
                         ${currentLayout === option.id ? 'border-pink-500 bg-slate-100 dark:bg-slate-700/50 shadow-lg' : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-100/70 dark:hover:bg-slate-700/30'}
                     `}
                     role="button"
                     aria-pressed={currentLayout === option.id}
                 >
+                    <SlideLayoutWireframe layout={option.id} />
                     <div className="flex-grow">
                         <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">{option.name}</h3>
                         <p className="text-sm text-slate-600 dark:text-slate-400">{option.description}</p>

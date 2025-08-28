@@ -24,6 +24,9 @@ interface SlidesStepProps {
   onAdaptAudience: (id: string) => void;
   onReorderSlides: (startIndex: number, endIndex: number) => void;
   onSelectImageFromSearch: (slideId: string, url: string) => void;
+  onGenerateImageSuggestions: (slideId: string) => void;
+  onSelectImageSuggestion: (slideId: string, suggestion: string) => void;
+  onClearSelectedImage: (slideId: string) => void;
   currentLoadingStep: number;
   currentLoadingSubStep: number;
   generationStats: GenerationStats;

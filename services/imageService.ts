@@ -52,3 +52,35 @@ export const generateImageForSlide = async (prompt: string): Promise<string> => 
   }
   return ""; // Should only be reached if all retries fail.
 };
+
+
+/**
+ * Generates multiple image suggestions for a slide using the given prompt.
+ * @param prompt The text prompt to generate images from.
+ * @returns An array of base64 encoded strings of the generated images.
+ */
+export const generateImageSuggestions = async (prompt: string): Promise<string[]> => {
+  if (!prompt) return [];
+  
+  // Using a simpler retry logic for suggestions to fail faster if the service is busy.
+  try {
+    const response = await ai.models.generateImages({
+        model: 'imagen-4.0-generate-001',
+        prompt: prompt,
+        config: {
+          numberOfImages: 3, // Request 3 suggestions
+          outputMimeType: 'image/jpeg',
+          aspectRatio: '16:9',
+        },
+    });
+    
+    if (response.generatedImages && response.generatedImages.length > 0) {
+      return response.generatedImages.map(img => img.image.imageBytes);
+    }
+    return [];
+  } catch (error) {
+    console.error(`Error generating image suggestions for prompt "${prompt}":`, error);
+    // For suggestions, we fail gracefully to not block the user.
+    return [];
+  }
+};
