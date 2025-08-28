@@ -49,10 +49,14 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
     const selectedTemplate = useMemo(() => templates.find(t => t.id === state.selectedTemplateId) || templates[0], [state.selectedTemplateId]);
 
     // 4. Decomposed actions
+    // FIX: Restructured `actionProps` to correctly pass `state` and `currentState` as top-level properties, matching the ActionHookProps type.
     const actionProps = {
         presentation, onUpdatePresentation, onAddCheckpoint,
-        state, setters, modalState, modalSetters,
-        managedFiles, timer, currentState, selectedTemplate, brandKit
+        state, // Pass the whole state object
+        setters, modalState, modalSetters,
+        managedFiles, timer,
+        currentState, // Pass the memoized currentState object
+        selectedTemplate, brandKit
     };
 
     const outlineActions = useOutlineActions(actionProps);
@@ -95,12 +99,13 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
             editingSlide: state.slides.find(s => s.id === modalState.editingSlideId) || null,
             stylingSlide: state.slides.find(s => s.id === modalState.stylingSlideId) || null,
             adaptingAudienceSlide: state.slides.find(s => s.id === modalState.adaptingAudienceSlideId) || null,
+            imageStudioSlide: state.slides.find(s => s.id === modalState.imageStudioSlideId) || null,
             error: state.error,
             autoSaveStatus,
             selectedTemplate,
             managedFiles,
         };
-    }, [state.selectedTemplateId, state.inputText, managedFiles, state.slides, modalState.editingSlideId, modalState.stylingSlideId, modalState.adaptingAudienceSlideId, state.error, autoSaveStatus, selectedTemplate]);
+    }, [state.selectedTemplateId, state.inputText, managedFiles, state.slides, modalState.editingSlideId, modalState.stylingSlideId, modalState.adaptingAudienceSlideId, modalState.imageStudioSlideId, state.error, autoSaveStatus, selectedTemplate]);
     
     // 7. Assemble the final return object to match the original API
     return {
@@ -145,6 +150,7 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
             setCritiqueResult: modalSetters.setCritiqueResult,
             adaptingAudienceSlideId: modalState.adaptingAudienceSlideId,
             setAdaptingAudienceSlideId: modalSetters.setAdaptingAudienceSlideId,
+            isImageStudioOpen: modalState.isImageStudioOpen,
         },
         derivedState,
     };

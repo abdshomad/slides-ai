@@ -1,12 +1,12 @@
 import React, { useState, useRef, useCallback } from 'react';
 // FIX: Correct import path for types
 import { Slide as SlideType } from '../types/index';
-import SlideActionToolbar from './SlideActionToolbar';
 import SlideContent from './slide/SlideContent';
 import SlideMetadata from './slide/SlideMetadata';
 import useSlideExport from '../hooks/useSlideExport';
 import SlideChart from './SlideChart';
 import ImageEditor from './slide/ImageEditor';
+import { ActionMenu } from './slide/actions/ActionMenu';
 
 
 interface SlideDetailViewProps {
@@ -19,18 +19,14 @@ interface SlideDetailViewProps {
   onGenerateNotes: () => void;
   onExpand: () => void;
   onViewHistory: () => void;
-  onGenerateImage: () => void;
   onFactCheck: () => void;
   onCritiqueDesign: (slideId: string, imageBase64: string) => void;
   onAdaptAudience: () => void;
-  onSelectImageFromSearch: (slideId: string, url: string) => void;
-  onGenerateImageSuggestions: (slideId: string) => void;
-  onSelectImageSuggestion: (slideId: string, suggestion: string) => void;
-  onClearSelectedImage: (slideId: string) => void;
+  onOpenImageStudio: (slideId: string) => void;
 }
 
 const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
-  const { slide, slideNumber, totalSlides, onSelectImageFromSearch } = props;
+  const { slide, slideNumber, totalSlides, onOpenImageStudio } = props;
   const [showNotes, setShowNotes] = useState(false);
   const slideContentRef = useRef<HTMLDivElement>(null);
   const { captureSlideAsBase64 } = useSlideExport(slideContentRef, slide, slideNumber);
@@ -54,7 +50,7 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
   }
 
   const hasContent = slide.bulletPoints?.length > 0 || slide.body1?.length > 0 || slide.body2?.length > 0;
-  const hasImage = slide.image || (slide.imageSearchResults && slide.imageSearchResults.length > 0) || slide.imagePrompt || slide.imageSuggestions;
+  const hasImage = !['ONE_COLUMN_TEXT', 'TITLE_ONLY', 'SECTION_HEADER', 'QUOTE', 'TWO_COLUMN_TEXT', 'TIMELINE', 'COMPARISON'].includes(slide.layout || '');
 
   const getLayoutClass = () => {
     switch (slide.layout) {
@@ -91,17 +87,11 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
                         <SlideContent slide={slide} />
                     </div>
                 )}
-                {hasImage && !['ONE_COLUMN_TEXT', 'TITLE_ONLY', 'SECTION_HEADER', 'QUOTE', 'TWO_COLUMN_TEXT', 'TIMELINE', 'COMPARISON'].includes(slide.layout || '') && (
+                {hasImage && (
                     <div className="w-1/2">
                         <ImageEditor
                             slide={slide}
-                            title={slide.title}
-                            onGenerate={props.onGenerateImage}
-                            onSelectImage={(url) => onSelectImageFromSearch(slide.id, url)}
-                            onGenerateSuggestions={() => props.onGenerateImageSuggestions(slide.id)}
-                            onSelectSuggestion={(suggestion) => props.onSelectImageSuggestion(slide.id, suggestion)}
-                            onClearSelectedImage={() => props.onClearSelectedImage(slide.id)}
-                            onCustomPrompt={props.onEdit}
+                            onOpenImageStudio={() => onOpenImageStudio(slide.id)}
                         />
                     </div>
                 )}
@@ -111,7 +101,7 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
         <SlideMetadata slide={slide} showNotes={showNotes} />
       </div>
 
-      <SlideActionToolbar
+      <ActionMenu
         slide={slide}
         onEdit={props.onEdit}
         onStyle={props.onStyle}
@@ -119,7 +109,7 @@ const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
         onGenerateNotes={props.onGenerateNotes}
         onExpand={props.onExpand}
         onViewHistory={props.onViewHistory}
-        onGenerateImage={props.onGenerateImage}
+        onGenerateImage={() => onOpenImageStudio(slide.id)}
         onFactCheck={props.onFactCheck}
         onCritiqueDesign={handleCritique}
         onAdaptAudience={props.onAdaptAudience}

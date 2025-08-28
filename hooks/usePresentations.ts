@@ -1,6 +1,7 @@
 
 
 
+
 import { useState, useEffect, useCallback, useMemo } from 'react';
 // FIX: Correct import path for types
 import { PresentationProject, AppState, HistoryCheckpoint, BrandKit } from '../types/index';
@@ -42,10 +43,11 @@ const usePresentations = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const { presentations, currentPresentationId, brandKit } = loadPresentations();
-    setPresentations(presentations);
-    setCurrentPresentationId(currentPresentationId);
-    setBrandKit(brandKit || defaultBrandKit);
+    const loadedData = loadPresentations();
+    setPresentations(loadedData.presentations || []);
+    setCurrentPresentationId(loadedData.currentPresentationId || null);
+    // Merge loaded brand kit with defaults to ensure new properties are present
+    setBrandKit(loadedData.brandKit ? { ...defaultBrandKit, ...loadedData.brandKit } : defaultBrandKit);
     setIsLoading(false);
   }, []);
 

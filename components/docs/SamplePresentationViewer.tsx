@@ -8,24 +8,21 @@ const SamplePresentationViewer: React.FC<{ onBack: () => void }> = ({ onBack }) 
     // A dummy function to satisfy the component's prop requirements. It does nothing.
     const doNothing = () => {};
 
+    // FIX: Corrected the props object to match the SlideEditorLayoutProps interface.
+    // Added the missing 'onOpenImageStudio' prop and removed extraneous ones.
     const props = {
         slides: samplePresentation,
         onEditSlide: doNothing,
         onStyleSlide: doNothing,
         onGenerateNotes: doNothing,
         onGenerateTakeaway: doNothing,
-        onGenerateImage: doNothing,
         onExpandSlide: doNothing,
         onViewSlideHistory: doNothing,
         onFactCheckSlide: doNothing,
         onCritiqueSlide: doNothing,
         onAdaptAudience: doNothing,
         onReorderSlides: doNothing,
-        onSelectImageFromSearch: doNothing,
-        // FIX: Add missing required props to satisfy the SlideEditorLayout component's type.
-        onGenerateImageSuggestions: doNothing,
-        onSelectImageSuggestion: doNothing,
-        onClearSelectedImage: doNothing,
+        onOpenImageStudio: doNothing,
         selectedTemplate: templates[0],
     };
 

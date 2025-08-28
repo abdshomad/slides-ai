@@ -89,9 +89,16 @@ export const useEditorActions = ({
         createCheckpoint('Reviewed Images', { ...currentState, generationStep: nextStep });
     }, [setters, createCheckpoint, currentState]);
   
+    // FIX: Updated function to accept `prompt` and `negativePrompt` arguments to satisfy the `generateImageAction` type requirements.
     const handleGenerateImageForSlide = useCallback(
-        (slideId: string) => slideEditingActions.generateImageAction({
-            slideId, slides, setSlides, createCheckpoint, currentState
+        (slideId: string, prompt: string, negativePrompt?: string) => slideEditingActions.generateImageAction({
+            slideId,
+            prompt,
+            negativePrompt,
+            slides,
+            setSlides,
+            createCheckpoint,
+            currentState
         }), [slides, createCheckpoint, currentState, setSlides]
     );
 

@@ -12,6 +12,7 @@ export interface BrandKit {
   secondaryColor: string; // hex
   primaryFont: string;
   secondaryFont: string;
+  visualStyle?: string;
 }
 
 export interface AppState {

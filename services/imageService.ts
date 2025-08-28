@@ -5,9 +5,10 @@ const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 /**
  * Generates an image for a slide using the given prompt, with built-in retry logic for rate limiting.
  * @param prompt The text prompt to generate an image from.
+ * @param negativePrompt An optional text prompt of things to exclude from the image.
  * @returns A base64 encoded string of the generated image, or an empty string if generation fails.
  */
-export const generateImageForSlide = async (prompt: string): Promise<string> => {
+export const generateImageForSlide = async (prompt: string, negativePrompt?: string): Promise<string> => {
   if (!prompt) return "";
   
   let retries = 3;
@@ -22,6 +23,7 @@ export const generateImageForSlide = async (prompt: string): Promise<string> => 
             numberOfImages: 1,
             outputMimeType: 'image/jpeg',
             aspectRatio: '16:9',
+            negativePrompt: negativePrompt,
           },
       });
       

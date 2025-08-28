@@ -19,6 +19,7 @@ export interface Slide {
   subtitle2?: string; // For COMPARISON layout
   body2?: string[];   // For COMPARISON or TWO_COLUMN_TEXT layout
   imagePrompt?: string;
+  negativeImagePrompt?: string; // For advanced image generation
   imageSearchResults?: { url: string; title: string; }[];
   selectedImageUrl?: string;
   image?: string; // base64 string

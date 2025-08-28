@@ -10,13 +10,16 @@ export const useEditorModals = () => {
     const [critiqueResult, setCritiqueResult] = useState<{ slideId: string; critique: string } | null>(null);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [adaptingAudienceSlideId, setAdaptingAudienceSlideId] = useState<string | null>(null);
+    const [isImageStudioOpen, setIsImageStudioOpen] = useState(false);
+    const [imageStudioSlideId, setImageStudioSlideId] = useState<string | null>(null);
+
 
     const modalState = {
-        editingSlideId, stylingSlideId, historySlideId, isHistoryPanelOpen, factCheckResult, critiqueResult, isEditingTitle, adaptingAudienceSlideId,
+        editingSlideId, stylingSlideId, historySlideId, isHistoryPanelOpen, factCheckResult, critiqueResult, isEditingTitle, adaptingAudienceSlideId, isImageStudioOpen, imageStudioSlideId,
     };
 
     const setters = {
-        setEditingSlideId, setStylingSlideId, setHistorySlideId, setIsHistoryPanelOpen, setFactCheckResult, setCritiqueResult, setIsEditingTitle, setAdaptingAudienceSlideId,
+        setEditingSlideId, setStylingSlideId, setHistorySlideId, setIsHistoryPanelOpen, setFactCheckResult, setCritiqueResult, setIsEditingTitle, setAdaptingAudienceSlideId, setIsImageStudioOpen, setImageStudioSlideId,
     };
 
     return { modalState, setters };

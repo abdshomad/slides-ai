@@ -14,17 +14,13 @@ interface SlidesStepProps {
   onStyleSlide: (id: string) => void;
   onGenerateNotes: (id: string) => void;
   onGenerateTakeaway: (id: string) => void;
-  onGenerateImage: (id: string) => void;
+  onOpenImageStudio: (id: string) => void;
   onExpandSlide: (id: string) => void;
   onViewSlideHistory: (id: string) => void;
   onFactCheckSlide: (id: string) => void;
   onCritiqueSlide: (slideId: string, imageBase64: string) => void;
   onAdaptAudience: (id: string) => void;
   onReorderSlides: (startIndex: number, endIndex: number) => void;
-  onSelectImageFromSearch: (slideId: string, url: string) => void;
-  onGenerateImageSuggestions: (slideId: string) => void;
-  onSelectImageSuggestion: (slideId: string, suggestion: string) => void;
-  onClearSelectedImage: (slideId: string) => void;
   currentLoadingStep: number;
   currentLoadingSubStep: number;
   generationStats: GenerationStats;

@@ -21,7 +21,7 @@ interface PresentationEditorProps {
 }
 
 const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
-  const { presentation, onRollback, onExitEditor } = props;
+  const { presentation, onRollback, onExitEditor, brandKit } = props;
 
   const {
     state,
@@ -98,17 +98,13 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
           onStyleSlide={id => modals.setStylingSlideId(id)}
           onGenerateNotes={handlers.handleGenerateSpeakerNotesForSlide}
           onGenerateTakeaway={handlers.handleGenerateKeyTakeaway}
-          onGenerateImage={handlers.handleGenerateImageForSlide}
+          onOpenImageStudio={handlers.handleOpenImageStudio}
           onExpandSlide={handlers.handleExpandSlide}
           onViewSlideHistory={handlers.handleViewSlideHistory}
           onFactCheckSlide={handlers.handleFactCheckSlide}
           onCritiqueSlide={handlers.handleCritiqueSlide}
           onAdaptAudience={id => modals.setAdaptingAudienceSlideId(id)}
           onReorderSlides={handlers.handleReorderSlides}
-          onSelectImageFromSearch={handlers.handleSelectImageFromSearch}
-          onGenerateImageSuggestions={handlers.handleGenerateImageSuggestions}
-          onSelectImageSuggestion={handlers.handleSelectImageSuggestion}
-          onClearSelectedImage={handlers.handleClearSelectedImage}
           currentLoadingStep={state.currentLoadingStep}
           currentLoadingSubStep={state.currentLoadingSubStep}
           generationStats={state.generationStats}
@@ -134,13 +130,17 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
         editingSlide={derivedState.editingSlide}
         stylingSlide={derivedState.stylingSlide}
         adaptingAudienceSlide={derivedState.adaptingAudienceSlide}
+        imageStudioSlide={derivedState.imageStudioSlide}
         historySlideId={modals.historySlideId}
         factCheckResult={modals.factCheckResult}
         critiqueResult={modals.critiqueResult}
+        isImageStudioOpen={modals.isImageStudioOpen}
+        brandKit={brandKit}
         onCloseEditing={() => modals.setEditingSlideId(null)}
         onCloseStyling={() => modals.setStylingSlideId(null)}
         onCloseAdaptingAudience={() => modals.setAdaptingAudienceSlideId(null)}
         onCloseHistory={() => modals.setHistorySlideId(null)}
+        onCloseImageStudio={handlers.handleCloseImageStudio}
         onEditSlide={handlers.handleEditSlide}
         onStyleSlide={handlers.handleUpdateSlideLayout}
         onAdaptAudience={handlers.handleAdaptAudience}
@@ -148,6 +148,12 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
         onCloseFactCheck={handlers.handleCloseFactCheck}
         onApplyFactCheck={handlers.handleApplyFactCheck}
         onCloseCritique={handlers.handleCloseCritique}
+        onGenerateImage={handlers.handleGenerateImageForSlide}
+        onEditImage={handlers.handleEditImage}
+        onGenerateImageSuggestions={handlers.handleGenerateImageSuggestions}
+        onSelectImageSuggestion={handlers.handleSelectImageSuggestion}
+        onSelectImageFromSearch={handlers.handleSelectImageFromSearch}
+        onApplyStyleToAll={handlers.handleApplyStyleToAll}
       />
     </div>
   );
