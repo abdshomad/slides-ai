@@ -1,7 +1,5 @@
 
-
 import React from 'react';
-// FIX: Corrected the import path for the BrandKit type to resolve the module resolution error.
 import { BrandKit } from '../../types/index';
 
 interface FontAndStyleSelectorsProps {
