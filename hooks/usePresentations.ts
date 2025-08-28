@@ -1,5 +1,6 @@
 
 
+
 import { useState, useEffect, useCallback, useMemo } from 'react';
 // FIX: Correct import path for types
 import { PresentationProject, AppState, HistoryCheckpoint, BrandKit } from '../types/index';
@@ -15,6 +16,7 @@ const createNewPresentation = (title: string): PresentationProject => {
     uploadedFileNames: [],
     outline: '',
     sources: [],
+    sourcedImages: [],
     slides: [],
     selectedTemplateId: templates[0]?.id || '',
     tone: 'Professional',

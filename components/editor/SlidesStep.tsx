@@ -1,8 +1,6 @@
 import React from 'react';
 // FIX: Correct import path for types
 import { Slide as SlideType, GenerationStats, PresentationTemplate } from '../../types/index';
-import GenerationProgress from './GenerationProgress';
-import { slideGenerationSteps } from '../../utils/loadingSteps';
 import SlidesStepHeader from './slides/SlidesStepHeader';
 import AsyncTaskIndicator from './slides/AsyncTaskIndicator';
 import SlideEditorLayout from './slides/SlideEditorLayout';
@@ -41,29 +39,9 @@ const SlidesStep: React.FC<SlidesStepProps> = (props) => {
     isLoading,
     loadingMessage,
     onDownload,
-    currentLoadingStep,
-    currentLoadingSubStep,
-    generationStats,
     elapsedTime,
     estimatedTime,
   } = props;
-
-  // Determine if we should show the full generation progress screen.
-  // This is true if the loading process for initial slide generation is still active.
-  const isInitialGeneration = slides.length === 0 && isLoading;
-
-
-  if (isInitialGeneration) {
-    return (
-        <GenerationProgress
-            currentLoadingStep={currentLoadingStep}
-            currentLoadingSubStep={currentLoadingSubStep}
-            stats={generationStats}
-            elapsedTime={elapsedTime}
-            estimatedTime={estimatedTime}
-        />
-    );
-  }
 
   return (
     <div className="mt-8 animate-fade-in">

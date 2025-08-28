@@ -15,11 +15,12 @@ export interface BrandKit {
 }
 
 export interface AppState {
-  generationStep: 'input' | 'outline' | 'slides';
+  generationStep: 'input' | 'outline' | 'slides' | 'image-review';
   inputText: string;
   uploadedFileNames: string[];
   outline: string;
   sources: Source[];
+  sourcedImages: { url: string; title: string; }[];
   slides: Slide[];
   selectedTemplateId: string;
   tone: string;

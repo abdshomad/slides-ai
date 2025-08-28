@@ -22,6 +22,5 @@ This document outlines potential features and improvements for future versions o
 
 *   **Hide "Editable Outline" section:** The editable outline text area could be hidden by default to simplify the UI, and only shown when requested by the user.
 *   **Visual Content Tone Selection:** Enhance the "Choose a Content Tone" selector with icons or thumbnail previews to better communicate the style of each tone.
-*   **Post-Generation Image Preview:** After the "Crafting your presentation..." process, show a sample gallery of relevant images sourced during the research step.
 *   **Hide Export Slide Button:** The individual slide export button could be moved or hidden to streamline the UI.
 *   **Grouped Slide Actions:** All actions on an individual slide should be grouped into a single dropdown action button to reduce clutter.

@@ -37,7 +37,7 @@ export const useEditorActions = ({
     const { 
         setError, setIsLoading, setLoadingMessage, setOutline, setSources, setPresentationTitle, setGenerationStep,
         setSlides, setStylingSlideId, setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats,
-        setFactCheckResult, setEstimatedTime
+        setFactCheckResult, setEstimatedTime, setSourcedImages
     } = setters;
     const { setEditingSlideId, setHistorySlideId, setIsEditingTitle, setCritiqueResult, setAdaptingAudienceSlideId } = modalSetters;
     const { startTimer, stopTimer } = timer;
@@ -71,7 +71,7 @@ export const useEditorActions = ({
         try {
             await generateSlidesAction({
                 managedFiles, inputText, outline, tone, sources,
-                setError, setIsLoading, setLoadingMessage, setSlides, setGenerationStep,
+                setError, setIsLoading, setLoadingMessage, setSlides, setSourcedImages, setGenerationStep,
                 setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats,
                 createCheckpoint, currentState
             });
@@ -80,8 +80,14 @@ export const useEditorActions = ({
         }
     }, [
         managedFiles, inputText, outline, tone, sources, createCheckpoint, currentState, startTimer, stopTimer,
-        setSlides, setGenerationStep, setError, setIsLoading, setLoadingMessage, setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats, setEstimatedTime
+        setSlides, setSourcedImages, setGenerationStep, setError, setIsLoading, setLoadingMessage, setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats, setEstimatedTime
     ]);
+
+    const handleContinueToEditor = useCallback(() => {
+        const nextStep = 'slides';
+        setters.setGenerationStep(nextStep);
+        createCheckpoint('Reviewed Images', { ...currentState, generationStep: nextStep });
+    }, [setters, createCheckpoint, currentState]);
   
     const handleGenerateImageForSlide = useCallback(
         (slideId: string) => slideEditingActions.generateImageAction({
@@ -254,6 +260,7 @@ export const useEditorActions = ({
     return {
         handleGenerateOutline,
         handleGenerateSlidesFromOutline,
+        handleContinueToEditor,
         handleGenerateImageForSlide,
         handleEditSlide,
         handleUpdateSlideLayout,

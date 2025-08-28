@@ -33,12 +33,13 @@ const usePresentationEditorState = ({ presentation, brandKit, onUpdatePresentati
         uploadedFileNames: managedFiles.map(f => f.file.name),
         outline: state.outline,
         sources: state.sources,
+        sourcedImages: state.sourcedImages,
         slides: state.slides,
         selectedTemplateId: state.selectedTemplateId,
         tone: state.tone,
     }), [
         state.generationStep, state.inputText, managedFiles, state.outline,
-        state.sources, state.slides, state.selectedTemplateId, state.tone
+        state.sources, state.sourcedImages, state.slides, state.selectedTemplateId, state.tone
     ]);
     
     const selectedTemplate = useMemo(() => templates.find(t => t.id === state.selectedTemplateId) || templates[0], [state.selectedTemplateId]);

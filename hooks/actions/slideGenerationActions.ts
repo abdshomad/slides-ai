@@ -17,6 +17,7 @@ interface GenerateSlidesArgs extends ActionContext {
     setIsLoading: SetState<boolean>;
     setLoadingMessage: SetState<string>;
     setSlides: SetState<SlideType[]>;
+    setSourcedImages: SetState<{ url: string; title: string; }[]>;
     setGenerationStep: SetState<AppState['generationStep']>;
     setCurrentLoadingStep: SetState<number>;
     setCurrentLoadingSubStep: SetState<number>;
@@ -25,7 +26,7 @@ interface GenerateSlidesArgs extends ActionContext {
 export const generateSlidesAction = async (args: GenerateSlidesArgs) => {
     const {
         managedFiles, inputText, outline, tone, sources,
-        setError, setIsLoading, setLoadingMessage, setSlides, setGenerationStep,
+        setError, setIsLoading, setLoadingMessage, setSlides, setSourcedImages, setGenerationStep,
         setCurrentLoadingStep, setCurrentLoadingSubStep, setGenerationStats,
         createCheckpoint, currentState
     } = args;
@@ -83,7 +84,27 @@ export const generateSlidesAction = async (args: GenerateSlidesArgs) => {
             });
         }
         
-        const newState = { ...currentState, slides: tempSlides, generationStep: nextStep, outline, tone, selectedTemplateId: currentState.selectedTemplateId };
+        const allImageSearchResults = tempSlides.flatMap(s => s.imageSearchResults || []).filter(img => img && img.url);
+
+        const newState: AppState = {
+            ...currentState,
+            slides: tempSlides,
+            sourcedImages: allImageSearchResults,
+            outline,
+            tone,
+            selectedTemplateId: currentState.selectedTemplateId,
+            generationStep: 'slides', // Default value
+        };
+
+        if (allImageSearchResults.length > 0) {
+            const nextStepForReview: AppState['generationStep'] = 'image-review';
+            setGenerationStep(nextStepForReview);
+            setSourcedImages(allImageSearchResults);
+            newState.generationStep = nextStepForReview;
+        } else {
+            setGenerationStep('slides');
+        }
+
         createCheckpoint('Generated Slides', newState);
 
     } catch (e) {

@@ -8,6 +8,8 @@ import InputStep from './editor/InputStep';
 import OutlineStep from './editor/OutlineStep';
 import SlidesStep from './editor/SlidesStep';
 import EditorModals from './editor/EditorModals';
+import GenerationProgress from './editor/GenerationProgress';
+import ImageReviewStep from './editor/ImageReviewStep';
 
 interface PresentationEditorProps {
     presentation: PresentationProject;
@@ -27,6 +29,8 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
     modals,
     derivedState,
   } = usePresentationEditorState(props);
+
+  const isGeneratingSlides = state.generationStep === 'slides' && state.isLoading && state.slides.length === 0;
 
   return (
     <div className="relative">
@@ -79,7 +83,24 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
         </div>
       )}
 
-      {state.generationStep === 'slides' && (
+      {isGeneratingSlides && (
+        <GenerationProgress
+            currentLoadingStep={state.currentLoadingStep}
+            currentLoadingSubStep={state.currentLoadingSubStep}
+            stats={state.generationStats}
+            elapsedTime={state.elapsedTime}
+            estimatedTime={state.estimatedTime}
+        />
+      )}
+      
+      {state.generationStep === 'image-review' && (
+        <ImageReviewStep 
+            images={state.sourcedImages}
+            onContinue={handlers.handleContinueToEditor}
+        />
+      )}
+
+      {state.generationStep === 'slides' && !isGeneratingSlides && (
         <SlidesStep
           slides={state.slides}
           isLoading={state.isLoading}
