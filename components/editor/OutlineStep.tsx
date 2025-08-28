@@ -5,13 +5,15 @@ import ToneSelector from '../ToneSelector';
 import TemplateSelector from '../TemplateSelector';
 import { parseOutline } from '../../utils/outlineParser';
 import OutlineLayoutSelectorModal from './OutlineLayoutSelectorModal';
+import RegenerateSlideModal from './outline/RegenerateSlideModal';
 import OutlinePreview from './outline/OutlinePreview';
 import OutlineEditor from './outline/OutlineEditor';
 import SourceList from './outline/SourceList';
 import OutlineActions from './outline/OutlineActions';
 import { DiagramIcon, ListIcon, EditIcon } from '../icons';
 import OutlineDiagram from './outline/OutlineDiagram';
-import { updateLayoutInOutline, addSlideToOutline, removeSlideFromOutline } from '../../utils/outlineUtils';
+import { regenerateSlideContent } from '../../services/slideEditingService';
+import { updateLayoutInOutline, addSlideToOutline, removeSlideFromOutline, updateSlideContentInOutline } from '../../utils/outlineUtils';
 
 interface OutlineStepProps {
   outline: string;
@@ -41,6 +43,7 @@ const OutlineStep: React.FC<OutlineStepProps> = ({
   loadingMessage,
 }) => {
   const [editingLayoutIndex, setEditingLayoutIndex] = useState<number | null>(null);
+  const [regeneratingSlideIndex, setRegeneratingSlideIndex] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'diagram'>('list');
   const [isEditorVisible, setIsEditorVisible] = useState(false);
   const parsedOutline = useMemo(() => parseOutline(outline), [outline]);
@@ -59,6 +62,23 @@ const OutlineStep: React.FC<OutlineStepProps> = ({
     if (window.confirm('Are you sure you want to remove this slide from the outline?')) {
         const newOutline = removeSlideFromOutline(outline, slideIndex);
         setOutline(newOutline);
+    }
+  };
+
+  const handleRegenerateSlideContent = async (slideIndex: number, prompt: string) => {
+    const originalSlide = parsedOutline[slideIndex];
+    if (!originalSlide) return;
+
+    try {
+      const newContent = await regenerateSlideContent(
+        { title: originalSlide.title, bulletPoints: originalSlide.points },
+        prompt
+      );
+      const newOutline = updateSlideContentInOutline(outline, slideIndex, newContent);
+      setOutline(newOutline);
+    } catch (error) {
+      console.error("Failed to regenerate slide content:", error);
+      // You could add a user-facing error message here, e.g., using a toast notification library.
     }
   };
 
@@ -107,6 +127,7 @@ const OutlineStep: React.FC<OutlineStepProps> = ({
                     onEditLayout={setEditingLayoutIndex}
                     onAddSlide={handleAddSlide}
                     onRemoveSlide={handleRemoveSlide}
+                    onRegenerateSlide={setRegeneratingSlideIndex}
                 />
             ) : (
                 <OutlineDiagram parsedOutline={parsedOutline} />
@@ -143,6 +164,18 @@ const OutlineStep: React.FC<OutlineStepProps> = ({
           currentLayout={parsedOutline[editingLayoutIndex]?.layout || 'ONE_COLUMN_TEXT'}
         />
       )}
+      
+      {regeneratingSlideIndex !== null && (
+        <RegenerateSlideModal
+          slide={parsedOutline[regeneratingSlideIndex]}
+          onClose={() => setRegeneratingSlideIndex(null)}
+          onSave={async (prompt) => {
+            await handleRegenerateSlideContent(regeneratingSlideIndex, prompt);
+            setRegeneratingSlideIndex(null);
+          }}
+        />
+      )}
+
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {

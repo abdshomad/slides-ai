@@ -2,7 +2,7 @@ import { Type } from "@google/genai";
 import { ai } from './geminiClient';
 // FIX: Correct import path for types
 import { Slide, FactCheckResult } from '../types/index';
-import { presentationSchema, factCheckSchema, chartSchema, adaptAudienceSchema } from './schemas';
+import { presentationSchema, factCheckSchema, chartSchema, adaptAudienceSchema, slideContentSchema } from './schemas';
 import { getEditSlidePrompt } from './prompts';
 
 /**
@@ -51,6 +51,36 @@ export const editSlide = async (slide: Slide, userPrompt: string): Promise<Parti
                 required: ["title"]
             }
         }
+    });
+
+    return JSON.parse(response.text);
+};
+
+/**
+ * Regenerates a slide's text content for the outline stage based on a user's instructions.
+ * @param originalContent The current slide's title and bullet points.
+ * @param instructions The user's instructions for what to change.
+ * @returns An object with the regenerated `title` and `bulletPoints`.
+ */
+export const regenerateSlideContent = async (originalContent: { title: string, bulletPoints: string[] }, instructions: string): Promise<{ title: string; bulletPoints: string[] }> => {
+    const prompt = `You are an AI presentation slide editor. Your task is to regenerate the content for a single slide based on user instructions.
+    
+    Analyze the original content and the user's instructions to create a new version of the slide's title and bullet points.
+    
+    Original Title: "${originalContent.title}"
+    Original Bullet Points: ${JSON.stringify(originalContent.bulletPoints)}
+    
+    User Instructions: "${instructions}"
+    
+    Your response MUST be a single, valid JSON object with the new "title" and "bulletPoints". Do not add markdown formatting.`;
+    
+    const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: slideContentSchema,
+        },
     });
 
     return JSON.parse(response.text);

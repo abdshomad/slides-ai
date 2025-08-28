@@ -8,6 +8,7 @@ interface OutlinePreviewProps {
     onEditLayout: (index: number) => void;
     onAddSlide: (index: number) => void;
     onRemoveSlide: (index: number) => void;
+    onRegenerateSlide: (index: number) => void;
 }
 
 const AddSlideButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
@@ -25,7 +26,7 @@ const AddSlideButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 );
 
 
-const OutlinePreview: React.FC<OutlinePreviewProps> = ({ parsedOutline, onEditLayout, onAddSlide, onRemoveSlide }) => {
+const OutlinePreview: React.FC<OutlinePreviewProps> = ({ parsedOutline, onEditLayout, onAddSlide, onRemoveSlide, onRegenerateSlide }) => {
     return (
         <div className="h-96 overflow-y-auto pr-2 custom-scrollbar bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
             {parsedOutline.length > 0 ? (
@@ -33,8 +34,15 @@ const OutlinePreview: React.FC<OutlinePreviewProps> = ({ parsedOutline, onEditLa
                 <AddSlideButton onClick={() => onAddSlide(0)} />
                 {parsedOutline.map((slide, index) => (
                 <React.Fragment key={index}>
-                    <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700/50 shadow-sm animate-fade-in flex items-start gap-6 relative group/slide">
-                        <div className="flex-shrink-0">
+                    <div 
+                        onClick={() => onRegenerateSlide(index)}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onRegenerateSlide(index)}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Regenerate slide ${index + 1}: ${slide.title}`}
+                        className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700/50 shadow-sm animate-fade-in flex items-start gap-6 relative group/slide cursor-pointer hover:border-pink-500/50 dark:hover:border-pink-400/50 transition-colors"
+                    >
+                        <div className="flex-shrink-0" onClick={e => e.stopPropagation()}>
                             <SlideLayoutWireframe
                                 layout={slide.layout}
                                 className="group"

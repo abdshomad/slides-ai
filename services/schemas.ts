@@ -69,6 +69,22 @@ export const presentationSchema = {
   required: ["slides"]
 };
 
+export const slideContentSchema = {
+    type: Type.OBJECT,
+    properties: {
+        title: {
+        type: Type.STRING,
+        description: "The regenerated slide title."
+        },
+        bulletPoints: {
+        type: Type.ARRAY,
+        description: "A list of regenerated bullet points.",
+        items: { type: Type.STRING }
+        }
+    },
+    required: ["title", "bulletPoints"]
+};
+
 export const factCheckSchema = {
   type: Type.OBJECT,
   properties: {

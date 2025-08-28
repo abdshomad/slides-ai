@@ -68,6 +68,28 @@ const getSlideTextBlocks = (outline: string): string[] => {
     return blocks.map(block => block.trimEnd());
 };
 
+export const updateSlideContentInOutline = (outline: string, slideIndex: number, newContent: { title: string, bulletPoints: string[] }): string => {
+    const blocks = getSlideTextBlocks(outline);
+    if (slideIndex < 0 || slideIndex >= blocks.length) {
+        return outline; // Index out of bounds
+    }
+
+    const oldBlock = blocks[slideIndex];
+    const layoutRegex = /\[LAYOUT:\s*([^\]]+)\]/;
+    const layoutMatch = oldBlock.match(layoutRegex);
+    const layoutTag = layoutMatch ? layoutMatch[0] : '[LAYOUT: DEFAULT]'; // Default if none found
+
+    let newBlock = `${layoutTag} ${newContent.title}`.trim();
+
+    if (newContent.bulletPoints && newContent.bulletPoints.length > 0) {
+        newBlock += '\n' + newContent.bulletPoints.map(p => `- ${p}`).join('\n');
+    }
+
+    blocks[slideIndex] = newBlock;
+
+    return blocks.join('\n\n');
+};
+
 export const removeSlideFromOutline = (outline: string, slideIndex: number): string => {
     const blocks = getSlideTextBlocks(outline);
     if (slideIndex < 0 || slideIndex >= blocks.length) {
