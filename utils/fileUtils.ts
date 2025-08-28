@@ -1,4 +1,5 @@
-import { FilePart } from '../types';
+// FIX: Correct import path for types
+import { FilePart } from '../types/index';
 
 export const convertFileToGenerativePart = (file: File): Promise<FilePart> => {
   return new Promise((resolve, reject) => {

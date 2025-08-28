@@ -1,84 +1,80 @@
 import React from 'react';
-import { Slide as SlideType } from '../../types';
-import Loader from '../Loader';
-import SlideSidebar from '../SlideSidebar';
-import SlideDetailView from '../SlideDetailView';
-import { DownloadIcon } from '../icons';
+// FIX: Correct import path for types
+import { Slide as SlideType, GenerationStats, PresentationTemplate } from '../../types/index';
+import GenerationProgress from './GenerationProgress';
+import { slideGenerationSteps } from '../../utils/loadingSteps';
+import SlidesStepHeader from './slides/SlidesStepHeader';
+import AsyncTaskIndicator from './slides/AsyncTaskIndicator';
+import SlideEditorLayout from './slides/SlideEditorLayout';
 
 interface SlidesStepProps {
   slides: SlideType[];
   isLoading: boolean;
   loadingMessage: string;
-  selectedSlideId: string | null;
-  onSelectSlide: (id: string) => void;
   onDownload: () => void;
   onEditSlide: (id: string) => void;
   onStyleSlide: (id: string) => void;
   onGenerateNotes: (id: string) => void;
   onGenerateTakeaway: (id: string) => void;
-  onExpandSlide: (id: string) => void;
-  onViewHistory: (id: string) => void;
   onGenerateImage: (id: string) => void;
+  onExpandSlide: (id: string) => void;
+  onViewSlideHistory: (id: string) => void;
+  onFactCheckSlide: (id: string) => void;
+  onCritiqueSlide: (slideId: string, imageBase64: string) => void;
+  onReorderSlides: (startIndex: number, endIndex: number) => void;
+  onSelectImageFromSearch: (slideId: string, url: string) => void;
+  currentLoadingStep: number;
+  currentLoadingSubStep: number;
+  generationStats: GenerationStats;
+  elapsedTime: number;
+  estimatedTime: number;
+  selectedTemplate: PresentationTemplate;
 }
 
-const SlidesStep: React.FC<SlidesStepProps> = ({
-  slides,
-  isLoading,
-  loadingMessage,
-  selectedSlideId,
-  onSelectSlide,
-  onDownload,
-  onEditSlide,
-  onStyleSlide,
-  onGenerateNotes,
-  onGenerateTakeaway,
-  onExpandSlide,
-  onViewHistory,
-  onGenerateImage,
-}) => {
-  const selectedSlide = React.useMemo(() => slides.find(s => s.id === selectedSlideId), [slides, selectedSlideId]);
+const SlidesStep: React.FC<SlidesStepProps> = (props) => {
+  const {
+    slides,
+    isLoading,
+    loadingMessage,
+    onDownload,
+    currentLoadingStep,
+    currentLoadingSubStep,
+    generationStats,
+    elapsedTime,
+    estimatedTime,
+  } = props;
+
+  // Determine if we should show the full generation progress screen.
+  // This is true if the loading process for initial slide generation is still active.
+  const isInitialGeneration = currentLoadingStep < slideGenerationSteps.length;
+
+  if (isInitialGeneration) {
+    return (
+        <GenerationProgress
+            currentLoadingStep={currentLoadingStep}
+            currentLoadingSubStep={currentLoadingSubStep}
+            stats={generationStats}
+            elapsedTime={elapsedTime}
+            estimatedTime={estimatedTime}
+        />
+    );
+  }
 
   return (
     <div className="mt-8 animate-fade-in">
-      <div className="flex justify-end items-center mb-6">
-          {slides.length > 0 && !isLoading && (
-              <button
-                onClick={onDownload}
-                className="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-green-500 transition-colors"
-              >
-                <DownloadIcon className="w-5 h-5 mr-2" />
-                Download PPTX
-              </button>
-          )}
-      </div>
+      <SlidesStepHeader 
+        showDownloadButton={slides.length > 0 && !isLoading}
+        onDownload={onDownload}
+      />
+      
+      <AsyncTaskIndicator
+        isLoading={isLoading}
+        loadingMessage={loadingMessage}
+        elapsedTime={elapsedTime}
+        estimatedTime={estimatedTime}
+      />
 
-       {(isLoading && slides.length === 0) && (
-        <div className="flex flex-col items-center justify-center text-center p-8">
-            <Loader />
-            <p className="mt-4 text-slate-400">{loadingMessage}</p>
-        </div>
-      )}
-
-      {slides.length > 0 && (
-        <div className="flex gap-8">
-          <SlideSidebar 
-              slides={slides}
-              selectedSlideId={selectedSlideId}
-              onSelectSlide={onSelectSlide}
-          />
-          <SlideDetailView
-              slide={selectedSlide || null}
-              onEdit={() => selectedSlideId && onEditSlide(selectedSlideId)}
-              onStyle={() => selectedSlideId && onStyleSlide(selectedSlideId)}
-              onGenerateNotes={() => selectedSlideId && onGenerateNotes(selectedSlideId)}
-              onGenerateTakeaway={() => selectedSlideId && onGenerateTakeaway(selectedSlideId)}
-              onExpand={() => selectedSlideId && onExpandSlide(selectedSlideId)}
-              onViewHistory={() => selectedSlideId && onViewHistory(selectedSlideId)}
-              onGenerateImage={() => selectedSlideId && onGenerateImage(selectedSlideId)}
-              isLoading={isLoading && loadingMessage.includes('Expanding')}
-          />
-        </div>
-      )}
+      <SlideEditorLayout {...props} />
     </div>
   );
 };

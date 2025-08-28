@@ -1,38 +1,77 @@
-import React from 'react';
-import { Slide as SlideType } from '../types';
+import React, { useState } from 'react';
+// FIX: Correct import path for types
+import { Slide as SlideType, PresentationTemplate } from '../types/index';
+import DraggableSlideThumbnail from './slide/DraggableSlideThumbnail';
 
 interface SlideSidebarProps {
   slides: SlideType[];
   selectedSlideId: string | null;
   onSelectSlide: (slideId: string) => void;
+  onReorderSlides: (startIndex: number, endIndex: number) => void;
+  onEditSlide: (slideId: string) => void;
+  template: PresentationTemplate;
 }
 
-const SlideSidebar: React.FC<SlideSidebarProps> = ({ slides, selectedSlideId, onSelectSlide }) => {
+const SlideSidebar: React.FC<SlideSidebarProps> = ({ slides, selectedSlideId, onSelectSlide, onReorderSlides, onEditSlide, template }) => {
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.setData('text/plain', index.toString());
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    if (draggedIndex !== null && draggedIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault(); // Necessary to allow dropping
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
+    e.preventDefault();
+    setDragOverIndex(null);
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      return;
+    }
+    onReorderSlides(draggedIndex, dropIndex);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
   return (
     <div className="w-64 flex-shrink-0 h-[75vh] overflow-y-auto pr-2 space-y-4 custom-scrollbar">
       {slides.map((slide, index) => (
-        <div
+        <DraggableSlideThumbnail
           key={slide.id}
-          onClick={() => onSelectSlide(slide.id)}
-          className={`cursor-pointer rounded-lg border-2 transition-all duration-200 p-2 ${
-            selectedSlideId === slide.id ? 'border-pink-500 bg-slate-700/50' : 'border-transparent hover:border-slate-600 bg-slate-700/20'
-          }`}
-          role="button"
-          aria-label={`Select slide ${index + 1}`}
-          tabIndex={0}
-          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onSelectSlide(slide.id)}
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-slate-400 font-bold w-6 text-center">{index + 1}</span>
-            <div className="w-24 h-14 bg-slate-800 rounded-md flex-shrink-0 overflow-hidden relative">
-              {slide.image && <img src={`data:image/jpeg;base64,${slide.image}`} className="w-full h-full object-cover" alt="Slide thumbnail"/>}
-               {!slide.image && <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xs text-slate-500">No Image</span>}
-            </div>
-            <p className="text-sm text-slate-300 truncate flex-grow pr-2">{slide.title}</p>
-          </div>
-        </div>
+          slide={slide}
+          template={template}
+          index={index}
+          isSelected={selectedSlideId === slide.id}
+          isBeingDragged={draggedIndex === index}
+          isDragTarget={dragOverIndex === index}
+          onSelectSlide={onSelectSlide}
+          onEditSlide={onEditSlide}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onDragEnd={handleDragEnd}
+        />
       ))}
-      {slides.length === 0 && <p className="text-slate-500 text-center py-4">No slides generated yet.</p>}
+      {slides.length === 0 && <p className="text-slate-400 dark:text-slate-500 text-center py-4">No slides generated yet.</p>}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
@@ -41,9 +80,12 @@ const SlideSidebar: React.FC<SlideSidebarProps> = ({ slides, selectedSlideId, on
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #475569;
+          background-color: #cbd5e1;
           border-radius: 10px;
           border: 3px solid transparent;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #475569;
         }
       `}</style>
     </div>

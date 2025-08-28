@@ -1,0 +1,11 @@
+# 5. Non-Functional Requirements
+
+*   **NF-01 (Performance & Responsiveness):** The UI must remain responsive and interactive at all times. Long-running AI processes are handled in one of two ways:
+    *   **Blocking Global Actions:** Initial outline and slide generation are modal operations that affect the entire project. They will display a full-screen progress view, as the user must wait for completion before proceeding.
+    *   **Non-Blocking Local Actions:** Asynchronous tasks on individual slides (e.g., generating speaker notes, fact-checking, expanding content, generating an image) must not block the main UI. The user can continue to navigate and work on other slides while these tasks run in the background. Progress is indicated on the specific UI element that triggered the action (e.g., a button spinner or a loading state in the image area).
+*   **NF-02 (Usability):** The application follows an intuitive, step-by-step workflow. Interactions are straightforward, discoverable, and require a minimal learning curve.
+*   **NF-03 (Accessibility):** The application adheres to WCAG 2.1 AA standards, including proper use of ARIA attributes for screen readers, full keyboard navigation, and sufficient color contrast ratios.
+*   **NF-04 (Browser Compatibility):** Must function correctly on the latest stable versions of major desktop browsers (Chrome, Firefox, Safari, Edge).
+*   **NF-05 (Security):** The user's Gemini API key is treated as a sensitive environment variable and is not exposed on the client-side or stored in Local Storage.
+*   **NF-06 (State Management & Persistence):** Application state is managed predictably. All user-generated content and project history is reliably persisted in the browser's Local Storage, featuring an auto-save mechanism to prevent data loss.
+*   **NF-07 (Maintainability):** The codebase is modular and well-structured, utilizing a clear separation of concerns (e.g., components, hooks, services, utils) to ensure long-term maintainability and scalability.

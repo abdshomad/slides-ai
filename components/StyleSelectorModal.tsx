@@ -1,5 +1,6 @@
 import React from 'react';
-import { Slide } from '../types';
+// FIX: Correct import path for types
+import { Slide } from '../types/index';
 
 interface StyleSelectorModalProps {
   slide: Slide;
@@ -10,7 +11,14 @@ interface StyleSelectorModalProps {
 const layoutOptions = [
     { id: 'DEFAULT', name: 'Image Right, Text Left', description: 'Standard layout with visual on the right.' },
     { id: 'DEFAULT_REVERSE', name: 'Image Left, Text Right', description: 'Visual on the left, supporting text on the right.' },
+    { id: 'ONE_COLUMN_TEXT', name: 'Text Only', description: 'A title and bullet points, with no image.' },
+    { id: 'TWO_COLUMN_TEXT', name: 'Two Column Text', description: 'Organize text into two distinct columns under a main title.' },
+    { id: 'TIMELINE', name: 'Timeline', description: 'Present a sequence of events chronologically.' },
     { id: 'TITLE_ONLY', name: 'Title Only', description: 'A full-slide title for section breaks or intros.' },
+    { id: 'SECTION_HEADER', name: 'Section Header', description: 'A title with a supporting subtitle. Great for introductions.' },
+    { id: 'MAIN_POINT_EMPHASIS', name: 'Main Point Emphasis', description: 'Highlight a key number, phrase, or statement.' },
+    { id: 'QUOTE', name: 'Quote', description: 'Feature a compelling quote with attribution.' },
+    { id: 'COMPARISON', name: 'Comparison', description: 'Place two blocks of content side-by-side for comparison.' },
 ];
 
 
@@ -26,12 +34,12 @@ const StyleSelectorModal: React.FC<StyleSelectorModalProps> = ({ slide, onClose,
       aria-labelledby="style-slide-title"
     >
       <div 
-        className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl p-6 sm:p-8 text-white transform transition-transform scale-100"
+        className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl p-6 sm:p-8 text-slate-900 dark:text-white transform transition-transform scale-100"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-start mb-6">
-            <h2 id="style-slide-title" className="text-2xl font-bold text-pink-400">Select Slide Layout</h2>
-            <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl leading-none" aria-label="Close">
+            <h2 id="style-slide-title" className="text-2xl font-bold text-pink-600 dark:text-pink-400">Change Slide Style</h2>
+            <button onClick={onClose} className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white text-3xl leading-none" aria-label="Close">
                 &times;
             </button>
         </div>
@@ -44,14 +52,14 @@ const StyleSelectorModal: React.FC<StyleSelectorModalProps> = ({ slide, onClose,
                     tabIndex={0}
                     onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onSave(option.id)}
                     className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 flex items-center
-                        ${currentLayout === option.id ? 'border-pink-500 bg-slate-700/50 shadow-lg' : 'border-slate-600 hover:border-slate-500 hover:bg-slate-700/30'}
+                        ${currentLayout === option.id ? 'border-pink-500 bg-slate-100 dark:bg-slate-700/50 shadow-lg' : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-100/70 dark:hover:bg-slate-700/30'}
                     `}
                     role="button"
                     aria-pressed={currentLayout === option.id}
                 >
                     <div className="flex-grow">
-                        <h3 className="font-bold text-lg text-slate-200">{option.name}</h3>
-                        <p className="text-sm text-slate-400">{option.description}</p>
+                        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">{option.name}</h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">{option.description}</p>
                     </div>
                      {currentLayout === option.id && (
                         <div className="ml-4 flex-shrink-0">

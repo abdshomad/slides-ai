@@ -1,0 +1,16 @@
+# 4.3. Step 2: Outline Generation
+
+*   **F-OG-01:** The AI shall generate a presentation outline based on the text and file inputs.
+*   **F-OG-02 (Web Research):** The AI uses Google Search to gather up-to-date information, enhancing the outline's quality and relevance.
+*   **F-OG-03 (Source Citing):** The URLs of web sources used by the AI are displayed below the outline for user reference and verification.
+*   **F-OG-04 (Title Generation):** The AI suggests a concise and engaging title for the presentation based on the content.
+*   **F-OG-05 (Outline Editing & Review):** The generated outline is displayed in a side-by-side view.
+    *   One pane provides a text editor allowing the user to directly modify the raw outline content.
+    *   The other pane shows a live, visual preview of the slide structure that updates as the user types.
+    *   The live preview pane offers two distinct views: a detailed "List" view and a "Diagram" view that renders the presentation flow as a flowchart.
+*   **F-OG-06 (Interactive Layout Previews):**
+    *   **F-OG-06a:** Alongside each slide in the outline preview, a visual wireframe of the suggested slide layout is displayed.
+    *   **F-OG-06b:** The layout wireframe is interactive. Clicking it opens a modal allowing the user to select a different layout for that specific slide before the main content generation.
+*   **F-OG-07 (Tone & Template Selection):**
+    *   Users can select a content tone (e.g., Professional, Casual, Enthusiastic) from a dropdown list.
+    *   Users must choose a visual design template from a gallery of predefined options.

@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
-import { Slide as SlideType } from '../types';
-import { KeyIcon, NotesIcon } from './icons';
-import Loader from './Loader';
+import React, { useState, useRef, useCallback } from 'react';
+// FIX: Correct import path for types
+import { Slide as SlideType } from '../types/index';
 import SlideActionToolbar from './SlideActionToolbar';
+import SlideContent from './slide/SlideContent';
+import SlideImage from './slide/SlideImage';
+import SlideMetadata from './slide/SlideMetadata';
+import useSlideExport from '../hooks/useSlideExport';
+import SlideChart from './SlideChart';
+
 
 interface SlideDetailViewProps {
   slide: SlideType | null;
+  slideNumber: number;
+  totalSlides: number;
   onEdit: () => void;
   onStyle: () => void;
   onGenerateTakeaway: () => void;
@@ -13,72 +20,107 @@ interface SlideDetailViewProps {
   onExpand: () => void;
   onViewHistory: () => void;
   onGenerateImage: () => void;
-  isLoading: boolean;
+  onFactCheck: () => void;
+  onCritiqueDesign: (slideId: string, imageBase64: string) => void;
+  onSelectImageFromSearch: (slideId: string, url: string) => void;
 }
 
 const SlideDetailView: React.FC<SlideDetailViewProps> = (props) => {
-  const { slide } = props;
+  const { slide, slideNumber, totalSlides, onSelectImageFromSearch } = props;
   const [showNotes, setShowNotes] = useState(false);
+  const slideContentRef = useRef<HTMLDivElement>(null);
+  const { isExporting, exportSlide, captureSlideAsBase64 } = useSlideExport(slideContentRef, slide, slideNumber);
 
   if (!slide) {
     return (
-        <div className="flex-grow h-[75vh] flex items-center justify-center bg-slate-800/50 rounded-lg">
-            <p className="text-slate-400">Select a slide to view details</p>
+        <div className="flex-grow h-[75vh] flex items-center justify-center bg-slate-200 dark:bg-slate-800/50 rounded-lg">
+            <p className="text-slate-500 dark:text-slate-400">Select a slide to view details</p>
         </div>
     );
   }
+
+  const handleCritique = useCallback(async () => {
+    if (!slide) return;
+    try {
+      const imageData = await captureSlideAsBase64(); // uses default pixel ratio
+      props.onCritiqueDesign(slide.id, imageData);
+    } catch (error) {
+      console.error("Failed to capture slide for critique:", error);
+      // Ideally show an error toast to the user
+    }
+  }, [slide, captureSlideAsBase64, props.onCritiqueDesign]);
   
   return (
-    <div className="flex-grow h-[75vh] flex flex-col bg-slate-700/30 rounded-lg shadow-lg">
-        <div className="relative w-full h-1/2 bg-slate-800 rounded-t-lg flex items-center justify-center overflow-hidden">
-            {slide.isLoadingImage && (
-                <div className="flex flex-col items-center text-slate-400">
-                    <Loader />
-                    <span className="text-xs mt-2">Generating Image...</span>
+    <div className="flex-grow h-[75vh] flex flex-col bg-slate-100 dark:bg-slate-700/30 rounded-lg shadow-lg">
+        <div ref={slideContentRef} className="flex-grow flex flex-col overflow-hidden relative">
+             {/* Conditionally hide SlideImage if a chart is present */}
+            {!slide.chartData && (
+                <SlideImage
+                  isLoading={slide.isLoadingImage}
+                  image={slide.image}
+                  title={slide.title}
+                  imagePrompt={slide.imagePrompt}
+                  imageSearchResults={slide.imageSearchResults}
+                  onGenerate={props.onGenerateImage}
+                  onSelectImage={(url) => onSelectImageFromSearch(slide.id, url)}
+                />
+            )}
+             {slideNumber > 0 && (
+                <div className="absolute top-3 right-3 bg-white/70 dark:bg-slate-900/70 text-slate-600 dark:text-slate-300 text-xs font-semibold rounded-md px-2 py-1 backdrop-blur-sm">
+                    {slideNumber} / {totalSlides}
                 </div>
             )}
-            {slide.image && !slide.isLoadingImage && (
-            <img src={`data:image/jpeg;base64,${slide.image}`} alt={slide.title} className="w-full h-full object-contain" />
-            )}
-            {!slide.image && !slide.isLoadingImage && (
-                <span className="text-slate-500 text-lg">No Image</span>
-            )}
+            
+            <div className="p-6 flex-grow flex flex-col overflow-y-auto custom-scrollbar">
+                {/* Render title here */}
+                <div className={`flex items-center mb-4 ${slide.layout === 'TITLE_ONLY' ? 'justify-center h-full' : ''}`}>
+                   {slide.layout !== 'TITLE_ONLY' && <div className="w-1 h-8 bg-pink-400 rounded-full mr-4 flex-shrink-0"></div>}
+                    <h3 className={`font-bold text-pink-600 dark:text-pink-400 ${slide.layout === 'TITLE_ONLY' ? 'text-5xl text-center' : 'text-2xl'}`}>{slide.title}</h3>
+                </div>
+                
+                {/* Render Chart or SlideContent */}
+                {slide.chartData ? (
+                    <div className="w-full h-96 flex-grow">
+                        <SlideChart chartData={slide.chartData} />
+                    </div>
+                ) : (
+                    <SlideContent slide={slide} />
+                )}
+                <SlideMetadata slide={slide} showNotes={showNotes} />
+            </div>
         </div>
-        
-        <div className="p-6 flex-grow flex flex-col overflow-y-auto custom-scrollbar">
-            <h3 className="font-bold text-2xl text-pink-400 mb-4">{slide.title}</h3>
-            <ul className="list-disc list-inside space-y-2 text-slate-300 text-lg">
-            {slide.bulletPoints.map((point, index) => (
-                <li key={index}>{point}</li>
-            ))}
-            {slide.bulletPoints.length === 0 && <li className="text-slate-400">No content</li>}
-            </ul>
-
-            {slide.keyTakeaway && (
-                <div className="mt-4 pt-4 border-t border-slate-600/50">
-                    <p className="text-md font-semibold text-purple-300 flex items-start">
-                        <KeyIcon className="w-4 h-4 mr-2 mt-1 flex-shrink-0" />
-                        <span className="font-bold">Key Takeaway:</span>
-                        <span className="ml-2 font-normal text-slate-300">{slide.keyTakeaway}</span>
-                    </p>
-                </div>
-            )}
-            {showNotes && slide.speakerNotes && (
-                <div className="mt-4 pt-4 border-t border-slate-600/50 bg-slate-900/50 p-4 rounded-md">
-                    <h4 className="font-bold text-md text-purple-300 mb-2 flex items-center">
-                        <NotesIcon className="w-5 h-5 mr-2" />
-                        Speaker Notes
-                    </h4>
-                    <p className="text-md text-slate-300 whitespace-pre-wrap">{slide.speakerNotes}</p>
-                </div>
-            )}
-        </div>
-
         <SlideActionToolbar 
-            {...props}
+            slide={slide}
+            onEdit={props.onEdit}
+            onStyle={props.onStyle}
+            onGenerateTakeaway={props.onGenerateTakeaway}
+            onGenerateNotes={props.onGenerateNotes}
+            onExpand={props.onExpand}
+            onViewHistory={props.onViewHistory}
+            onGenerateImage={props.onGenerateImage}
+            onFactCheck={props.onFactCheck}
+            onCritiqueDesign={handleCritique}
+            onExportSlide={exportSlide}
+            isExporting={isExporting}
             showNotes={showNotes}
             setShowNotes={setShowNotes}
         />
+         <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: #cbd5e1;
+          border-radius: 10px;
+          border: 3px solid transparent;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #475569;
+        }
+      `}</style>
     </div>
   );
 };

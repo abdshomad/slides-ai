@@ -1,12 +1,18 @@
 import React, { useState, useRef } from 'react';
-import { UploadIcon } from './icons';
+// FIX: Correct import path for types
+import { ManagedFile } from '../types/index';
+import ManagedFilesList from './upload/ManagedFilesList';
+import ManagedFileItem from './upload/ManagedFileItem';
+import { UploadIcon } from './icons/UploadIcon';
 
 interface FileUploadProps {
   onFilesChange: (files: File[]) => void;
   acceptedFileTypes?: string;
+  managedFiles: ManagedFile[];
+  onRemoveFile: (id: string) => void;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ onFilesChange, acceptedFileTypes }) => {
+const FileUpload: React.FC<FileUploadProps> = ({ onFilesChange, acceptedFileTypes, managedFiles, onRemoveFile }) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -48,6 +54,37 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesChange, acceptedFileType
   const handleClick = () => {
     fileInputRef.current?.click();
   };
+
+  if (managedFiles.length > 0) {
+    return (
+      <ManagedFilesList
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        isDragging={isDragging}
+      >
+        <input ref={fileInputRef} type="file" multiple onChange={handleFileChange} className="hidden" accept={acceptedFileTypes} />
+        <h3 className="text-lg font-semibold text-slate-300 mb-3">Context Files</h3>
+        <ul className="space-y-3">
+            {managedFiles.map(mf => (
+              <ManagedFileItem 
+                key={mf.id} 
+                managedFile={mf} 
+                onRemoveFile={onRemoveFile} 
+              />
+            ))}
+        </ul>
+        <button 
+          type="button"
+          onClick={handleClick} 
+          className="mt-4 w-full text-center text-sm text-pink-400 hover:text-pink-300 font-semibold p-2 rounded-md hover:bg-slate-700/50 transition-colors"
+        >
+          + Add more files
+        </button>
+      </ManagedFilesList>
+    );
+  }
 
   return (
     <div

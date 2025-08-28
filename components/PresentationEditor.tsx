@@ -1,14 +1,15 @@
+
+
 import React from 'react';
-import { PresentationProject, AppState } from '../types';
+// FIX: Correct import path for types
+import { PresentationProject, AppState } from '../types/index';
 import usePresentationEditorState from '../hooks/usePresentationEditorState';
-import EditSlideModal from './EditSlideModal';
-import StyleSelectorModal from './StyleSelectorModal';
 import HistoryPanel from './HistoryPanel';
-import SlideHistoryPanel from './SlideHistoryPanel';
 import EditorHeader from './editor/EditorHeader';
 import InputStep from './editor/InputStep';
 import OutlineStep from './editor/OutlineStep';
 import SlidesStep from './editor/SlidesStep';
+import EditorModals from './editor/EditorModals';
 
 interface PresentationEditorProps {
     presentation: PresentationProject;
@@ -19,7 +20,7 @@ interface PresentationEditorProps {
 }
 
 const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
-  const { presentation, onUpdatePresentation, onRollback, onExitEditor } = props;
+  const { presentation, onRollback, onExitEditor } = props;
 
   const {
     state,
@@ -33,7 +34,7 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
       <EditorHeader
         onExitEditor={onExitEditor}
         onOpenHistory={() => modals.setIsHistoryPanelOpen(true)}
-        isEditingTitle={derivedState.isEditingTitle}
+        isEditingTitle={state.isEditingTitle}
         setIsEditingTitle={handlers.setIsEditingTitle}
         presentationTitle={state.presentationTitle}
         setPresentationTitle={handlers.setPresentationTitle}
@@ -45,13 +46,15 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
         <InputStep
           inputText={state.inputText}
           setInputText={handlers.setInputText}
-          managedFiles={state.managedFiles}
+          managedFiles={derivedState.managedFiles}
           onFilesChange={handlers.handleFilesChange}
           onRemoveFile={handlers.handleRemoveFile}
           onGenerateOutline={handlers.handleGenerateOutline}
           isLoading={state.isLoading}
           loadingMessage={state.loadingMessage}
           hasContent={derivedState.hasContent}
+          elapsedTime={state.elapsedTime}
+          estimatedTime={state.estimatedTime}
         />
       )}
 
@@ -82,17 +85,24 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
           slides={state.slides}
           isLoading={state.isLoading}
           loadingMessage={state.loadingMessage}
-          selectedSlideId={state.selectedSlideId}
-          onSelectSlide={handlers.setSelectedSlideId}
           onDownload={handlers.handleDownload}
           onEditSlide={id => modals.setEditingSlideId(id)}
           onStyleSlide={id => modals.setStylingSlideId(id)}
           onGenerateNotes={handlers.handleGenerateSpeakerNotesForSlide}
           onGenerateTakeaway={handlers.handleGenerateKeyTakeaway}
-          onExpandSlide={handlers.handleExpandSlide}
-          onViewHistory={id => modals.setHistorySlideId(id)}
-          // Fix: Pass the onGenerateImage handler to the SlidesStep component.
           onGenerateImage={handlers.handleGenerateImageForSlide}
+          onExpandSlide={handlers.handleExpandSlide}
+          onViewSlideHistory={handlers.handleViewSlideHistory}
+          onFactCheckSlide={handlers.handleFactCheckSlide}
+          onCritiqueSlide={handlers.handleCritiqueSlide}
+          onReorderSlides={handlers.handleReorderSlides}
+          onSelectImageFromSearch={handlers.handleSelectImageFromSearch}
+          currentLoadingStep={state.currentLoadingStep}
+          currentLoadingSubStep={state.currentLoadingSubStep}
+          generationStats={state.generationStats}
+          elapsedTime={state.elapsedTime}
+          estimatedTime={state.estimatedTime}
+          selectedTemplate={derivedState.selectedTemplate}
         />
       )}
     
@@ -107,30 +117,23 @@ const PresentationEditor: React.FC<PresentationEditorProps> = (props) => {
         />
       )}
 
-      {derivedState.editingSlide && (
-        <EditSlideModal
-          slide={derivedState.editingSlide}
-          onClose={() => modals.setEditingSlideId(null)}
-          onSave={handlers.handleEditSlide}
-        />
-      )}
-      
-      {derivedState.stylingSlide && (
-        <StyleSelectorModal
-          slide={derivedState.stylingSlide}
-          onClose={() => modals.setStylingSlideId(null)}
-          onSave={handlers.handleUpdateSlideLayout}
-        />
-      )}
-
-      {modals.historySlideId && (
-        <SlideHistoryPanel
-          history={presentation.history}
-          slideId={modals.historySlideId}
-          onClose={() => modals.setHistorySlideId(null)}
-          onRestore={handlers.handleRestoreSlideState}
-        />
-      )}
+      <EditorModals
+        presentationHistory={presentation.history}
+        editingSlide={derivedState.editingSlide}
+        stylingSlide={derivedState.stylingSlide}
+        historySlideId={modals.historySlideId}
+        factCheckResult={modals.factCheckResult}
+        critiqueResult={modals.critiqueResult}
+        onCloseEditing={() => modals.setEditingSlideId(null)}
+        onCloseStyling={() => modals.setStylingSlideId(null)}
+        onCloseHistory={() => modals.setHistorySlideId(null)}
+        onEditSlide={handlers.handleEditSlide}
+        onStyleSlide={handlers.handleUpdateSlideLayout}
+        onRestoreSlide={handlers.handleRestoreSlideFromHistory}
+        onCloseFactCheck={handlers.handleCloseFactCheck}
+        onApplyFactCheck={handlers.handleApplyFactCheck}
+        onCloseCritique={handlers.handleCloseCritique}
+      />
     </div>
   );
 };

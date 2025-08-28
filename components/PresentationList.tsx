@@ -1,6 +1,8 @@
 import React from 'react';
-import { PresentationProject } from '../types';
-import { PlusIcon, TrashIcon } from './icons';
+// FIX: Correct import path for types
+import { PresentationProject } from '../types/index';
+import { PlusIcon } from './icons/PlusIcon';
+import { TrashIcon } from './icons/TrashIcon';
 
 interface PresentationListProps {
   presentations: PresentationProject[];
@@ -18,10 +20,10 @@ const PresentationList: React.FC<PresentationListProps> = ({ presentations, onCr
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-slate-200">Your Presentations</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Your Presentations</h2>
         <button
           onClick={handleCreate}
-          className="mt-4 sm:mt-0 inline-flex items-center justify-center p-3 rounded-full text-slate-300 bg-slate-700 hover:bg-slate-600 hover:text-pink-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-pink-500 transition-all"
+          className="mt-4 sm:mt-0 inline-flex items-center justify-center p-3 rounded-full text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-pink-500 dark:hover:text-pink-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-800 focus:ring-pink-500 transition-all"
           aria-label="Create New Presentation"
         >
           <PlusIcon className="w-6 h-6" />
@@ -36,11 +38,11 @@ const PresentationList: React.FC<PresentationListProps> = ({ presentations, onCr
             .map((p) => (
             <li
               key={p.id}
-              className="bg-slate-700/50 rounded-lg p-4 flex items-center justify-between hover:bg-slate-700 transition-colors"
+              className="bg-slate-100 dark:bg-slate-700/50 rounded-lg p-4 flex items-center justify-between hover:bg-slate-200/70 dark:hover:bg-slate-700 transition-colors"
             >
               <div className="cursor-pointer flex-grow" onClick={() => onSelect(p.id)}>
-                <h3 className="font-bold text-lg text-slate-200">{p.title}</h3>
-                <p className="text-sm text-slate-400">
+                <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">{p.title}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   Last modified: {new Date(p.lastModified).toLocaleString()}
                 </p>
               </div>
@@ -51,7 +53,7 @@ const PresentationList: React.FC<PresentationListProps> = ({ presentations, onCr
                      onDelete(p.id);
                    }
                 }}
-                className="p-2 text-slate-400 hover:text-red-400 rounded-full hover:bg-slate-600 transition-colors"
+                className="p-2 text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                 aria-label={`Delete ${p.title}`}
               >
                 <TrashIcon className="w-5 h-5" />
@@ -60,9 +62,9 @@ const PresentationList: React.FC<PresentationListProps> = ({ presentations, onCr
           ))}
         </ul>
       ) : (
-        <div className="text-center py-12 border-2 border-dashed border-slate-700 rounded-lg">
-          <h3 className="text-xl font-semibold text-slate-400">Loading your new presentation...</h3>
-          <p className="text-slate-500 mt-2">Get ready to create!</p>
+        <div className="text-center py-12 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg">
+          <h3 className="text-xl font-semibold text-slate-500 dark:text-slate-400">Loading your new presentation...</h3>
+          <p className="text-slate-400 dark:text-slate-500 mt-2">Get ready to create!</p>
         </div>
       )}
     </div>

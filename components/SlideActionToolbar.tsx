@@ -1,7 +1,17 @@
 import React from 'react';
-import { Slide as SlideType } from '../types';
-import { EditIcon, StyleIcon, KeyIcon, NotesIcon, HistoryIcon, ExpandIcon, MagicIcon } from './icons';
+// FIX: Correct import path for types
+import { Slide as SlideType } from '../types/index';
+import { EditIcon } from './icons/EditIcon';
+import { StyleIcon } from './icons/StyleIcon';
+import { KeyIcon } from './icons/KeyIcon';
+import { NotesIcon } from './icons/NotesIcon';
+import { HistoryIcon } from './icons/HistoryIcon';
+import { ExpandIcon } from './icons/ExpandIcon';
+import { MagicIcon } from './icons/MagicIcon';
+import { FactCheckIcon } from './icons/FactCheckIcon';
+import { ImageIcon } from './icons/ImageIcon';
 import Loader from './Loader';
+import { LightbulbIcon } from './icons/LightbulbIcon';
 
 interface SlideActionToolbarProps {
   slide: SlideType;
@@ -12,10 +22,18 @@ interface SlideActionToolbarProps {
   onExpand: () => void;
   onViewHistory: () => void;
   onGenerateImage: () => void;
-  isLoading: boolean;
+  onFactCheck: () => void;
+  onCritiqueDesign: () => void;
+  onExportSlide: () => void;
+  isExporting: boolean;
   showNotes: boolean;
   setShowNotes: (show: boolean) => void;
 }
+
+const buttonBaseClass = "inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors disabled:opacity-70 disabled:cursor-wait";
+const secondaryButtonClass = `${buttonBaseClass} bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200`;
+const primaryButtonClass = `${buttonBaseClass} bg-purple-600 hover:bg-purple-700 text-white`;
+
 
 const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
   slide,
@@ -26,79 +44,52 @@ const SlideActionToolbar: React.FC<SlideActionToolbarProps> = ({
   onExpand,
   onViewHistory,
   onGenerateImage,
-  isLoading,
+  onFactCheck,
+  onCritiqueDesign,
+  onExportSlide,
+  isExporting,
   showNotes,
   setShowNotes,
 }) => {
   return (
-    <div className="flex-shrink-0 p-4 bg-slate-800/50 rounded-b-lg border-t border-slate-600/50 flex flex-wrap gap-3 justify-center">
-      <button onClick={onEdit} className="btn-secondary"><EditIcon className="w-4 h-4 mr-2" />Edit</button>
-      <button onClick={onStyle} className="btn-secondary"><StyleIcon className="w-4 h-4 mr-2" />Style</button>
-      
+    <div className="flex-shrink-0 p-4 bg-slate-200/50 dark:bg-slate-800/50 rounded-b-lg border-t border-slate-300/50 dark:border-slate-600/50 flex flex-wrap gap-3 justify-center">
+      <button onClick={onEdit} className={secondaryButtonClass}><EditIcon className="w-4 h-4 mr-2" />Edit</button>
+      <button onClick={onStyle} className={secondaryButtonClass}><StyleIcon className="w-4 h-4 mr-2" />Style</button>
+      <button onClick={onExportSlide} disabled={isExporting} className={secondaryButtonClass}>
+          {isExporting ? <><Loader />Exporting...</> : <><ImageIcon className="w-4 h-4 mr-2" />Export Slide</>}
+      </button>
+      <button onClick={onFactCheck} disabled={slide.isFactChecking} className={secondaryButtonClass}>
+          {slide.isFactChecking ? <><Loader />Checking...</> : <><FactCheckIcon className="w-4 h-4 mr-2" />Fact Check</>}
+      </button>
+      <button onClick={onCritiqueDesign} disabled={slide.isCritiquing} className={secondaryButtonClass}>
+          {slide.isCritiquing ? <><Loader />Analyzing...</> : <><LightbulbIcon className="w-4 h-4 mr-2" />Suggest Ideas</>}
+      </button>
+
       {slide.imagePrompt && (
-        <button onClick={onGenerateImage} disabled={slide.isLoadingImage} className="btn-secondary">
+        <button onClick={onGenerateImage} disabled={slide.isLoadingImage} className={secondaryButtonClass}>
           {slide.isLoadingImage ? <><Loader />Generating...</> : <><MagicIcon className="w-4 h-4 mr-2" />{slide.image ? 'Regenerate' : 'Generate'} Image</>}
         </button>
       )}
 
       {slide.speakerNotes ? (
-            <button onClick={() => setShowNotes(!showNotes)} className="btn-secondary"><NotesIcon className="w-4 h-4 mr-2" />{showNotes ? 'Hide' : 'Show'} Notes</button>
+            <button onClick={() => setShowNotes(!showNotes)} className={secondaryButtonClass}><NotesIcon className="w-4 h-4 mr-2" />{showNotes ? 'Hide' : 'Show'} Notes</button>
       ) : (
-          <button onClick={onGenerateNotes} disabled={slide.isGeneratingNotes} className="btn-secondary">
+          <button onClick={onGenerateNotes} disabled={slide.isGeneratingNotes} className={secondaryButtonClass}>
               {slide.isGeneratingNotes ? <><Loader />Generating...</> : <><NotesIcon className="w-4 h-4 mr-2" />Generate Notes</>}
           </button>
       )}
 
       {!slide.keyTakeaway && (
-          <button onClick={onGenerateTakeaway} disabled={slide.isGeneratingTakeaway} className="btn-secondary">
+          <button onClick={onGenerateTakeaway} disabled={slide.isGeneratingTakeaway} className={secondaryButtonClass}>
               {slide.isGeneratingTakeaway ? <><Loader />Generating...</> : <><KeyIcon className="w-4 h-4 mr-2" />Key Takeaway</>}
           </button>
       )}
 
-      <button onClick={onExpand} className="btn-primary" disabled={isLoading}>
-          {isLoading ? <><Loader />Expanding...</> : <><ExpandIcon className="w-4 h-4 mr-2" />Expand Slide</>}
+      <button onClick={onExpand} className={primaryButtonClass} disabled={slide.isExpanding}>
+          {slide.isExpanding ? <><Loader />Expanding...</> : <><ExpandIcon className="w-4 h-4 mr-2" />Expand Slide</>}
       </button>
 
-      <button onClick={onViewHistory} className="btn-secondary"><HistoryIcon className="w-4 h-4 mr-2" />View History</button>
-
-      <style>{`
-        .btn-secondary {
-          display: inline-flex;
-          align-items: center;
-          padding: 8px 16px;
-          background-color: #334155;
-          color: #E2E8F0;
-          border-radius: 6px;
-          font-weight: 500;
-          transition: background-color 0.2s;
-        }
-        .btn-secondary:hover {
-          background-color: #475569;
-        }
-        .btn-secondary:disabled {
-          background-color: #475569;
-          cursor: wait;
-          opacity: 0.7;
-        }
-        .btn-primary {
-           display: inline-flex;
-          align-items: center;
-          padding: 8px 16px;
-          background-color: #9333EA;
-          color: white;
-          border-radius: 6px;
-          font-weight: 500;
-          transition: background-color 0.2s;
-        }
-        .btn-primary:hover {
-            background-color: #A855F7;
-        }
-         .btn-primary:disabled {
-          background-color: #A855F7;
-          cursor: wait;
-          opacity: 0.7;
-        }
-      `}</style>
+      <button onClick={onViewHistory} className={secondaryButtonClass}><HistoryIcon className="w-4 h-4 mr-2" />View History</button>
     </div>
   );
 };

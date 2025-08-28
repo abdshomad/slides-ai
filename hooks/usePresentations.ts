@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { PresentationProject, AppState, HistoryCheckpoint } from '../types';
-import { templates } from '../templates';
-
-const STORAGE_KEY = 'ai_presentations';
+// FIX: Correct import path for types
+import { PresentationProject, AppState, HistoryCheckpoint } from '../types/index';
+import { templates } from '../templates/index';
+import { loadPresentations, savePresentations } from '../services/presentationStorageService';
 
 const createNewPresentation = (title: string): PresentationProject => {
   const now = Date.now();
@@ -36,30 +36,10 @@ const usePresentations = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        setPresentations(parsedData.presentations || []);
-        setCurrentPresentationId(parsedData.currentPresentationId || null);
-      }
-    } catch (error) {
-      console.error("Failed to load presentations from localStorage", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const saveData = useCallback((newPresentations: PresentationProject[], newCurrentId: string | null) => {
-    try {
-      const dataToSave = {
-        presentations: newPresentations,
-        currentPresentationId: newCurrentId,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-    } catch (error) {
-      console.error("Failed to save presentations to localStorage", error);
-    }
+    const { presentations, currentPresentationId } = loadPresentations();
+    setPresentations(presentations);
+    setCurrentPresentationId(currentPresentationId);
+    setIsLoading(false);
   }, []);
 
   const createPresentation = useCallback((title?: string) => {
@@ -67,33 +47,33 @@ const usePresentations = () => {
     const newPresentation = createNewPresentation(newTitle);
     setPresentations(prev => {
       const updated = [...prev, newPresentation];
-      saveData(updated, newPresentation.id);
+      savePresentations(updated, newPresentation.id);
       return updated;
     });
     setCurrentPresentationId(newPresentation.id);
-  }, [saveData, presentations.length]);
+  }, [presentations.length]);
 
   const deletePresentation = useCallback((id: string) => {
     setPresentations(prev => {
       const updated = prev.filter(p => p.id !== id);
       const newCurrentId = currentPresentationId === id ? null : currentPresentationId;
-      saveData(updated, newCurrentId);
+      savePresentations(updated, newCurrentId);
       if (currentPresentationId === id) {
         setCurrentPresentationId(null);
       }
       return updated;
     });
-  }, [currentPresentationId, saveData]);
+  }, [currentPresentationId]);
   
   const updatePresentation = useCallback((id: string, updates: Partial<PresentationProject>) => {
     setPresentations(prev => {
       const newPresentations = prev.map(p =>
         p.id === id ? { ...p, ...updates, lastModified: Date.now() } : p
       );
-      saveData(newPresentations, currentPresentationId);
+      savePresentations(newPresentations, currentPresentationId);
       return newPresentations;
     });
-  }, [currentPresentationId, saveData]);
+  }, [currentPresentationId]);
 
 
   const addCheckpoint = useCallback((id: string, action: string, state: AppState) => {
@@ -113,10 +93,10 @@ const usePresentations = () => {
         }
         return p;
       });
-      saveData(newPresentations, id);
+      savePresentations(newPresentations, id);
       return newPresentations;
     });
-  }, [saveData]);
+  }, []);
 
   const rollbackToCheckpoint = useCallback((id: string, checkpointIndex: number) => {
     setPresentations(prev => {
@@ -139,20 +119,20 @@ const usePresentations = () => {
         }
         return p;
       });
-      saveData(newPresentations, id);
+      savePresentations(newPresentations, id);
       return newPresentations;
     });
-  }, [saveData]);
+  }, []);
   
   const selectPresentation = useCallback((id: string) => {
     setCurrentPresentationId(id);
-    saveData(presentations, id);
-  }, [presentations, saveData]);
+    savePresentations(presentations, id);
+  }, [presentations]);
 
   const clearCurrentPresentation = useCallback(() => {
     setCurrentPresentationId(null);
-    saveData(presentations, null);
-  }, [presentations, saveData]);
+    savePresentations(presentations, null);
+  }, [presentations]);
 
   const currentPresentation = presentations.find(p => p.id === currentPresentationId) || null;
 

@@ -1,0 +1,44 @@
+import React from 'react';
+import { samplePresentation } from '../../slides/samplePresentation';
+import SlideEditorLayout from '../editor/slides/SlideEditorLayout';
+import { templates } from '../../templates/index';
+import { ArrowLeftIcon } from '../icons';
+
+const SamplePresentationViewer: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+    // A dummy function to satisfy the component's prop requirements. It does nothing.
+    const doNothing = () => {};
+
+    const props = {
+        slides: samplePresentation,
+        onEditSlide: doNothing,
+        onStyleSlide: doNothing,
+        onGenerateNotes: doNothing,
+        onGenerateTakeaway: doNothing,
+        onGenerateImage: doNothing,
+        onExpandSlide: doNothing,
+        onViewSlideHistory: doNothing,
+        onFactCheckSlide: doNothing,
+        // FIX: Add missing onCritiqueSlide prop for SlideEditorLayout
+        onCritiqueSlide: doNothing,
+        onReorderSlides: doNothing,
+        onSelectImageFromSearch: doNothing,
+        selectedTemplate: templates[0],
+    };
+
+    return (
+        <div className="animate-fade-in">
+            <div className="flex justify-between items-center mb-6">
+                <button onClick={onBack} className="flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-200 dark:bg-slate-800/60 hover:bg-slate-300 dark:hover:bg-slate-700/80 px-3 py-1.5 rounded-md transition-colors border border-slate-300 dark:border-slate-700/50">
+                    <ArrowLeftIcon className="w-4 h-4 mr-2" />
+                    Back to App
+                </button>
+                 <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Sample Presentation</h2>
+                 <div className="w-36"></div>{/* Spacer */}
+            </div>
+            
+            <SlideEditorLayout {...props} />
+        </div>
+    );
+};
+
+export default SamplePresentationViewer;
